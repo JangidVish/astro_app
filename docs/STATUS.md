@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M3 Provider adapter. T3.1 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T3.2.
+- **Current milestone:** Phase 6, M3 Provider adapter. T3.2 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T3.3.
 
 ## Approved decisions
 
@@ -45,10 +45,11 @@
 - **T2.2 API core** (config, redacting logger, error model, `/healthz`, esbuild build), completed 2026-10-17.
 - **T2.3 Auth module** (Firebase ID token and App Check on `/v1`), completed 2026-10-17.
 - **T3.1 Provider interface and MockProvider**, completed 2026-10-17.
+- **T3.2 AstrologyAPI HTTP client**, completed 2026-10-17.
 
 ## In progress
 
-- T3.1 review (owner: you).
+- T3.2 review (owner: you).
 
 ## Blocked / failed
 
@@ -158,6 +159,23 @@
 - `npm run check` passes (**308 tests**).
 - **Deviation from the backlog.** Mock fixtures are TypeScript built to match the documented samples. Raw provider-JSON fixtures arrive with the mappers in T3.3.
 
+**T3.2, 2026-10-17. All checks were actually run:**
+
+- **Client: 51 tests pass.** No real network calls; `fetch` and `sleep` are injected.
+  - Requests: Basic auth, JSON body, credentials kept out of the URL, redirects refused.
+  - 9 malicious endpoint strings (`../`, a full URL, `//host`, a query, and others) are refused before any request.
+  - Status classification for 13 codes.
+  - No retry on 401, 402, 429, or 400.
+  - 5xx is retried with 1, 2, and 4 s backoff, then gives up after 4 attempts.
+  - Network errors, hung requests, a body stalled after headers, and a connection dropped mid-body are all retried.
+  - Malformed responses: non-JSON, truncated, empty, null body, `200` with `status: false`, and a body over 2 MB (stopped mid-stream) all fail cleanly.
+  - Multi-byte UTF-8 split across chunks is reassembled correctly.
+  - Call records hold metadata only; a throwing hook is ignored.
+  - Credentials and birth data never appear in errors or records.
+- **Coverage of `client.ts`:** 98.4% of branches (target was 90%). The only uncovered line is an unreachable defensive branch.
+- **Mutation test.** Making 4xx retryable fails 3 tests.
+- `npm run check` passes (**359 tests**). The prod audit finds 0.
+
 ## Outstanding risks
 
 | Risk                                                                                     | Mitigation                                                                                                                                                         |
@@ -177,6 +195,6 @@ Approve T1.3. Then **T2.1: shared package schemas and validation**.
 
 ## Decisions awaiting your approval
 
-1. T3.1 results.
+1. T3.2 results.
 2. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.
 3. Your M0 items (see `backlog.md`). **M0.1 (AstrologyAPI account) is needed before T3.4.**

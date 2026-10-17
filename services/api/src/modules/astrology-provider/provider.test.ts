@@ -28,7 +28,7 @@ describe('createProvider', () => {
     expect(() => createProvider(config({ env: 'prod' }))).toThrow(/prod/);
   });
 
-  it('fails loudly for the real provider until T3.2 implements it', () => {
+  it('fails loudly for the real provider until T3.3 wires it up', () => {
     expect(() =>
       createProvider(config({ provider: { kind: 'astrologyapi', userId: 'u', apiKey: 'k' } })),
     ).toThrow(/not implemented/);

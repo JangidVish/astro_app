@@ -15,6 +15,6 @@ export function createProvider(config: Config): AstrologyProvider {
     }
     return new MockProvider();
   }
-  // Replaced by the HTTP implementation in T3.2.
-  throw new Error('AstrologyApiProvider is not implemented yet (T3.2)');
+  // Wired up with the HTTP client and mappers in T3.3.
+  throw new Error('AstrologyApiProvider is not implemented yet (T3.3)');
 }
