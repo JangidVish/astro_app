@@ -61,7 +61,10 @@ describe('routeFor', () => {
     primaryProfileId: null,
     profileCount: 0,
   });
-  const signedIn = { status: 'signedIn', user: { uid: 'u', email: null } } as const;
+  const signedIn = {
+    status: 'signedIn',
+    user: { uid: 'u', email: null, providers: ['password'] },
+  } as const;
 
   it.each([
     ['auth resolving', { status: 'loading' } as const, undefined, 'splash'],

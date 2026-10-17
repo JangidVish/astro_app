@@ -2,6 +2,8 @@
 export interface AuthUser {
   readonly uid: string;
   readonly email: string | null;
+  /** How the account signs in, e.g. ['password'] or ['apple.com']. Drives re-authentication. */
+  readonly providers: readonly string[];
 }
 
 /**
@@ -18,8 +20,13 @@ export interface AuthService {
   readonly google: { signIn(): Promise<void> } | null;
   readonly apple: { signIn(): Promise<void> } | null;
   signOut(): Promise<void>;
-  /** Fresh Firebase ID token for API calls, or null when signed out. */
-  getIdToken(): Promise<string | null>;
+  /** Firebase ID token for API calls, or null when signed out. */
+  getIdToken(forceRefresh?: boolean): Promise<string | null>;
+  /**
+   * Confirms the user's identity again before a sensitive action (account deletion). Password
+   * accounts pass the password; Apple accounts go through Sign in with Apple again.
+   */
+  reauthenticate(credentials: { password?: string }): Promise<void>;
 }
 
 /** Stable reasons for auth failures; the UI maps these to messages. */

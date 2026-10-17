@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M8 mobile app. T8.5 and T8.6 are done. Next is T8.7 (settings, account deletion).
+- **Current milestone:** Phase 6, M8 mobile app. T8.7 is done. Next is T8.8 (states and accessibility pass).
 
 ## Approved decisions
 
@@ -63,6 +63,7 @@
 - **T8.3 Profiles UI** (list, create, edit, delete, place search, DST prompts, offset shown), completed 2026-10-17.
 - **T8.4 North Indian chart renderer and chart screen** (D1/D9 tabs, planet table, unknown-time view), completed 2026-10-17.
 - **T8.5 Dasha screen** and **T8.6 Daily prediction screen**, completed 2026-10-17.
+- **T8.7 Settings and account deletion** (re-authentication, then `DELETE /v1/me`), completed 2026-10-17.
 - `UID_HASH_PEPPER` was generated into `.env` on 2026-10-17. The value was not displayed.
 
 ## In progress
@@ -485,6 +486,18 @@
   - prediction: the basis (Moon sign and nakshatra), all six sections verbatim, the noon note shown only for unknown time, the disclaimer, and the "not available for this day" message for the server's birth-place window.
 - **Mutation test.** An inclusive period end fails the boundary test.
 - `expo lint` is clean, the Android bundle builds, and `npm run check` passes.
+
+**T8.7, 2026-10-17. All checks were actually run:**
+
+- **Mobile tests: 152 pass.** The deletion flow is tested to:
+  - re-authenticate, force-refresh the token, delete, clear the query cache (no personal data left in memory), and sign out, **in that order**;
+  - require the password before doing anything;
+  - on a wrong password, delete nothing and show a message;
+  - on a server `REAUTH_REQUIRED`, ask again and stay signed in;
+  - use Sign in with Apple to re-authenticate Apple accounts (no password field);
+  - when offline, keep the account and show a message.
+- **Mutation test.** Removing the forced token refresh fails the order test. Without it, the server would reject the request as a stale sign-in.
+- Settings shows the account, policy versions, the disclaimer, and the app version. The legal links follow with M0.6.
 
 ## Outstanding risks
 

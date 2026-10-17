@@ -131,6 +131,20 @@ export const en = {
   'prediction.notAvailable':
     'This day’s prediction is not available yet for this birth place. Try today or tomorrow.',
 
+  'settings.title': 'Settings',
+  'settings.account': 'Account',
+  'settings.legal': 'Legal',
+  'settings.version': 'App version',
+  'settings.deleteAccount': 'Delete account',
+  'delete.title': 'Delete your account',
+  'delete.body':
+    'This permanently deletes your account, all birth profiles, charts and saved readings. It cannot be undone.',
+  'delete.passwordPrompt': 'Enter your password to confirm.',
+  'delete.applePrompt': 'Confirm with Sign in with Apple to continue.',
+  'delete.confirm': 'Delete my account',
+  'delete.reauthAgain': 'For your security, please confirm again.',
+  'delete.done': 'Your account has been deleted.',
+
   'common.loading': 'Loading',
   'common.retry': 'Try again',
   'common.error': 'Something went wrong.',

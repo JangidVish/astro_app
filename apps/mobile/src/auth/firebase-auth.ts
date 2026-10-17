@@ -5,10 +5,12 @@ import { getApps, initializeApp } from 'firebase/app';
 import {
   connectAuthEmulator,
   createUserWithEmailAndPassword,
+  EmailAuthProvider,
   getReactNativePersistence,
   initializeAuth,
   onAuthStateChanged,
   OAuthProvider,
+  reauthenticateWithCredential,
   sendPasswordResetEmail,
   signInWithCredential,
   signInWithEmailAndPassword,
@@ -40,8 +42,12 @@ export function firebaseConfigFromEnv(
   return { apiKey, authDomain, projectId, appId, ...(authEmulatorUrl ? { authEmulatorUrl } : {}) };
 }
 
-function toUser(user: { uid: string; email: string | null } | null): AuthUser | null {
-  return user ? { uid: user.uid, email: user.email } : null;
+function toUser(
+  user: { uid: string; email: string | null; providerData: { providerId: string }[] } | null,
+): AuthUser | null {
+  return user
+    ? { uid: user.uid, email: user.email, providers: user.providerData.map((p) => p.providerId) }
+    : null;
 }
 
 /** Wraps an auth call so every failure surfaces as an AuthError with a stable reason. */
@@ -57,7 +63,7 @@ async function guard(run: () => Promise<unknown>): Promise<void> {
  * Sign in with Apple: a random nonce is hashed for Apple and the raw value given to Firebase, so a
  * stolen Apple token cannot be replayed (Firebase's documented flow).
  */
-async function appleSignIn(auth: Auth): Promise<void> {
+async function appleCredential() {
   const rawNonce = Crypto.randomUUID();
   const hashedNonce = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, rawNonce);
   const result = await AppleAuthentication.signInAsync({
@@ -65,11 +71,11 @@ async function appleSignIn(auth: Auth): Promise<void> {
     nonce: hashedNonce,
   });
   if (!result.identityToken) throw new Error('Apple returned no identity token');
-  const credential = new OAuthProvider('apple.com').credential({
-    idToken: result.identityToken,
-    rawNonce,
-  });
-  await signInWithCredential(auth, credential);
+  return new OAuthProvider('apple.com').credential({ idToken: result.identityToken, rawNonce });
+}
+
+async function appleSignIn(auth: Auth): Promise<void> {
+  await signInWithCredential(auth, await appleCredential());
 }
 
 export function createFirebaseAuthService(config: FirebasePublicConfig): AuthService {
@@ -98,6 +104,23 @@ export function createFirebaseAuthService(config: FirebasePublicConfig): AuthSer
     // wired in T10 together with App Check and the native Firebase config files.
     google: null,
     signOut: () => guard(() => signOut(auth)),
-    getIdToken: async () => (auth.currentUser ? auth.currentUser.getIdToken() : null),
+    getIdToken: async (forceRefresh = false) =>
+      auth.currentUser ? auth.currentUser.getIdToken(forceRefresh) : null,
+    reauthenticate: ({ password }) =>
+      guard(async () => {
+        const user = auth.currentUser;
+        if (!user) throw new Error('not signed in');
+        const providers = user.providerData.map((p) => p.providerId);
+        if (providers.includes('password') && user.email && password) {
+          await reauthenticateWithCredential(
+            user,
+            EmailAuthProvider.credential(user.email, password),
+          );
+        } else if (providers.includes('apple.com')) {
+          await reauthenticateWithCredential(user, await appleCredential());
+        } else {
+          throw new Error('no supported re-authentication method');
+        }
+      }),
   };
 }
