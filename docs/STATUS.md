@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M4 Users. T4.1 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T4.2 (quota).
+- **Current milestone:** Phase 6, M4 Users. T4.2 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T5.2 (places).
 
 ## Approved decisions
 
@@ -51,10 +51,11 @@
 - **T5.1 Timezone resolution library** (`packages/shared/src/time/resolve.ts`), completed 2026-10-17.
 - **T3.4 Live provider spike**, completed 2026-10-17. It used 24 live calls. Findings are in `api-provider-notes.md`.
 - **T4.1 Users module** (`GET/PATCH /v1/me`, consent), completed 2026-10-17.
+- **T4.2 Quota module** (per-user daily provider-call budget), completed 2026-10-17.
 
 ## In progress
 
-- T4.1 review (owner: you).
+- T4.2 review (owner: you).
 
 ## Blocked / failed
 
@@ -256,6 +257,29 @@
 - **Harness bug fixed.** With 2 emulators, tests could start before the Auth emulator was ready (ECONNREFUSED). `with-emulators.mjs` now waits for the CLI's "All emulators ready" banner as well as open ports. It then ran green twice in a row (263/263).
 - **Refactor.** firebase-admin now uses one shared app for the auth verifier and Firestore.
 
+**T4.2, 2026-10-17. All checks were actually run:**
+
+- **Quota tests on the Firestore emulator: 12 pass, plus 1 app-level test.** They cover:
+  - limit then 429 with `Retry-After` until UTC midnight;
+  - **exactly 10 of 20 concurrent reservations succeed** at a limit of 10;
+  - per-user separation;
+  - the midnight reset;
+  - one pseudonymous audit event per day, not per request;
+  - a 7-day `expireAt`;
+  - `runMetered` counts successes, refunds failures, and never calls the provider when over quota;
+  - the `Retry-After` header reaches the HTTP response.
+- **Contention measured.** With 5, 10, and 20 concurrent calls, exactly `limit` succeed and the rest get `QUOTA_EXCEEDED`. No contention errors leak. The emulator takes 3.7 to 7.3 s, so the two concurrency tests have a 30 s timeout.
+- **Test-harness flakiness found and fixed.**
+  - Integration files ran in parallel and wiped each other's emulator data. Files now run sequentially.
+  - The emulator start could hang in `npx` or the CLI update check. The wrapper now runs the pinned local binary with `NO_UPDATE_NOTIFIER=1`.
+  - Per-test timeout is 15 s in the API package.
+  - Result: **5 of 5 consecutive runs green (276/276).**
+- **Mutation tests** (each fails exactly its own target test):
+  - reading outside the transaction;
+  - removing the refund;
+  - auditing every breach.
+- `npm run check` passes (**505 tests**).
+
 ## Outstanding risks
 
 | Risk                                                                                                                         | Mitigation                                                                                                                                                         |
@@ -276,7 +300,7 @@ Approve T1.3. Then **T2.1: shared package schemas and validation**.
 
 ## Decisions awaiting your approval
 
-1. T4.1 results.
-2. **Credits.** Please check the AstrologyAPI dashboard balance. 24 calls have been used so far. This is needed to set the T4.2 quota from real numbers. Until then the placeholder is 30 calls per user per day.
+1. T4.2 results. Failed provider calls are refunded, so outages do not use up a user's daily budget.
+2. **Credits.** Please check the AstrologyAPI dashboard balance (24 calls used). The quota stays at the placeholder of 30 per user per day until real costs are known.
 3. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.
-4. Add `UID_HASH_PEPPER` to `.env`. The API will not start without it.
+4. Add `UID_HASH_PEPPER` to `.env`.

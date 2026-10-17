@@ -93,15 +93,21 @@ describe('GET /v1/me', () => {
     );
   });
 
-  it('creates exactly one user under 20 concurrent first requests', async () => {
-    const responses = await Promise.all(
-      Array.from({ length: 20 }, () =>
-        app.inject({ method: 'GET', url: '/v1/me', headers: as('racer') }),
-      ),
-    );
-    expect(responses.every((r) => r.statusCode === 200)).toBe(true);
-    expect(await auditEvents('account_created')).toHaveLength(1);
-  });
+  // Contended transactions on one document are slow in the emulator (measured 4-8 s for 20);
+  // correctness is what is asserted, so allow more time than the 5 s default.
+  it(
+    'creates exactly one user under 20 concurrent first requests',
+    { timeout: 30_000 },
+    async () => {
+      const responses = await Promise.all(
+        Array.from({ length: 20 }, () =>
+          app.inject({ method: 'GET', url: '/v1/me', headers: as('racer') }),
+        ),
+      );
+      expect(responses.every((r) => r.statusCode === 200)).toBe(true);
+      expect(await auditEvents('account_created')).toHaveLength(1);
+    },
+  );
 
   it('requires authentication', async () => {
     expect((await app.inject({ method: 'GET', url: '/v1/me' })).statusCode).toBe(401);

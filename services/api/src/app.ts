@@ -86,6 +86,7 @@ export function buildApp(config: Config, options: BuildAppOptions): FastifyInsta
     const appError = toAppError(error);
     if (appError) {
       if (appError.status >= 500) request.log.error({ err: error }, 'request failed');
+      if (appError.options.headers) void reply.headers(appError.options.headers);
       return reply.status(appError.status).send(errorBody(appError));
     }
     request.log.error({ err: error }, 'unhandled error');

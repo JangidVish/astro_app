@@ -9,7 +9,13 @@ export class AppError extends Error {
     readonly code: ErrorCode,
     readonly status: number,
     message: string,
-    readonly options: { retryable?: boolean; details?: ValidationDetail[]; cause?: unknown } = {},
+    readonly options: {
+      retryable?: boolean;
+      details?: ValidationDetail[];
+      cause?: unknown;
+      /** Extra response headers, e.g. Retry-After on 429. */
+      headers?: Readonly<Record<string, string>>;
+    } = {},
   ) {
     super(message, { cause: options.cause });
     this.name = 'AppError';

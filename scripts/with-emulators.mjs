@@ -11,6 +11,7 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { connect } from 'node:net';
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 
 const PROJECT_ID = 'demo-astro-app';
@@ -72,6 +73,9 @@ async function waitForReady(child) {
   throw new Error(`Emulators not ready after ${READY_TIMEOUT_MS / 1000}s`);
 }
 
+// On Windows this force-kills the whole tree. The CLI may notice the Java emulator exiting first
+// and print "Firestore Emulator has exited with code: 1 ... Fatal error": expected during
+// teardown, after the test command has already finished.
 function killTree(child) {
   if (child.exitCode !== null || child.pid === undefined) return;
   if (isWindows) {
@@ -108,10 +112,19 @@ function runSync(file, args, options) {
     : spawnSync(file, args, options);
 }
 
+// Use the repo's pinned firebase-tools binary directly: `npx` can stall on a registry lookup, and
+// the CLI's update check can stall on the network, both before the emulators print anything.
+const firebaseBin = fileURLToPath(
+  new URL(`../node_modules/.bin/firebase${isWindows ? '.cmd' : ''}`, import.meta.url),
+);
 const emulators = run(
-  'npx',
-  ['firebase', 'emulators:start', '--project', PROJECT_ID, '--only', only, '--config', configPath],
-  { stdio: ['ignore', 'pipe', 'inherit'], detached: !isWindows },
+  isWindows ? `"${firebaseBin}"` : firebaseBin,
+  ['emulators:start', '--project', PROJECT_ID, '--only', only, '--config', configPath],
+  {
+    stdio: ['ignore', 'pipe', 'inherit'],
+    detached: !isWindows,
+    env: { ...process.env, NO_UPDATE_NOTIFIER: '1' },
+  },
 );
 // Echo emulator output while watching for the ready banner (it may be split across chunks).
 let recentOutput = '';

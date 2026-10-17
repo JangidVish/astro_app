@@ -36,6 +36,12 @@ beforeEach(async () => {
   app.get('/app-error', () => {
     throw new AppError('PROFILE_LIMIT_REACHED', 409, 'Profile limit reached');
   });
+  app.get('/quota', () => {
+    throw new AppError('QUOTA_EXCEEDED', 429, 'Daily limit reached', {
+      retryable: true,
+      headers: { 'retry-after': '3600' },
+    });
+  });
   app.get('/zod-error', () =>
     z.strictObject({ hour: z.number().max(23, 'INVALID_TIME') }).parse({ hour: 30 }),
   );
@@ -148,6 +154,13 @@ describe('error handling', () => {
       code: 'PROFILE_LIMIT_REACHED',
       retryable: false,
     });
+  });
+
+  it('AppError headers reach the response (Retry-After on 429)', async () => {
+    const res = await app.inject({ method: 'GET', url: '/quota' });
+    expect(res.statusCode).toBe(429);
+    expect(res.headers['retry-after']).toBe('3600');
+    expect(expectErrorShape(res.json())).toMatchObject({ code: 'QUOTA_EXCEEDED', retryable: true });
   });
 
   it('ZodError becomes 400 with field-level details', async () => {
