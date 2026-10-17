@@ -1,6 +1,45 @@
+# Dependencies
 node_modules/
+
+# Build output
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Env and secrets: never commit real values
 .env
 .env.*
 !.env.example
+*.pem
+*.p8
+*.p12
+*.key
+*.keystore
+*.jks
+service-account*.json
+*-credentials.json
+google-services.json
+GoogleService-Info.plist
+
+# Expo / React Native (apps/mobile, added in T8.1)
+.expo/
+ios/
+android/
+
+# Firebase emulators
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+.firebase/
+
+# Logs and OS files
 *.log
+npm-debug.log*
 .DS_Store
+Thumbs.db
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/

@@ -1,0 +1,3 @@
+# Extends the built-in gitleaks ruleset. Add allowlists only with a comment explaining why.
+[extend]
+useDefault = true
