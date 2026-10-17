@@ -1,0 +1,237 @@
+{
+  "description": "Birth-time resolution cases. Expected offsets come from the IANA tz database (tzdata 2025b); `source` names the tzdb file and rule. Reused by the T3.4 cross-check against AstrologyAPI timezone_with_dst.",
+  "now": "2026-10-17T12:00:00Z",
+  "cases": [
+    {
+      "id": "ist-modern",
+      "zone": "Asia/Kolkata",
+      "date": "1990-05-10",
+      "time": "19:55",
+      "expect": { "status": "ok", "offset": 330, "instant": "1990-05-10T14:25:00Z" },
+      "source": "tzdb asia: IST +05:30 since 1945-10-15"
+    },
+    {
+      "id": "ist-1950",
+      "zone": "Asia/Kolkata",
+      "date": "1950-01-01",
+      "time": "00:00",
+      "expect": { "status": "ok", "offset": 330 },
+      "source": "tzdb asia: IST"
+    },
+    {
+      "id": "ist-war-1941",
+      "zone": "Asia/Kolkata",
+      "date": "1941-12-01",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": 390 },
+      "source": "tzdb asia: +0630 from 1941-10-01 to 1942-05-15"
+    },
+    {
+      "id": "ist-between-wars",
+      "zone": "Asia/Kolkata",
+      "date": "1942-07-01",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": 330 },
+      "source": "tzdb asia: IST 1942-05-15 to 1942-09-01"
+    },
+    {
+      "id": "ist-war-1943",
+      "zone": "Asia/Kolkata",
+      "date": "1943-01-15",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": 390 },
+      "source": "tzdb asia: +0630 1942-09-01 to 1945-10-15"
+    },
+    {
+      "id": "madras-time-1900",
+      "zone": "Asia/Kolkata",
+      "date": "1900-01-01",
+      "time": "06:00",
+      "expect": { "status": "ok", "offset": 321 },
+      "source": "tzdb asia: MMT +05:21:10 until 1906 (rounded to whole minutes)"
+    },
+    {
+      "id": "nepal-before-1986",
+      "zone": "Asia/Kathmandu",
+      "date": "1985-12-31",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": 330 },
+      "source": "tzdb asia: Nepal +0530 until 1986"
+    },
+    {
+      "id": "nepal-modern",
+      "zone": "Asia/Kathmandu",
+      "date": "1990-06-01",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": 345 },
+      "source": "tzdb asia: Nepal +0545 since 1986"
+    },
+    {
+      "id": "ny-summer",
+      "zone": "America/New_York",
+      "date": "2021-07-04",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": -240 },
+      "source": "tzdb northamerica: EDT"
+    },
+    {
+      "id": "ny-winter",
+      "zone": "America/New_York",
+      "date": "2021-12-25",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": -300 },
+      "source": "tzdb northamerica: EST"
+    },
+    {
+      "id": "ny-gap",
+      "zone": "America/New_York",
+      "date": "2021-03-14",
+      "time": "02:30",
+      "expect": { "status": "gap" },
+      "source": "tzdb northamerica: clocks 02:00 -> 03:00 on 2021-03-14"
+    },
+    {
+      "id": "ny-overlap",
+      "zone": "America/New_York",
+      "date": "2021-11-07",
+      "time": "01:30",
+      "expect": { "status": "ambiguous", "offsets": [-240, -300] },
+      "source": "tzdb northamerica: 01:00-02:00 repeated on 2021-11-07"
+    },
+    {
+      "id": "ny-overlap-earlier",
+      "zone": "America/New_York",
+      "date": "2021-11-07",
+      "time": "01:30",
+      "offsetChoice": "earlier",
+      "expect": { "status": "ok", "offset": -240, "instant": "2021-11-07T05:30:00Z" },
+      "source": "first occurrence is EDT"
+    },
+    {
+      "id": "ny-overlap-later",
+      "zone": "America/New_York",
+      "date": "2021-11-07",
+      "time": "01:30",
+      "offsetChoice": "later",
+      "expect": { "status": "ok", "offset": -300, "instant": "2021-11-07T06:30:00Z" },
+      "source": "second occurrence is EST"
+    },
+    {
+      "id": "london-summer",
+      "zone": "Europe/London",
+      "date": "2021-06-01",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": 60 },
+      "source": "tzdb europe: BST"
+    },
+    {
+      "id": "london-bst-all-year-1970",
+      "zone": "Europe/London",
+      "date": "1970-12-01",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": 60 },
+      "source": "tzdb europe: British Standard Time +1 all year 1968-10-27 to 1971-10-31"
+    },
+    {
+      "id": "london-double-summer-1941",
+      "zone": "Europe/London",
+      "date": "1941-06-01",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": 120 },
+      "source": "tzdb europe: BDST +2 in wartime summers"
+    },
+    {
+      "id": "sydney-summer",
+      "zone": "Australia/Sydney",
+      "date": "2021-01-15",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": 660 },
+      "source": "tzdb australasia: southern-hemisphere DST (AEDT)"
+    },
+    {
+      "id": "sydney-winter",
+      "zone": "Australia/Sydney",
+      "date": "2021-07-15",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": 600 },
+      "source": "tzdb australasia: AEST"
+    },
+    {
+      "id": "sydney-gap",
+      "zone": "Australia/Sydney",
+      "date": "2021-10-03",
+      "time": "02:30",
+      "expect": { "status": "gap" },
+      "source": "tzdb australasia: 02:00 -> 03:00 on 2021-10-03"
+    },
+    {
+      "id": "sydney-overlap",
+      "zone": "Australia/Sydney",
+      "date": "2021-04-04",
+      "time": "02:30",
+      "expect": { "status": "ambiguous", "offsets": [660, 600] },
+      "source": "tzdb australasia: 02:00-03:00 repeated on 2021-04-04"
+    },
+    {
+      "id": "sao-paulo-dst-2018",
+      "zone": "America/Sao_Paulo",
+      "date": "2018-01-15",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": -120 },
+      "source": "tzdb southamerica: Brazil DST until 2019"
+    },
+    {
+      "id": "sao-paulo-no-dst-2020",
+      "zone": "America/Sao_Paulo",
+      "date": "2020-01-15",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": -180 },
+      "source": "tzdb southamerica: DST abolished 2019"
+    },
+    {
+      "id": "dhaka-dst-2009",
+      "zone": "Asia/Dhaka",
+      "date": "2009-07-01",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": 420 },
+      "source": "tzdb asia: Bangladesh DST 2009-06-19 to 2009-12-31"
+    },
+    {
+      "id": "karachi-dst-2008",
+      "zone": "Asia/Karachi",
+      "date": "2008-07-01",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": 360 },
+      "source": "tzdb asia: Pakistan DST 2008"
+    },
+    {
+      "id": "kiritimati-plus14",
+      "zone": "Pacific/Kiritimati",
+      "date": "2020-06-01",
+      "time": "12:00",
+      "expect": { "status": "ok", "offset": 840 },
+      "source": "tzdb australasia: +14"
+    },
+    {
+      "id": "samoa-skipped-day",
+      "zone": "Pacific/Apia",
+      "date": "2011-12-30",
+      "time": "12:00",
+      "expect": { "status": "gap" },
+      "source": "tzdb australasia: Samoa skipped 2011-12-30 entirely"
+    },
+    {
+      "id": "unknown-time-noon",
+      "zone": "Asia/Kolkata",
+      "date": "1990-05-10",
+      "time": null,
+      "expect": {
+        "status": "ok",
+        "offset": 330,
+        "instant": "1990-05-10T06:30:00Z",
+        "timeAssumedNoon": true
+      },
+      "source": "FR-8: unknown time -> 12:00 local"
+    }
+  ]
+}

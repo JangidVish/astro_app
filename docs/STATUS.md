@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M3 Provider adapter. T3.3 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T5.1 (it must precede T3.4).
+- **Current milestone:** Phase 6, M5 Places and profiles. T5.1 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T3.4 (live spike, needs your `.env`).
 
 ## Approved decisions
 
@@ -47,10 +47,12 @@
 - **T3.1 Provider interface and MockProvider**, completed 2026-10-17.
 - **T3.2 AstrologyAPI HTTP client**, completed 2026-10-17.
 - **T3.3 Response schemas, mappers and AstrologyApiProvider**, completed 2026-10-17.
+- **T5.1 Timezone resolution library** (`packages/shared/src/time/resolve.ts`), completed 2026-10-17.
 
 ## In progress
 
-- T3.3 review (owner: you).
+- T5.1 review (owner: you).
+- AstrologyAPI credentials go in `.env` at the repo root, which is gitignored (owner: you).
 
 ## Blocked / failed
 
@@ -194,18 +196,40 @@
 - `npm run check` passes (**423 tests**).
 - **New finding.** The prediction response includes `prediction_date`, so predictions are cached under the provider's own date. See `api-provider-notes.md`.
 
+**T5.1, 2026-10-17. All checks were actually run:**
+
+- **28 documented tz database cases pass.** They cover:
+  - India: IST, the 1941–45 war-time +06:30 periods, and Madras time in 1900 (+05:21:10, rounded);
+  - Nepal: +05:30 before 1986 and +05:45 after;
+  - New York and Sydney: DST gaps and overlaps, with both offset choices;
+  - London: all-year BST in 1970 and double summer time in 1941;
+  - Brazil after DST was abolished;
+  - DST in Dhaka (2009) and Karachi (2008);
+  - Kiritimati at +14;
+  - Samoa's skipped day (2011-12-30);
+  - unknown time resolving to noon.
+- **15 more tests pass.** They cover:
+  - the exact future check in the birthplace calendar, including UTC+14;
+  - invalid zones;
+  - times just outside a gap.
+- **Bug found and fixed.** The runtime accepted `"IST"` as a valid zone, but "IST" is ambiguous (India, Israel, Ireland). Zones must now be in `Area/Location` form.
+- **New guard.** A `tsconfig.src.json` keeps Node APIs out of the shared `src` code, which the React Native app imports. A planted `node:fs` import fails the check.
+- **Mutation test.** Hiding ambiguity fails 3 overlap cases.
+- `npm run check` passes (**466 tests**).
+
 ## Outstanding risks
 
-| Risk                                                                                     | Mitigation                                                                                                                                                         |
-| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Provider credits per call are unknown, so the real cost per user is unknown              | Measure with the 150 free credits in Phase 7, then set the quota                                                                                                   |
-| Provider rate limits are undocumented, and "abuse" can lead to suspension                | Caching, per-user quota, App Check, max-instances cap                                                                                                              |
-| Cross-user caching is not explicitly allowed in the provider's terms                     | Ask the provider in writing before launch                                                                                                                          |
-| Historical timezone or DST errors would corrupt charts silently                          | Local tzdb plus a fixture cross-check against `timezone_with_dst`                                                                                                  |
-| Store compliance (Sign in with Apple, account deletion, privacy policy)                  | These are built into the MVP scope and acceptance criteria                                                                                                         |
-| Emulator env vars in a deployed env would make firebase-admin accept unsigned tokens     | Config refuses `FIREBASE_AUTH_EMULATOR_HOST` / `FIRESTORE_EMULATOR_HOST` in staging and prod (tested)                                                              |
-| Developer accounts and legal entity are unowned (U-7)                                    | Needed before staging builds reach TestFlight or Play                                                                                                              |
-| 12 dev-only npm audit findings (8 high) in firebase-tools / firebase SDK transitive deps | Local emulator only, bound to 127.0.0.1, never shipped. The prod audit finds 0. `--force` would downgrade majors, so it was rejected. Re-check on Firebase updates |
+| Risk                                                                                                                         | Mitigation                                                                                                                                                         |
+| ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Provider credits per call are unknown, so the real cost per user is unknown                                                  | Measure with the 150 free credits in Phase 7, then set the quota                                                                                                   |
+| Provider rate limits are undocumented, and "abuse" can lead to suspension                                                    | Caching, per-user quota, App Check, max-instances cap                                                                                                              |
+| Cross-user caching is not explicitly allowed in the provider's terms                                                         | Ask the provider in writing before launch                                                                                                                          |
+| Historical timezone or DST errors would corrupt charts silently                                                              | Local tzdb plus a fixture cross-check against `timezone_with_dst`                                                                                                  |
+| Store compliance (Sign in with Apple, account deletion, privacy policy)                                                      | These are built into the MVP scope and acceptance criteria                                                                                                         |
+| Emulator env vars in a deployed env would make firebase-admin accept unsigned tokens                                         | Config refuses `FIREBASE_AUTH_EMULATOR_HOST` / `FIRESTORE_EMULATOR_HOST` in staging and prod (tested)                                                              |
+| Timezone history comes from the runtime's tz data (Node 24: tzdata 2025b). Dev and prod could differ if Node versions differ | Pin the Node image version in the Dockerfile (T10). Cross-check fixtures against the provider in T3.4                                                              |
+| Developer accounts and legal entity are unowned (U-7)                                                                        | Needed before staging builds reach TestFlight or Play                                                                                                              |
+| 12 dev-only npm audit findings (8 high) in firebase-tools / firebase SDK transitive deps                                     | Local emulator only, bound to 127.0.0.1, never shipped. The prod audit finds 0. `--force` would downgrade majors, so it was rejected. Re-check on Firebase updates |
 
 ## Next recommended task
 
@@ -213,7 +237,7 @@ Approve T1.3. Then **T2.1: shared package schemas and validation**.
 
 ## Decisions awaiting your approval
 
-1. T3.3 results.
-2. **Order change.** Do T5.1 (timezone library) next, before T3.4, because the T3.4 live spike cross-checks it. The backlog's critical path already shows this order.
+1. T5.1 results.
+2. **T3.4 live spike.** It uses about 60–100 of the 150 free credits. It needs `ASTROLOGYAPI_USER_ID` and `ASTROLOGYAPI_API_KEY` in `.env`. It needs your explicit go-ahead.
 3. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.
-4. Your M0 items. **M0.1 (AstrologyAPI account) is needed for T3.4.**
+4. Your other M0 items.
