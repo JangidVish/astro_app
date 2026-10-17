@@ -157,7 +157,9 @@ export class MockProvider implements AstrologyProvider {
       day === 'today' ? 'daily_nakshatra_prediction' : `daily_nakshatra_prediction/${day}`;
     return this.call('getDailyPrediction', endpoint, [input, day], () => {
       this.checkInput(input, endpoint);
-      return mockPrediction();
+      const offsetDays = day === 'previous' ? -1 : day === 'next' ? 1 : 0;
+      const forDate = new Date(Date.now() + offsetDays * 86_400_000).toISOString().slice(0, 10);
+      return mockPrediction(forDate);
     });
   }
 }

@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M3 Provider adapter. T3.2 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T3.3.
+- **Current milestone:** Phase 6, M3 Provider adapter. T3.3 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T5.1 (it must precede T3.4).
 
 ## Approved decisions
 
@@ -46,10 +46,11 @@
 - **T2.3 Auth module** (Firebase ID token and App Check on `/v1`), completed 2026-10-17.
 - **T3.1 Provider interface and MockProvider**, completed 2026-10-17.
 - **T3.2 AstrologyAPI HTTP client**, completed 2026-10-17.
+- **T3.3 Response schemas, mappers and AstrologyApiProvider**, completed 2026-10-17.
 
 ## In progress
 
-- T3.2 review (owner: you).
+- T3.3 review (owner: you).
 
 ## Blocked / failed
 
@@ -176,6 +177,23 @@
 - **Mutation test.** Making 4xx retryable fails 3 tests.
 - `npm run check` passes (**359 tests**). The prod audit finds 0.
 
+**T3.3, 2026-10-17. All checks were actually run:**
+
+- **Provider module: 161 tests pass.**
+  - All 9 documented samples (saved as fixtures) map cleanly.
+  - The chart and planets samples agree on every graha's house.
+  - 8 schema rejections pass.
+  - 25 consistency rejections pass, covering charts, planets, dasha, places, time, ayanamsa, and the prediction date.
+  - Date conversion for dasha and prediction dates works (year crossing, leap day, negative offset).
+  - Requests send the right body: `tzone` in hours (including 5.75 and -3.5), the documented endpoints, and the lowercase `sub_vdasha` path.
+  - Each result keeps the raw response and is labelled with its source.
+  - Schema and mapping failures become `malformed`.
+  - The factory builds the real provider with the call hook connected.
+- **Coverage (branches):** `mappers.ts` 93.8%, `client.ts` 98.4%, provider class 83% (the only gap is a defensive rethrow).
+- **Mutation tests.** Removing dasha contiguity fails exactly 1 test. Removing the sign-vs-longitude check fails exactly 1 test.
+- `npm run check` passes (**423 tests**).
+- **New finding.** The prediction response includes `prediction_date`, so predictions are cached under the provider's own date. See `api-provider-notes.md`.
+
 ## Outstanding risks
 
 | Risk                                                                                     | Mitigation                                                                                                                                                         |
@@ -195,6 +213,7 @@ Approve T1.3. Then **T2.1: shared package schemas and validation**.
 
 ## Decisions awaiting your approval
 
-1. T3.2 results.
-2. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.
-3. Your M0 items (see `backlog.md`). **M0.1 (AstrologyAPI account) is needed before T3.4.**
+1. T3.3 results.
+2. **Order change.** Do T5.1 (timezone library) next, before T3.4, because the T3.4 live spike cross-checks it. The backlog's critical path already shows this order.
+3. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.
+4. Your M0 items. **M0.1 (AstrologyAPI account) is needed for T3.4.**

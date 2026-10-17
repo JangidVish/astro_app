@@ -1,0 +1,86 @@
+[
+  {
+    "sign": 7,
+    "sign_name": "Libra",
+    "planet": [],
+    "planet_small": [],
+    "planet_degree": []
+  },
+  {
+    "sign": 8,
+    "sign_name": "Scorpio",
+    "planet": [],
+    "planet_small": [],
+    "planet_degree": []
+  },
+  {
+    "sign": 9,
+    "sign_name": "Sagittarius",
+    "planet": [],
+    "planet_small": [],
+    "planet_degree": []
+  },
+  {
+    "sign": 10,
+    "sign_name": "Capricorn",
+    "planet": ["KETU"],
+    "planet_small": ["Ke "],
+    "planet_degree": []
+  },
+  {
+    "sign": 11,
+    "sign_name": "Aquarius",
+    "planet": [],
+    "planet_small": [],
+    "planet_degree": []
+  },
+  {
+    "sign": 12,
+    "sign_name": "Pisces",
+    "planet": [],
+    "planet_small": [],
+    "planet_degree": []
+  },
+  {
+    "sign": 1,
+    "sign_name": "Aries",
+    "planet": ["MOON"],
+    "planet_small": ["Mo "],
+    "planet_degree": []
+  },
+  {
+    "sign": 2,
+    "sign_name": "Taurus",
+    "planet": ["JUPITER", "SATURN"],
+    "planet_small": ["Ju ", "Sa "],
+    "planet_degree": []
+  },
+  {
+    "sign": 3,
+    "sign_name": "Gemini",
+    "planet": ["SUN", "MARS", "MERCURY", "VENUS"],
+    "planet_small": ["Su ", "Ma ", "Me ", "Ve "],
+    "planet_degree": []
+  },
+  {
+    "sign": 4,
+    "sign_name": "Cancer",
+    "planet": ["RAHU"],
+    "planet_small": ["Ra "],
+    "planet_degree": []
+  },
+  {
+    "sign": 5,
+    "sign_name": "Leo",
+    "planet": [],
+    "planet_small": [],
+    "planet_degree": []
+  },
+  {
+    "sign": 6,
+    "sign_name": "Virgo",
+    "planet": [],
+    "planet_small": [],
+    "planet_degree": []
+  }
+]

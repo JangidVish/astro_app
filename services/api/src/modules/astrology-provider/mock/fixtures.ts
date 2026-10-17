@@ -141,9 +141,10 @@ export const MOCK_MOON = (() => {
   };
 })();
 
-export function mockPrediction(): DailyPrediction {
+export function mockPrediction(forDate: string): DailyPrediction {
   const note = '[MOCK] Development data, not a real prediction.';
   return {
+    forDate,
     moonSign: MOCK_MOON.sign,
     nakshatra: MOCK_MOON.nakshatra.name,
     sections: {

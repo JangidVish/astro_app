@@ -42,6 +42,8 @@ export interface BirthDetails {
 export type PredictionDay = 'previous' | 'today' | 'next';
 
 export interface DailyPrediction {
+  /** The calendar date (yyyy-mm-dd) the provider says this prediction is for. Cache key. */
+  readonly forDate: string;
   readonly moonSign: string;
   readonly nakshatra: string;
   readonly sections: {

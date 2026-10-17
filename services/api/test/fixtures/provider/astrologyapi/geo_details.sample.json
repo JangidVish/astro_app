@@ -1,0 +1,18 @@
+{
+  "geonames": [
+    {
+      "place_name": "Mumbai",
+      "latitude": 19.07283,
+      "longitude": "72.88261",
+      "timezone_id": "Asia/Kolkata",
+      "country_code": "IN"
+    },
+    {
+      "place_name": "Navi Mumbai",
+      "latitude": 19.03681,
+      "longitude": "73.01582",
+      "timezone_id": "Asia/Kolkata",
+      "country_code": "IN"
+    }
+  ]
+}

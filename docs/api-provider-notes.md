@@ -51,6 +51,25 @@ Everything here comes from the public documentation. **None of it has been verif
 - The documented response for `horo_chart_image` is `"{svg:\"...\"}"`, a string wrapper, so it needs defensive parsing.
 - The errors' `code` and `message` structure is not fully documented. Capture real samples in Phase 7.
 
+## Findings from the documented samples (T3.3)
+
+These were saved as fixtures in `services/api/test/fixtures/provider/astrologyapi/*.sample.json`.
+
+- **`daily_nakshatra_prediction` returns `prediction_date`.**
+  - Format: `"7 July 2017"`, mapped to `forDate` (yyyy-mm-dd).
+  - Predictions are cached under the date the provider says it used, which resolves the "which today?" question.
+  - Still to confirm live: whether the provider's "today" follows IST or UTC.
+- **`isRetro` types are mixed.** It is the string `"true"`/`"false"` for grahas, but a real boolean for the Ascendant.
+- **`horo_chart` format.**
+  - Planet names are UPPERCASE (`"KETU"`).
+  - Houses are listed in order, with house 1 first (the Lagna sign) and signs advancing by one.
+  - `planet_degree` was empty in the sample.
+- **`sub_vdasha/:md` uses a lowercase planet name** (`sub_vdasha/venus`).
+- **Nakshatra spellings are the provider's own** (`"Uttra Shadha"`, `"Uttra Phalguni"`). We keep them as returned.
+- **The documented dasha sample does not cover its own sample birth date.** Ketu starts in 1994 for a 1990 birth input, so the samples come from different inputs. The mapper therefore does not check that the birth falls in the first period. Re-check with live data in T3.4.
+- **Dasha date timezone.** The `d-m-yyyy H:m` dates are assumed to be birth-local (the request's `tzone`), and the mapper converts them to UTC. **Verify in T3.4.**
+- **Sanity check on ayanamsa.** The mapper rejects ayanamsa values outside 20–26°. A tropical (0) or wrong-system response becomes `malformed`.
+
 ## Calls per new birth profile (estimated)
 
 `birth_details`, `planets`, `horo_chart/D1`, `horo_chart/D9`, `major_vdasha`, `current_vdasha` makes **6 calls, made once and cached permanently**. `sub_vdasha` is called lazily, only when the user expands a Mahadasha. A daily prediction adds 1 call per profile per day viewed.
