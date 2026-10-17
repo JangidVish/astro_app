@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { toValidationDetails, type ErrorCode } from './errors.js';
+import { toValidationDetails, type ErrorCode } from './errors.ts';
 import {
   birthDateSchema,
   birthTimeSchema,
   profileCreateInputSchema,
   profileNameSchema,
   profileUpdateInputSchema,
-} from './profile.js';
+} from './profile.ts';
 import type { z } from 'zod';
 
 /** Fixed clock: 2026-10-17 12:00 UTC. */

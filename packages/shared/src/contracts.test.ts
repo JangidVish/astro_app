@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { z } from 'zod';
-import { chartResponseSchema } from './chart.js';
-import { isValidCalendarDate, daysBetween } from './common.js';
-import { dashaParamsSchema, dashaPeriodSchema } from './dasha.js';
-import { apiErrorSchema, ERROR_CODES, toValidationDetails, type ErrorCode } from './errors.js';
-import { meUpdateInputSchema } from './me.js';
-import { placeSchema, placeSearchQuerySchema } from './places.js';
-import { predictionQuerySchema } from './prediction.js';
-import { SIGNS } from './astro.js';
+import { chartResponseSchema } from './chart.ts';
+import { isValidCalendarDate, daysBetween } from './common.ts';
+import { dashaParamsSchema, dashaPeriodSchema } from './dasha.ts';
+import { apiErrorSchema, ERROR_CODES, toValidationDetails, type ErrorCode } from './errors.ts';
+import { meUpdateInputSchema } from './me.ts';
+import { placeSchema, placeSearchQuerySchema } from './places.ts';
+import { predictionQuerySchema } from './prediction.ts';
+import { SIGNS } from './astro.ts';
 
 const NOW = new Date('2026-10-17T12:00:00Z');
 beforeEach(() => {

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { isValidTimezone, resolveBirthTime, type BirthTimeInput } from './resolve.js';
+import { isValidTimezone, resolveBirthTime, type BirthTimeInput } from './resolve.ts';
 
 interface TzCase {
   id: string;

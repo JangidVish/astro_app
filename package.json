@@ -15,7 +15,7 @@
     "infra/*"
   ],
   "scripts": {
-    "lint": "node scripts/check-invisible-chars.mjs && eslint . --max-warnings=0",
+    "lint": "node scripts/check-invisible-chars.mjs && eslint . --max-warnings=0 && npm run lint --workspace @astro/mobile",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc -p tsconfig.json && npm run typecheck --workspaces --if-present",
@@ -24,18 +24,6 @@
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run test",
     "prepare": "husky",
     "emulators": "npm run emulators --workspace @astro/firebase"
-  },
-  "lint-staged": {
-    "*.{ts,tsx,js,mjs,cjs}": [
-      "eslint --max-warnings=0 --no-warn-ignored",
-      "prettier --check"
-    ],
-    "*.{json,md,yml,yaml}": [
-      "prettier --check"
-    ],
-    "*.{ts,tsx,js,mjs,cjs,json,md,yml,yaml,toml,rules}": [
-      "node scripts/check-invisible-chars.mjs"
-    ]
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

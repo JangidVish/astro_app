@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { grahaSchema } from './astro.js';
-import { isoDateTime } from './common.js';
+import { grahaSchema } from './astro.ts';
+import { isoDateTime } from './common.ts';
 
 /** GET /v1/profiles/{id}/dasha/{md}: path parameter. */
 export const dashaParamsSchema = z.strictObject({ md: grahaSchema });

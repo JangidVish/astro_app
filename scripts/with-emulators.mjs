@@ -15,7 +15,10 @@ import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 
 const PROJECT_ID = 'demo-astro-app';
-const READY_TIMEOUT_MS = 120_000;
+// The first start after a fresh `npm install` can be slow (firebase-tools is large and new files
+// may be scanned by antivirus), so allow up to 5 minutes and report progress while waiting.
+const READY_TIMEOUT_MS = 300_000;
+const HEARTBEAT_MS = 30_000;
 const isWindows = process.platform === 'win32';
 
 const sep = process.argv.indexOf('--');
@@ -61,8 +64,16 @@ const READY_BANNER = 'All emulators ready';
 let bannerSeen = false;
 
 async function waitForReady(child) {
-  const deadline = Date.now() + READY_TIMEOUT_MS;
+  const started = Date.now();
+  const deadline = started + READY_TIMEOUT_MS;
+  let nextHeartbeat = started + HEARTBEAT_MS;
   while (Date.now() < deadline) {
+    if (Date.now() >= nextHeartbeat) {
+      console.error(
+        `Still waiting for emulators (${String(Math.round((Date.now() - started) / 1000))}s)...`,
+      );
+      nextHeartbeat += HEARTBEAT_MS;
+    }
     if (child.exitCode !== null) throw new Error('Emulators exited before becoming ready');
     if (bannerSeen) {
       const ready = await Promise.all(ports.map(isListening));

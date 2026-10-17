@@ -5,8 +5,8 @@ import {
   houseNumberSchema,
   signNumberSchema,
   signSchema,
-} from './astro.js';
-import { isoDateTime } from './common.js';
+} from './astro.ts';
+import { isoDateTime } from './common.ts';
 
 /** GET /v1/profiles/{id}/chart?type= */
 export const chartQuerySchema = z.strictObject({ type: chartTypeSchema });

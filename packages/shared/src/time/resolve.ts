@@ -1,5 +1,5 @@
 import { DateTime, IANAZone } from 'luxon';
-import { timezoneIdSchema } from '../places.js';
+import { timezoneIdSchema } from '../places.ts';
 
 /**
  * Turns a local birth date/time at a place into a UTC instant, using the IANA tz database

@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { codePointLength } from './common.js';
-import { PLACE_QUERY_MAX, PLACE_QUERY_MIN } from './limits.js';
+import { codePointLength } from './common.ts';
+import { PLACE_QUERY_MAX, PLACE_QUERY_MIN } from './limits.ts';
 
 /** GET /v1/places?q= */
 export const placeSearchQuerySchema = z.strictObject({

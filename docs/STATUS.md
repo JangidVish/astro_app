@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6. **Backend API feature-complete** (T6.2 and T7.1 done). Next is M8, the Expo mobile app (T8.1).
+- **Current milestone:** Phase 6, M8 mobile app. T8.1 is done. Next is T8.2 (auth screens).
 
 ## Approved decisions
 
@@ -58,6 +58,7 @@
 - **T6.1 Charts, planets, readings cache, providerCalls log**, completed 2026-10-17.
 - **T6.2 Dasha** (`/dasha`, `/dasha/{md}`, current period), completed 2026-10-17.
 - **T7.1 Daily prediction** (`/prediction?date=`, birth-place "today" mapping), completed 2026-10-17.
+- **T8.1 Expo app scaffold** (SDK 58, expo-router, theme, typed API client), completed 2026-10-17.
 - `UID_HASH_PEPPER` was generated into `.env` on 2026-10-17. The value was not displayed.
 
 ## In progress
@@ -405,19 +406,37 @@
   - Using UTC "today" fails the UTC+14 test.
 - `npm run check` passes. The API suite was green twice in a row (379/379).
 
+**T8.1, 2026-10-17. All checks were actually run:**
+
+- **Mobile Jest tests: 52 pass.**
+  - **WCAG contrast is computed for every colour pair in light and dark mode.** Text must reach 4.5:1 and borders and the chart line 3:1.
+  - API client: auth and App Check headers, URL encoding, 204 handling, error codes and details, network and timeout errors, invalid responses (non-JSON, unknown shapes, contract mismatches), and no token in errors.
+  - Config: the dev default, and https required for release builds.
+- **Accessibility bug found by the contrast test and fixed.** Borders were about 2.1:1, below the 3:1 that WCAG 1.4.11 requires. They are now `#8C8170` (light) and `#7671B0` (dark).
+- **Real Metro bundle** (`expo export --platform android`): 3.6 MB Hermes. The shared package resolves inside the monorepo.
+- **Bundle secret scan:** no `.env` secret (API key, user ID, pepper) is in the bundle. Shared strings are found, which proves the scan reads the bundle.
+- **`expo lint`:** clean. A planted `console.log` was caught.
+- `npm run check` passes (**669 tests**).
+- **Toolchain decisions:**
+  - Shared package imports now use `.ts` extensions (`allowImportingTsExtensions`). Jest and Metro could not map `.js` to `.ts`.
+  - The mobile workspace pins **ESLint 9**, because eslint-plugin-react does not support ESLint 10.
+  - The eslint-plugin-import rules that need a resolver are off in mobile. Their TypeScript resolver fails to load, and `tsc` enforces imports anyway.
+  - The emulator wrapper now waits up to 300 s with a heartbeat. The first start after `npm install` hung for over 120 s.
+
 ## Outstanding risks
 
-| Risk                                                                                                                         | Mitigation                                                                                                                                                         |
-| ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Provider credits per call are unknown, so the real cost per user is unknown                                                  | Measure with the 150 free credits in Phase 7, then set the quota                                                                                                   |
-| Provider rate limits are undocumented, and "abuse" can lead to suspension                                                    | Caching, per-user quota, App Check, max-instances cap                                                                                                              |
-| Cross-user caching is not explicitly allowed in the provider's terms                                                         | Ask the provider in writing before launch                                                                                                                          |
-| Historical timezone or DST errors would corrupt charts silently                                                              | Local tzdb plus a fixture cross-check against `timezone_with_dst`                                                                                                  |
-| Store compliance (Sign in with Apple, account deletion, privacy policy)                                                      | These are built into the MVP scope and acceptance criteria                                                                                                         |
-| Emulator env vars in a deployed env would make firebase-admin accept unsigned tokens                                         | Config refuses `FIREBASE_AUTH_EMULATOR_HOST` / `FIRESTORE_EMULATOR_HOST` in staging and prod (tested)                                                              |
-| Timezone history comes from the runtime's tz data (Node 24: tzdata 2025b). Dev and prod could differ if Node versions differ | Pin the Node image version in the Dockerfile (T10). Cross-check fixtures against the provider in T3.4                                                              |
-| Developer accounts and legal entity are unowned (U-7)                                                                        | Needed before staging builds reach TestFlight or Play                                                                                                              |
-| 12 dev-only npm audit findings (8 high) in firebase-tools / firebase SDK transitive deps                                     | Local emulator only, bound to 127.0.0.1, never shipped. The prod audit finds 0. `--force` would downgrade majors, so it was rejected. Re-check on Firebase updates |
+| Risk                                                                                                                                                                                                     | Mitigation                                                                                                                                                         |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Provider credits per call are unknown, so the real cost per user is unknown                                                                                                                              | Measure with the 150 free credits in Phase 7, then set the quota                                                                                                   |
+| Provider rate limits are undocumented, and "abuse" can lead to suspension                                                                                                                                | Caching, per-user quota, App Check, max-instances cap                                                                                                              |
+| Cross-user caching is not explicitly allowed in the provider's terms                                                                                                                                     | Ask the provider in writing before launch                                                                                                                          |
+| Historical timezone or DST errors would corrupt charts silently                                                                                                                                          | Local tzdb plus a fixture cross-check against `timezone_with_dst`                                                                                                  |
+| Store compliance (Sign in with Apple, account deletion, privacy policy)                                                                                                                                  | These are built into the MVP scope and acceptance criteria                                                                                                         |
+| Emulator env vars in a deployed env would make firebase-admin accept unsigned tokens                                                                                                                     | Config refuses `FIREBASE_AUTH_EMULATOR_HOST` / `FIRESTORE_EMULATOR_HOST` in staging and prod (tested)                                                              |
+| Timezone history comes from the runtime's tz data (Node 24: tzdata 2025b). Dev and prod could differ if Node versions differ                                                                             | Pin the Node image version in the Dockerfile (T10). Cross-check fixtures against the provider in T3.4                                                              |
+| Mobile toolchain advisories: braces, node-forge, sprintf-js (no patched release exists), and uuid. They are in Expo CLI, Metro, and code-signing build tooling, not in the API runtime or the app bundle | CI blocks high or critical advisories in API and shared, and critical ones in mobile. Re-check on each Expo SDK update                                             |
+| Developer accounts and legal entity are unowned (U-7)                                                                                                                                                    | Needed before staging builds reach TestFlight or Play                                                                                                              |
+| 12 dev-only npm audit findings (8 high) in firebase-tools / firebase SDK transitive deps                                                                                                                 | Local emulator only, bound to 127.0.0.1, never shipped. The prod audit finds 0. `--force` would downgrade majors, so it was rejected. Re-check on Firebase updates |
 
 ## Next recommended task
 

@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { daysBetween, isoDate, isoDateTime, toIsoDate } from './common.js';
-import { PREDICTION_DATE_WINDOW_DAYS } from './limits.js';
+import { daysBetween, isoDate, isoDateTime, toIsoDate } from './common.ts';
+import { PREDICTION_DATE_WINDOW_DAYS } from './limits.ts';
 
 /**
  * GET /v1/profiles/{id}/prediction?date=yyyy-mm-dd

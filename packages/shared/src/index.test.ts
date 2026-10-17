@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { API_VERSION } from './index.js';
+import { API_VERSION } from './index.ts';
 
 describe('@astro/shared', () => {
   it('exposes the API contract version', () => {

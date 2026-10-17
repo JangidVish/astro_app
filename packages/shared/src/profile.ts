@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { isoDateTime, isValidCalendarDate, personName, toIsoDate } from './common.js';
-import { MIN_BIRTH_YEAR, PROFILE_NAME_MAX } from './limits.js';
-import { placeSchema } from './places.js';
+import { isoDateTime, isValidCalendarDate, personName, toIsoDate } from './common.ts';
+import { MIN_BIRTH_YEAR, PROFILE_NAME_MAX } from './limits.ts';
+import { placeSchema } from './places.ts';
 
 /** Most-advanced UTC offset in use (UTC+14), so "today" anywhere is never past now + 14h. */
 const MAX_UTC_OFFSET_MS = 14 * 60 * 60 * 1000;

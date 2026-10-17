@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { isoDateTime, personName } from './common.js';
-import { DISPLAY_NAME_MAX } from './limits.js';
+import { isoDateTime, personName } from './common.ts';
+import { DISPLAY_NAME_MAX } from './limits.ts';
 
 const policyVersion = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'VALIDATION_FAILED');
 
