@@ -1,0 +1,368 @@
+{
+  "ranAt": "2026-10-17T13:54:58.612Z",
+  "providerCalls": 23,
+  "outcomes": [
+    {
+      "endpoint": "geo_details",
+      "ok": true
+    },
+    {
+      "endpoint": "birth_details",
+      "ok": true
+    },
+    {
+      "endpoint": "planets",
+      "ok": true
+    },
+    {
+      "endpoint": "horo_chart/D1",
+      "ok": true
+    },
+    {
+      "endpoint": "horo_chart/D9",
+      "ok": true
+    },
+    {
+      "endpoint": "major_vdasha",
+      "ok": false,
+      "error": "schema: 0.start Invalid string: must match pattern /^(\\d{1,2})-(\\d{1,2})-(\\d{4}) (\\d{1,2}):(\\d{1,2})$/; 0.end Invalid string: must match pattern /^(\\d{1,2})-(\\d{1,2})-(\\d{4}) (\\d{1,2}):(\\d{1,2})$/; 1.start Invalid string: must match pattern /^(\\d{1,2})-(\\d{1,2})-(\\d{4}) (\\d{1,2}):(\\d{1,2})$/"
+    },
+    {
+      "endpoint": "daily_nakshatra_prediction",
+      "ok": true
+    },
+    {
+      "endpoint": "daily_nakshatra_prediction/previous",
+      "ok": true
+    },
+    {
+      "endpoint": "daily_nakshatra_prediction/next",
+      "ok": true
+    },
+    {
+      "endpoint": "planets",
+      "ok": true
+    },
+    {
+      "endpoint": "major_vdasha",
+      "ok": false,
+      "error": "schema: 0.start Invalid string: must match pattern /^(\\d{1,2})-(\\d{1,2})-(\\d{4}) (\\d{1,2}):(\\d{1,2})$/; 0.end Invalid string: must match pattern /^(\\d{1,2})-(\\d{1,2})-(\\d{4}) (\\d{1,2}):(\\d{1,2})$/; 1.start Invalid string: must match pattern /^(\\d{1,2})-(\\d{1,2})-(\\d{4}) (\\d{1,2}):(\\d{1,2})$/"
+    },
+    {
+      "endpoint": "daily_nakshatra_prediction",
+      "ok": true
+    },
+    {
+      "endpoint": "timezone_with_dst",
+      "ok": true
+    },
+    {
+      "endpoint": "timezone_with_dst",
+      "ok": true
+    },
+    {
+      "endpoint": "timezone_with_dst",
+      "ok": true
+    },
+    {
+      "endpoint": "timezone_with_dst",
+      "ok": true
+    },
+    {
+      "endpoint": "timezone_with_dst",
+      "ok": true
+    },
+    {
+      "endpoint": "timezone_with_dst",
+      "ok": true
+    },
+    {
+      "endpoint": "timezone_with_dst",
+      "ok": true
+    },
+    {
+      "endpoint": "timezone_with_dst",
+      "ok": true
+    },
+    {
+      "endpoint": "timezone_with_dst",
+      "ok": true
+    },
+    {
+      "endpoint": "timezone_with_dst",
+      "ok": true
+    }
+  ],
+  "findings": {
+    "geo_first": {
+      "name": "Mumbai",
+      "countryCode": "IN",
+      "lat": 19.07283,
+      "lon": 72.88261,
+      "timezoneId": "Asia/Kolkata"
+    },
+    "ayanamsa": {
+      "provider": 23.722362954519497,
+      "lahiriApprox": 23.7183
+    },
+    "birth_inside_first_mahadasha": null,
+    "prediction_dates": {
+      "today": "2026-10-17",
+      "previous": "2026-10-16",
+      "next": "2026-10-18",
+      "utcToday": "2026-10-17",
+      "istToday": "2026-10-17"
+    },
+    "planets_identical_for_same_instant": true,
+    "dasha_raw_first_start": {
+      "requestTzone5_5": "23-8-1988  18:54",
+      "requestTzone0": "23-8-1988  13:24"
+    },
+    "dasha_mapped_first_start_equal": null,
+    "prediction_date_for_tzone14": {
+      "provider": "2026-10-18",
+      "plus14Today": "2026-10-18"
+    },
+    "timezone_cross_check": [
+      {
+        "id": "ist-war-1943",
+        "ours": 390,
+        "provider": 390,
+        "match": true
+      },
+      {
+        "id": "madras-time-1900",
+        "ours": 321,
+        "provider": 353,
+        "match": false
+      },
+      {
+        "id": "nepal-before-1986",
+        "ours": 330,
+        "provider": 330,
+        "match": true
+      },
+      {
+        "id": "nepal-modern",
+        "ours": 345,
+        "provider": 345,
+        "match": true
+      },
+      {
+        "id": "ny-summer",
+        "ours": -240,
+        "provider": -240,
+        "match": true
+      },
+      {
+        "id": "ny-winter",
+        "ours": -300,
+        "provider": -300,
+        "match": true
+      },
+      {
+        "id": "london-bst-all-year-1970",
+        "ours": 60,
+        "provider": 60,
+        "match": true
+      },
+      {
+        "id": "london-double-summer-1941",
+        "ours": 120,
+        "provider": 120,
+        "match": true
+      },
+      {
+        "id": "sao-paulo-dst-2018",
+        "ours": -120,
+        "provider": -120,
+        "match": true
+      },
+      {
+        "id": "dhaka-dst-2009",
+        "ours": 420,
+        "provider": 420,
+        "match": true
+      }
+    ],
+    "wrong_key": {
+      "status": 401,
+      "body": "{\"status\":false,\"msg\":\"Your API key is either expired or invalid. Kindy use a valid API Key and User ID combination.\"}"
+    }
+  },
+  "responseHeaderNames": {
+    "geo_details": [
+      "access-control-allow-headers",
+      "access-control-allow-methods",
+      "access-control-allow-origin",
+      "connection",
+      "content-length",
+      "content-type",
+      "date",
+      "etag",
+      "server",
+      "vary",
+      "x-powered-by"
+    ],
+    "birth_details": [
+      "access-control-allow-headers",
+      "access-control-allow-methods",
+      "access-control-allow-origin",
+      "connection",
+      "content-length",
+      "content-type",
+      "date",
+      "etag",
+      "server",
+      "vary",
+      "x-powered-by"
+    ],
+    "planets": [
+      "access-control-allow-headers",
+      "access-control-allow-methods",
+      "access-control-allow-origin",
+      "connection",
+      "content-encoding",
+      "content-type",
+      "date",
+      "etag",
+      "server",
+      "transfer-encoding",
+      "vary",
+      "x-powered-by"
+    ],
+    "horo_chart/D1": [
+      "access-control-allow-headers",
+      "access-control-allow-methods",
+      "access-control-allow-origin",
+      "connection",
+      "content-encoding",
+      "content-type",
+      "date",
+      "etag",
+      "server",
+      "transfer-encoding",
+      "vary",
+      "x-powered-by"
+    ],
+    "horo_chart/D9": [
+      "access-control-allow-headers",
+      "access-control-allow-methods",
+      "access-control-allow-origin",
+      "connection",
+      "content-encoding",
+      "content-type",
+      "date",
+      "etag",
+      "server",
+      "transfer-encoding",
+      "vary",
+      "x-powered-by"
+    ],
+    "major_vdasha": [
+      "access-control-allow-headers",
+      "access-control-allow-methods",
+      "access-control-allow-origin",
+      "connection",
+      "content-length",
+      "content-type",
+      "date",
+      "etag",
+      "server",
+      "vary",
+      "x-powered-by"
+    ],
+    "daily_nakshatra_prediction": [
+      "access-control-allow-headers",
+      "access-control-allow-methods",
+      "access-control-allow-origin",
+      "connection",
+      "content-encoding",
+      "content-type",
+      "date",
+      "etag",
+      "server",
+      "transfer-encoding",
+      "vary",
+      "x-powered-by"
+    ],
+    "daily_nakshatra_prediction/previous": [
+      "access-control-allow-headers",
+      "access-control-allow-methods",
+      "access-control-allow-origin",
+      "connection",
+      "content-encoding",
+      "content-type",
+      "date",
+      "etag",
+      "server",
+      "transfer-encoding",
+      "vary",
+      "x-powered-by"
+    ],
+    "daily_nakshatra_prediction/next": [
+      "access-control-allow-headers",
+      "access-control-allow-methods",
+      "access-control-allow-origin",
+      "connection",
+      "content-encoding",
+      "content-type",
+      "date",
+      "etag",
+      "server",
+      "transfer-encoding",
+      "vary",
+      "x-powered-by"
+    ],
+    "timezone_with_dst": [
+      "access-control-allow-headers",
+      "access-control-allow-methods",
+      "access-control-allow-origin",
+      "connection",
+      "content-length",
+      "content-type",
+      "date",
+      "etag",
+      "server",
+      "vary",
+      "x-powered-by"
+    ]
+  },
+  "sampleHeaders": {
+    "access-control-allow-headers": "Content-type,Accept,X-Access-Token,X-Key,authorization",
+    "access-control-allow-methods": "GET,PUT,POST,DELETE,OPTIONS",
+    "access-control-allow-origin": "*",
+    "connection": "keep-alive",
+    "content-length": "187",
+    "content-type": "application/json; charset=utf-8",
+    "date": "Sat, 17 Oct 2026 13:54:59 GMT",
+    "etag": "W/\"bb-j4g4pgxPROza53nMypujWX5mOcY\"",
+    "server": "nginx/1.24.0 (Ubuntu)",
+    "vary": "Accept-Encoding",
+    "x-powered-by": "Express"
+  },
+  "latencyMs": [
+    "geo_details:139",
+    "birth_details:55",
+    "planets:36",
+    "horo_chart/D1:40",
+    "horo_chart/D9:37",
+    "major_vdasha:33",
+    "daily_nakshatra_prediction:38",
+    "daily_nakshatra_prediction/previous:33",
+    "daily_nakshatra_prediction/next:39",
+    "planets:33",
+    "major_vdasha:33",
+    "daily_nakshatra_prediction:34",
+    "timezone_with_dst:31",
+    "timezone_with_dst:30",
+    "timezone_with_dst:33",
+    "timezone_with_dst:31",
+    "timezone_with_dst:32",
+    "timezone_with_dst:34",
+    "timezone_with_dst:32",
+    "timezone_with_dst:34",
+    "timezone_with_dst:54",
+    "timezone_with_dst:17"
+  ]
+}

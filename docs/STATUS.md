@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M5 Places and profiles. T5.1 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T3.4 (live spike, needs your `.env`).
+- **Current milestone:** Phase 6, M3 Provider adapter. T3.4 (live spike) is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T4.1.
 
 ## Approved decisions
 
@@ -48,11 +48,11 @@
 - **T3.2 AstrologyAPI HTTP client**, completed 2026-10-17.
 - **T3.3 Response schemas, mappers and AstrologyApiProvider**, completed 2026-10-17.
 - **T5.1 Timezone resolution library** (`packages/shared/src/time/resolve.ts`), completed 2026-10-17.
+- **T3.4 Live provider spike**, completed 2026-10-17. It used 24 live calls. Findings are in `api-provider-notes.md`.
 
 ## In progress
 
-- T5.1 review (owner: you).
-- AstrologyAPI credentials go in `.env` at the repo root, which is gitignored (owner: you).
+- T3.4 review (owner: you).
 
 ## Blocked / failed
 
@@ -217,6 +217,23 @@
 - **Mutation test.** Hiding ambiguity fails 3 overlap cases.
 - `npm run check` passes (**466 tests**).
 
+**T3.4, 2026-10-17. This was a live run that spent 24 API calls:**
+
+- **20 of 22 data probes mapped** on the first live run.
+  - Both Mahadasha calls failed the schema because the live API puts **two spaces** in dasha dates. The fix was to accept any whitespace.
+  - Re-validated offline against the saved responses, nothing else needed changing.
+  - The last probe (`sub_vdasha`) was then run live and maps correctly.
+- **Confirmed:**
+  - The ayanamsa is Lahiri.
+  - Dasha dates are birth-local, and our UTC conversion gives identical periods for both tzone variants.
+  - Planets depend only on the instant.
+  - The birth falls inside the first Mahadasha.
+  - The prediction "today" follows the birth place's tzone.
+  - The 401 body format.
+- **Timezone cross-check:** 9 of 10 match. The Kolkata 1900 case differs (a decision is needed).
+- **Live-fixture tests:** 10 pass offline. They pin the real response formats with no credits used.
+- **Credential check:** 24 saved files contain none of the credential values. The gitleaks history and staged scans are clean.
+
 ## Outstanding risks
 
 | Risk                                                                                                                         | Mitigation                                                                                                                                                         |
@@ -237,7 +254,11 @@ Approve T1.3. Then **T2.1: shared package schemas and validation**.
 
 ## Decisions awaiting your approval
 
-1. T5.1 results.
-2. **T3.4 live spike.** It uses about 60–100 of the 150 free credits. It needs `ASTROLOGYAPI_USER_ID` and `ASTROLOGYAPI_API_KEY` in `.env`. It needs your explicit go-ahead.
-3. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.
-4. Your other M0 items.
+1. T3.4 results.
+2. **Credits.** Please check the AstrologyAPI dashboard balance. 24 calls have been made in total (23 in the spike plus 1 follow-up). With the balance I can work out the cost per call, and from that the quota and cost per user.
+3. **Pre-1948 Indian births** (the Kolkata 1900 mismatch). Choose one:
+   - (a) keep tzdb (consistent and documented) and show the UTC offset used on the profile;
+   - (b) also let users override the offset (more work, later);
+   - (c) use the provider's `timezone_with_dst` for births before 1948. This costs a credit per profile.
+4. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.
+5. Add `UID_HASH_PEPPER` to `.env`. It is still the placeholder, and the API will not start without it.

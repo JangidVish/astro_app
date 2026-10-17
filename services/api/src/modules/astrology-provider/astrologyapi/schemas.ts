@@ -63,8 +63,12 @@ export const horoChartSchema = z.array(
   }),
 );
 
-/** Dates look like "2-5-2021 8:7" (day-month-year hour:minute, no zero padding). */
-export const DASHA_DATE = /^(\d{1,2})-(\d{1,2})-(\d{4}) (\d{1,2}):(\d{1,2})$/;
+/**
+ * Dates look like "2-5-2021 8:7" (day-month-year hour:minute, no zero padding). The live API
+ * separates date and time with two spaces ("23-8-1988  18:54") while the docs show one, so any
+ * run of whitespace is accepted. Times are in the request's `tzone` (verified live, T3.4).
+ */
+export const DASHA_DATE = /^(\d{1,2})-(\d{1,2})-(\d{4})\s+(\d{1,2}):(\d{1,2})$/;
 
 export const dashaSchema = z.array(
   z.object({
