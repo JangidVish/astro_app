@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M8 mobile app. T8.1 is done. Next is T8.2 (auth screens).
+- **Current milestone:** Phase 6, M8 mobile app. T8.2 is done. Next is T8.3 (profiles UI).
 
 ## Approved decisions
 
@@ -59,6 +59,7 @@
 - **T6.2 Dasha** (`/dasha`, `/dasha/{md}`, current period), completed 2026-10-17.
 - **T7.1 Daily prediction** (`/prediction?date=`, birth-place "today" mapping), completed 2026-10-17.
 - **T8.1 Expo app scaffold** (SDK 58, expo-router, theme, typed API client), completed 2026-10-17.
+- **T8.2 Auth screens** (email/password sign-in, sign-up, reset; Sign in with Apple wired; consent gate), completed 2026-10-17.
 - `UID_HASH_PEPPER` was generated into `.env` on 2026-10-17. The value was not displayed.
 
 ## In progress
@@ -422,6 +423,22 @@
   - The mobile workspace pins **ESLint 9**, because eslint-plugin-react does not support ESLint 10.
   - The eslint-plugin-import rules that need a resolver are off in mobile. Their TypeScript resolver fails to load, and `tsc` enforces imports anyway.
   - The emulator wrapper now waits up to 300 s with a heartbeat. The first start after `npm install` hung for over 120 s.
+
+**T8.2, 2026-10-17. All checks were actually run:**
+
+- **Mobile tests: 85 pass.** They cover:
+  - Firebase error-code mapping, including the same message for a wrong password and an unknown account (no account enumeration);
+  - email and password validation;
+  - `routeFor`: splash, sign-in, consent, and app;
+  - form component tests: labelled fields, field errors block submit, the 8-character sign-up rule, a valid submit, the wrong-password message, and the button disabled and busy while submitting.
+- **Mutation test.** Removing `disabled` from Button fails the double-submit test.
+- `expo lint` is clean. The iOS Metro bundle builds with the Firebase JS SDK's React Native build.
+- **Deviations, recorded:**
+  1. Auth uses the **Firebase JS SDK** (`initializeAuth` with React Native persistence), not `@react-native-firebase`. The native module needs the real project's config files (M0.2). Screens depend only on the `AuthService` interface, so swapping is local.
+  2. **Google sign-in is hidden** until OAuth client IDs exist (M0.2). Sign in with Apple is wired (nonce flow) for iOS.
+  3. **App Check in the app** needs the native module, so it moves to T10. The API still enforces App Check in staging and prod, so **staging will reject the app until T10 is done**.
+  4. `typedRoutes` is off, because its generated types would make CI typecheck non-deterministic.
+- **Not yet tested end to end:** real sign-in against the Auth emulator from a running app (simulator or device). That is part of M9 (Maestro).
 
 ## Outstanding risks
 

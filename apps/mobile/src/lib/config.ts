@@ -14,4 +14,16 @@ export function resolveApiBaseUrl(value: string | undefined, isDev: boolean): st
   return url.replace(/\/+$/, '');
 }
 
-export const API_BASE_URL = resolveApiBaseUrl(process.env['EXPO_PUBLIC_API_URL'], __DEV__);
+export const API_BASE_URL = resolveApiBaseUrl(process.env.EXPO_PUBLIC_API_URL, __DEV__);
+
+/**
+ * Firebase web config. Each variable must be referenced statically (process.env.EXPO_PUBLIC_X):
+ * Expo inlines only static references, so reading process.env dynamically would yield nothing.
+ */
+export const FIREBASE_ENV: Record<string, string | undefined> = {
+  EXPO_PUBLIC_FIREBASE_API_KEY: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  EXPO_PUBLIC_FIREBASE_PROJECT_ID: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  EXPO_PUBLIC_FIREBASE_APP_ID: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
+  EXPO_PUBLIC_FIREBASE_AUTH_EMULATOR_URL: process.env.EXPO_PUBLIC_FIREBASE_AUTH_EMULATOR_URL,
+};

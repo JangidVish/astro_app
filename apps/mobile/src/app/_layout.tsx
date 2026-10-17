@@ -3,12 +3,19 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AuthProvider } from '@/auth/auth-context';
+import type { AuthService } from '@/auth/auth-service';
+import { createFirebaseAuthService, firebaseConfigFromEnv } from '@/auth/firebase-auth';
+import { Screen, Text } from '@/components/ui';
 import { ApiProvider } from '@/lib/api-context';
+import { FIREBASE_ENV } from '@/lib/config';
 import { createQueryClient } from '@/lib/query-client';
 import { useTheme } from '@/theme/use-theme';
 
-// Until sign-in lands (T8.2) requests are unauthenticated; only /healthz works.
-const noToken = () => Promise.resolve(null);
+const firebaseConfig = firebaseConfigFromEnv(FIREBASE_ENV);
+const authService: AuthService | null = firebaseConfig
+  ? createFirebaseAuthService(firebaseConfig)
+  : null;
 
 export default function RootLayout() {
   const [queryClient] = useState(createQueryClient);
@@ -17,26 +24,37 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <QueryClientProvider client={queryClient}>
-        <ApiProvider getIdToken={noToken}>
-          <ThemeProvider
-            value={{
-              ...base,
-              colors: {
-                ...base.colors,
-                background: colors.background,
-                card: colors.surface,
-                text: colors.text,
-                border: colors.border,
-                primary: colors.primary,
-              },
-            }}
-          >
-            <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
-            <Stack screenOptions={{ headerTitleStyle: { color: colors.text } }} />
-          </ThemeProvider>
-        </ApiProvider>
-      </QueryClientProvider>
+      <ThemeProvider
+        value={{
+          ...base,
+          colors: {
+            ...base.colors,
+            background: colors.background,
+            card: colors.surface,
+            text: colors.text,
+            border: colors.border,
+            primary: colors.primary,
+          },
+        }}
+      >
+        <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+        {authService ? (
+          <AuthProvider service={authService}>
+            <QueryClientProvider client={queryClient}>
+              <ApiProvider getIdToken={() => authService.getIdToken()}>
+                <Stack screenOptions={{ headerShown: false }} />
+              </ApiProvider>
+            </QueryClientProvider>
+          </AuthProvider>
+        ) : (
+          <Screen>
+            <Text variant="heading">Configuration required</Text>
+            <Text>
+              Set the EXPO_PUBLIC_FIREBASE_* variables (see apps/mobile/.env.example) and restart.
+            </Text>
+          </Screen>
+        )}
+      </ThemeProvider>
     </SafeAreaProvider>
   );
 }
