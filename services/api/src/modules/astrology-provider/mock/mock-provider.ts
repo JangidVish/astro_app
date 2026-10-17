@@ -33,6 +33,9 @@ export class MockProvider implements AstrologyProvider {
   /** Every call, in order, for assertions such as "cache hit made no provider call". */
   readonly calls: MockCall[] = [];
 
+  /** Clock for date-dependent results (daily prediction). Tests may replace it. */
+  clock: () => Date = () => new Date();
+
   private readonly persistentFailures = new Map<ProviderMethod, ProviderErrorKind>();
   private readonly oneShotFailures = new Map<ProviderMethod, ProviderErrorKind[]>();
 
@@ -158,7 +161,9 @@ export class MockProvider implements AstrologyProvider {
     return this.call('getDailyPrediction', endpoint, [input, day], () => {
       this.checkInput(input, endpoint);
       const offsetDays = day === 'previous' ? -1 : day === 'next' ? 1 : 0;
-      const forDate = new Date(Date.now() + offsetDays * 86_400_000).toISOString().slice(0, 10);
+      // Like the live API (verified in T3.4), "today" is the date in the request's tzone.
+      const local = this.clock().getTime() + input.utcOffsetMinutes * 60_000;
+      const forDate = new Date(local + offsetDays * 86_400_000).toISOString().slice(0, 10);
       return mockPrediction(forDate);
     });
   }

@@ -5,6 +5,10 @@ import { ProviderCallLog } from './modules/astrology-provider/call-log.js';
 import { createProvider } from './modules/astrology-provider/factory.js';
 import { chartsModule } from './modules/charts/routes.js';
 import { ChartsService } from './modules/charts/service.js';
+import { dashaModule } from './modules/dasha/routes.js';
+import { DashaService } from './modules/dasha/service.js';
+import { predictionsModule } from './modules/predictions/routes.js';
+import { PredictionsService } from './modules/predictions/service.js';
 import { ReadingsCache } from './modules/readings/cache.js';
 import { FirebaseTokenVerifier } from './modules/auth/verifier.js';
 import { placesModule } from './modules/places/routes.js';
@@ -46,6 +50,8 @@ function start(): void {
   const profiles = new ProfilesService({ db, users, places, pepper });
   const cache = new ReadingsCache({ db, quota, source: provider.source });
   const charts = new ChartsService({ profiles, provider, cache });
+  const dasha = new DashaService({ profiles, provider, cache });
+  const predictions = new PredictionsService({ profiles, provider, cache });
   const deletion = new AccountDeletionService({
     db,
     pepper,
@@ -59,6 +65,8 @@ function start(): void {
       placesModule(places),
       profilesModule(profiles),
       chartsModule(charts),
+      dashaModule(dasha),
+      predictionsModule(predictions),
     ],
   });
 

@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, working through modules continuously. T6.1 is done. Next is T6.2 (dasha).
+- **Current milestone:** Phase 6. **Backend API feature-complete** (T6.2 and T7.1 done). Next is M8, the Expo mobile app (T8.1).
 
 ## Approved decisions
 
@@ -56,6 +56,8 @@
 - **T5.3 Birth profiles CRUD** (`/v1/profiles`), completed 2026-10-17.
 - **T4.3 Account deletion** (`DELETE /v1/me`), completed 2026-10-17.
 - **T6.1 Charts, planets, readings cache, providerCalls log**, completed 2026-10-17.
+- **T6.2 Dasha** (`/dasha`, `/dasha/{md}`, current period), completed 2026-10-17.
+- **T7.1 Daily prediction** (`/prediction?date=`, birth-place "today" mapping), completed 2026-10-17.
 - `UID_HASH_PEPPER` was generated into `.env` on 2026-10-17. The value was not displayed.
 
 ## In progress
@@ -376,6 +378,32 @@
   - in-flight de-duplication;
   - unknown-time masking.
 - `npm run check` passes.
+
+**T6.2 and T7.1, 2026-10-17. All checks were actually run:**
+
+- **`currentPeriod` unit tests: 9 pass.** They cover inclusive starts, exclusive ends, boundaries, outside all periods, and an empty list.
+- **Dasha and prediction integration tests: 21 pass.**
+  - Dasha:
+    - 9 Mahadashas, with `current` equal to the period containing now and a valid Antardasha;
+    - cached: the repeat makes 0 calls, and the first fetch makes 2;
+    - Antardashas start with their lord and are cached per lord;
+    - Pluto, lowercase, and Ascendant give 400 with no call;
+    - unknown time gives 409 on both endpoints;
+    - another user gives 404;
+    - provider down gives 503 with nothing cached.
+  - Prediction:
+    - -1, 0, and +1 days map to previous, today, and next;
+    - **a UTC+14 profile's "today" is the next UTC day**;
+    - out-of-range dates give 400 with no call;
+    - malformed dates give 400;
+    - cached per date with `expireAt` at date + 90 days;
+    - unknown time is flagged;
+    - **a provider date mismatch gives 502 and is never stored**.
+- **Shared test harness.** `test/integration/harness.ts` wires the full app like `server.ts`. The mock's prediction date now follows the request tzone and an injectable clock, like the live API.
+- **Mutation tests.**
+  - Dropping the `forDate` check fails the mismatch test.
+  - Using UTC "today" fails the UTC+14 test.
+- `npm run check` passes. The API suite was green twice in a row (379/379).
 
 ## Outstanding risks
 
