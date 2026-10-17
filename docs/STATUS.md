@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M1 Project setup. T1.3 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T2.1.
+- **Current milestone:** Phase 6, M2 API foundation. T2.1 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T2.2.
 
 ## Approved decisions
 
@@ -41,10 +41,11 @@
 - **T1.1 Monorepo scaffold and tooling**, completed 2026-10-17.
 - **T1.2 CI workflow**: written and committed locally. **Not yet pushed or verified** (see Blocked).
 - **T1.3 Firebase emulators and deny-all Firestore rules**, completed 2026-10-17.
+- **T2.1 Shared schemas and validation**, completed 2026-10-17.
 
 ## In progress
 
-- T1.3 review (owner: you).
+- T2.1 review (owner: you).
 
 ## Blocked / failed
 
@@ -78,6 +79,25 @@
 - The busy-port guard refuses to start and exits 1.
 - `npm run check` passes: format, lint, typecheck, and 87 tests.
 
+**T2.1, 2026-10-17. All checks were actually run:**
+
+- `@astro/shared`: **101 tests pass**. Over 70 of them are validation cases covering:
+  - dates: leap years, 1900 bounds, future dates
+  - times: 0:00 to 23:59, 24:00, decimals, strings, NaN
+  - names: Devanagari, ZWJ, Tamil, NFC/NFD, apostrophes, emoji, control and bidi characters, length limits
+  - unknown-time consistency
+  - injected fields
+  - coordinates (NaN, Infinity, out of range)
+  - timezone format
+  - place query length
+  - the prediction date window
+  - consent
+  - dasha lords
+  - chart shape
+- **Mutation test.** Removing the ZWJ/ZWNJ allowance makes exactly the Devanagari-ZWJ test fail.
+- **New guard, `check-invisible-chars`.** It is part of `npm run lint` and lint-staged. It catches planted U+202E (bidi) and U+200D in `.ts` and `.md` files, and passes on a clean repo.
+- `npm run check` passes: format, lint, typecheck, and **187 tests** (101 + 1 + 85).
+
 ## Outstanding risks
 
 | Risk                                                                                     | Mitigation                                                                                                                                                         |
@@ -96,6 +116,9 @@ Approve T1.3. Then **T2.1: shared package schemas and validation**.
 
 ## Decisions awaiting your approval
 
-1. T1.3 results, including accepting the dev-only audit findings.
+1. T2.1 results. There are three contract changes:
+   - prediction date window is ±2 days from the server's UTC date (was ±1);
+   - new route `GET /profiles/{id}/planets` for unknown-time profiles;
+   - profiles reference places by `placeId` only.
 2. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.
 3. Your M0 items (see `backlog.md`).

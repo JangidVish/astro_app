@@ -133,14 +133,14 @@ erDiagram
 
 ### 2.4 `users/{uid}/profiles/{profileId}/predictions/{yyyy-mm-dd}`
 
-| Field                               | Notes                                                                                                                |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `date`                              | The user's local calendar date. The app sends it. The API accepts only dates within ±1 day of the server's UTC date. |
-| `inputHash`                         |                                                                                                                      |
-| `moonSign`, `nakshatra`             | As returned by the provider. They are shown to the user (FR-17).                                                     |
-| `sections`                          | `{ health, emotions, profession, luck, personalLife, travel }`                                                       |
-| `raw`, `fetchedAt`, `schemaVersion` |                                                                                                                      |
-| `expireAt`                          | `date` + 90 days. A Firestore TTL policy removes old predictions.                                                    |
+| Field                               | Notes                                                                                                                                                                                      |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `date`                              | The user's local calendar date. The app sends it. The API accepts only dates within ±2 days of the server's UTC date (the user's local today ±1, plus up to 1 day of timezone difference). |
+| `inputHash`                         |                                                                                                                                                                                            |
+| `moonSign`, `nakshatra`             | As returned by the provider. They are shown to the user (FR-17).                                                                                                                           |
+| `sections`                          | `{ health, emotions, profession, luck, personalLife, travel }`                                                                                                                             |
+| `raw`, `fetchedAt`, `schemaVersion` |                                                                                                                                                                                            |
+| `expireAt`                          | `date` + 90 days. A Firestore TTL policy removes old predictions.                                                                                                                          |
 
 ⚠ **Phase 7 check:** it's unclear which "today" the provider uses (IST or UTC?). Near midnight, the provider's "today" and the user's date might differ. The adapter must work out which date the response actually covers before writing it to the cache.
 
@@ -285,17 +285,18 @@ To roll back, deploy the previous API version, which still reads both schema ver
 
 All routes are under `/v1`. They require a Firebase ID token, plus App Check in staging and prod.
 
-| Method               | Path                                        | Purpose                                |
-| -------------------- | ------------------------------------------- | -------------------------------------- |
-| GET                  | `/healthz`                                  | Liveness. Public.                      |
-| GET / PATCH          | `/me`                                       | Profile and consent                    |
-| DELETE               | `/me`                                       | Account deletion                       |
-| GET                  | `/places?q=`                                | Place search (≥ 3 characters)          |
-| GET / POST           | `/profiles`                                 | List and create profiles               |
-| GET / PATCH / DELETE | `/profiles/{id}`                            | Read, edit, and delete a profile       |
-| GET                  | `/profiles/{id}/chart?type=D1\|D9`          | Chart and planet table                 |
-| GET                  | `/profiles/{id}/dasha`                      | Mahadasha list plus the current period |
-| GET                  | `/profiles/{id}/dasha/{md}`                 | Antardashas for one Mahadasha          |
-| GET                  | `/profiles/{id}/prediction?date=yyyy-mm-dd` | Daily prediction                       |
+| Method               | Path                                        | Purpose                                                        |
+| -------------------- | ------------------------------------------- | -------------------------------------------------------------- |
+| GET                  | `/healthz`                                  | Liveness. Public.                                              |
+| GET / PATCH          | `/me`                                       | Profile and consent                                            |
+| DELETE               | `/me`                                       | Account deletion                                               |
+| GET                  | `/places?q=`                                | Place search (≥ 3 characters)                                  |
+| GET / POST           | `/profiles`                                 | List and create profiles                                       |
+| GET / PATCH / DELETE | `/profiles/{id}`                            | Read, edit, and delete a profile                               |
+| GET                  | `/profiles/{id}/planets`                    | Planet table. Also works when the birth time is unknown (FR-8) |
+| GET                  | `/profiles/{id}/chart?type=D1\|D9`          | Chart and planet table                                         |
+| GET                  | `/profiles/{id}/dasha`                      | Mahadasha list plus the current period                         |
+| GET                  | `/profiles/{id}/dasha/{md}`                 | Antardashas for one Mahadasha                                  |
+| GET                  | `/profiles/{id}/prediction?date=yyyy-mm-dd` | Daily prediction                                               |
 
 Errors use a stable shape, `{ error: { code, message, retryable } }`. The full contract is written in Phase 5.

@@ -273,7 +273,7 @@
 
 ## M6. Charts and Dasha
 
-### T6.1 Charts module: `GET /profiles/{id}/chart?type=D1|D9`. M / P0
+### T6.1 Charts module: `GET /profiles/{id}/chart?type=D1|D9` and `GET /profiles/{id}/planets`. M / P0
 
 - **Depends on:** T5.3, T3.3.
 - **Edge cases:**
