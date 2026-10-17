@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** M9 is done except the on-device runs. Next is M10 (deploy), which needs your accounts and approval.
+- **Current milestone:** All local work is done (M1–M9, the M10 scripts, and M11 docs). **Waiting on you for M10 cloud steps.** See "Decisions awaiting your approval".
 
 ## Approved decisions
 
@@ -68,12 +68,14 @@
 - **T9.1 Security suite**, completed 2026-10-17.
 - **T9.2 Performance test** (local; staging re-run pending T10), completed 2026-10-17.
 - **T9.3 End-to-end**: the API journey is automated and passing; the Maestro flow is written but **not run** (no device), 2026-10-17.
+- **M10 preparation (offline)**, 2026-10-18: the Dockerfile, `infra/gcp` scripts, deploy workflow and alert policies. **None of it has run against the cloud yet.**
+- **M11 Handover docs** (`docs/handover.md`, `infra/gcp/README.md`), 2026-10-18.
 - `UID_HASH_PEPPER` was generated into `.env` on 2026-10-17. The value was not displayed.
 
 ## In progress
 
-- T5.3 review (owner: you).
-- **Gap found:** there is no API to change which profile is primary. The contract does not have one yet. Propose adding `isPrimary: true` to `PATCH /profiles/{id}` in T8.3, when the UI needs it.
+- Nothing is in progress locally.
+- **Open gap:** there is no API to change which profile is primary, so the first profile stays primary. This is recorded as a known limitation in `docs/handover.md`. It is a small follow-up: add `isPrimary: true` to `PATCH /profiles/{id}`.
 
 ## Blocked / failed
 
@@ -572,6 +574,18 @@
   - The "provider failure shown" step is covered by integration tests (503 → banner) rather than Maestro, because a staging build cannot inject provider failures.
 - The API suite passes (**396 tests**).
 
+**M10 preparation and M11, 2026-10-18. What was actually run:**
+
+- **The production bundle was broken.** `node dist/server.js` crashed at startup with "Dynamic require of "fs" is not supported", because the CJS firebase-admin had been inlined into the ESM bundle. No earlier test ran `dist/`.
+  - **Fix:** firebase-admin is now external, like fastify and zod. The bundle went from 9.6 MB to 328 KB.
+  - **New CI step:** it builds the bundle and runs the real-server end-to-end journey against it (`E2E_SERVER_BUNDLE=1`). That run passes locally.
+- **Dockerfile** (`services/api/Dockerfile`). Docker is not running on this machine, so the image itself has **not** been built. Its install and build steps were simulated in a clean scratch directory:
+  - the build stage (`npm ci --workspace @astro/api --ignore-scripts`, then esbuild) produces the same 328 KB bundle;
+  - the runtime install (`npm ci --omit=dev --workspace @astro/api`) gives 253 packages (118 MB) with no Expo or devDependencies;
+  - the bundle booted from that isolated install against the emulators: `/healthz` returned 200 and `/v1/me` returned 401.
+  - The Node image is pinned to **24.13.0**, and `.nvmrc` was changed to match. CI and prod now share the same tzdata, which closes the earlier risk.
+- **`infra/gcp/*.sh` and `.github/workflows/deploy.yml`.** The scripts pass `bash -n` syntax checks. The GitHub action SHAs were looked up from the GitHub API, not guessed. **None of this has run**: gcloud is not installed here, and running it needs your accounts.
+
 ## Outstanding risks
 
 | Risk                                                                                                                                                                                                     | Mitigation                                                                                                                                                         |
@@ -582,17 +596,19 @@
 | Historical timezone or DST errors would corrupt charts silently                                                                                                                                          | Local tzdb plus a fixture cross-check against `timezone_with_dst`                                                                                                  |
 | Store compliance (Sign in with Apple, account deletion, privacy policy)                                                                                                                                  | These are built into the MVP scope and acceptance criteria                                                                                                         |
 | Emulator env vars in a deployed env would make firebase-admin accept unsigned tokens                                                                                                                     | Config refuses `FIREBASE_AUTH_EMULATOR_HOST` / `FIRESTORE_EMULATOR_HOST` in staging and prod (tested)                                                              |
-| Timezone history comes from the runtime's tz data (Node 24: tzdata 2025b). Dev and prod could differ if Node versions differ                                                                             | Pin the Node image version in the Dockerfile (T10). Cross-check fixtures against the provider in T3.4                                                              |
+| Timezone history comes from the runtime's tz data (Node 24: tzdata 2025b). **Closed 2026-10-18:** Node is pinned to 24.13.0 in `.nvmrc` and the Dockerfile                                               | Pin the Node image version in the Dockerfile (T10). Cross-check fixtures against the provider in T3.4                                                              |
 | Mobile toolchain advisories: braces, node-forge, sprintf-js (no patched release exists), and uuid. They are in Expo CLI, Metro, and code-signing build tooling, not in the API runtime or the app bundle | CI blocks high or critical advisories in API and shared, and critical ones in mobile. Re-check on each Expo SDK update                                             |
 | Developer accounts and legal entity are unowned (U-7)                                                                                                                                                    | Needed before staging builds reach TestFlight or Play                                                                                                              |
 | 12 dev-only npm audit findings (8 high) in firebase-tools / firebase SDK transitive deps                                                                                                                 | Local emulator only, bound to 127.0.0.1, never shipped. The prod audit finds 0. `--force` would downgrade majors, so it was rejected. Re-check on Firebase updates |
 
 ## Next recommended task
 
-Approve T1.3. Then **T2.1: shared package schemas and validation**.
+**M10 on staging.** It needs your accounts, so nothing runs until you approve each step. Follow `infra/gcp/README.md` in order.
 
 ## Decisions awaiting your approval
 
-1. T5.3 results.
-2. Next task: **T4.3 (account deletion)**. It was deferred because it needed profiles. After it comes M6: T6.1 (charts and the providerCalls log) and T6.2 (dasha).
-3. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.
+1. **Push to GitHub.** Fix the token's `workflow` scope, then push all local commits. The first green CI run closes T1.2.
+2. **M0 accounts:** a GCP billing account, and Firebase staging and prod projects. Also an Apple Developer account, a Google Play account, and bundle ids.
+3. **Approval to run `infra/gcp/setup.sh` on staging.** This creates billable resources, expected to cost about $1–5 a month.
+4. **App Check in the app** (native module, part of T10). It is needed before the deployed API accepts the app.
+5. **Legal text** for the privacy policy and terms (M0.6), and **the quota value**, once the credit cost per call is known.

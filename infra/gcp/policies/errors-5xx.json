@@ -1,0 +1,29 @@
+{
+  "displayName": "Astro API 5xx",
+  "combiner": "OR",
+  "conditions": [
+    {
+      "displayName": "5xx responses",
+      "conditionThreshold": {
+        "filter": "metric.type=\"run.googleapis.com/request_count\" AND resource.type=\"cloud_run_revision\" AND resource.label.service_name=\"astro-api\" AND metric.label.response_code_class=\"5xx\"",
+        "aggregations": [
+          {
+            "alignmentPeriod": "300s",
+            "perSeriesAligner": "ALIGN_SUM",
+            "crossSeriesReducer": "REDUCE_SUM"
+          }
+        ],
+        "comparison": "COMPARISON_GT",
+        "thresholdValue": 5,
+        "duration": "0s",
+        "trigger": {
+          "count": 1
+        }
+      }
+    }
+  ],
+  "documentation": {
+    "content": "More than 5 server errors in 5 minutes. 503s usually mean the astrology provider is down; see docs/runbook.md, 'Errors'.",
+    "mimeType": "text/markdown"
+  }
+}

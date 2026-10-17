@@ -11,6 +11,9 @@ coverage/
 .env
 .env.*
 !.env.example
+# Filled-in per-environment GCP settings (infra/gcp/env.example.sh is the template)
+infra/gcp/env.*.sh
+!infra/gcp/env.example.sh
 *.pem
 *.p8
 *.p12
