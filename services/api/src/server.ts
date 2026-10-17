@@ -1,7 +1,11 @@
 import { buildApp } from './app.js';
 import { ConfigError, loadConfig } from './common/config.js';
 import { firebaseApp, firestore } from './common/firebase.js';
+import { createProvider } from './modules/astrology-provider/factory.js';
 import { FirebaseTokenVerifier } from './modules/auth/verifier.js';
+import { placesModule } from './modules/places/routes.js';
+import { PlacesService } from './modules/places/service.js';
+import { QuotaService } from './modules/quota/service.js';
 import { usersModule } from './modules/users/routes.js';
 
 function start(): void {
@@ -17,10 +21,19 @@ function start(): void {
     throw error;
   }
 
+  const db = firestore(config.firebaseProjectId);
+  const provider = createProvider(config);
+  const quota = new QuotaService({
+    db,
+    pepper: config.uidHashPepper,
+    limitPerDay: config.quotaProviderCallsPerDay,
+  });
+
   const app = buildApp(config, {
     deps: { verifier: new FirebaseTokenVerifier(firebaseApp(config.firebaseProjectId)) },
     modules: [
-      usersModule({ db: firestore(config.firebaseProjectId), pepper: config.uidHashPepper }),
+      usersModule({ db, pepper: config.uidHashPepper }),
+      placesModule(new PlacesService({ db, provider, quota })),
     ],
   });
 

@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M4 Users. T4.2 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T5.2 (places).
+- **Current milestone:** Phase 6, M5 Places and profiles. T5.2 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T5.3 (birth profiles).
 
 ## Approved decisions
 
@@ -52,10 +52,13 @@
 - **T3.4 Live provider spike**, completed 2026-10-17. It used 24 live calls. Findings are in `api-provider-notes.md`.
 - **T4.1 Users module** (`GET/PATCH /v1/me`, consent), completed 2026-10-17.
 - **T4.2 Quota module** (per-user daily provider-call budget), completed 2026-10-17.
+- **T5.2 Places module** (`GET /v1/places`, cache, `resolvePlace`), completed 2026-10-17.
+- `UID_HASH_PEPPER` was generated into `.env` on 2026-10-17. The value was not displayed.
 
 ## In progress
 
-- T4.2 review (owner: you).
+- T5.2 review (owner: you).
+- **Not yet wired:** the `providerCalls` metadata log (data-model 2.6). The client's `onCall` hook exists but nothing writes the records to Firestore yet. Planned with T6.1, where most provider calls happen.
 
 ## Blocked / failed
 
@@ -280,6 +283,25 @@
   - auditing every breach.
 - `npm run check` passes (**505 tests**).
 
+**T5.2, 2026-10-17. All checks were actually run:**
+
+- **Places tests on the Firestore emulator: 20 pass.** They cover:
+  - the contract shape and stable `placeId` values;
+  - repeat and case or spacing variants serve from cache (**1 provider call and 1 quota unit in total**, shared across users);
+  - the same `placeId` from different searches;
+  - the 30-day cache refetches after expiry;
+  - empty results are cached for 1 day only;
+  - short and long queries get 400 with no provider call;
+  - provider down gives 503, nothing is cached, and the quota is refunded;
+  - over quota gives 429 with no provider call;
+  - 401 without a token;
+  - junk is dropped (an `IST` zone, an unknown zone, bad latitude), and coordinates are rounded;
+  - malformed data gives 502 with the quota refunded;
+  - `resolvePlace` works for searched places and rejects unknown, malformed, path-like, empty, and expired IDs.
+- **Mutation tests.** Ignoring expiry on read fails the 2 expiry tests. Removing the timezone filter fails the hygiene test.
+- **Bug found in my test stub and fixed.** It spread a class instance (losing its methods). It is now a `MockProvider` subclass.
+- `npm run check` passes. The API suite was green on 2 consecutive runs (296/296).
+
 ## Outstanding risks
 
 | Risk                                                                                                                         | Mitigation                                                                                                                                                         |
@@ -300,7 +322,6 @@ Approve T1.3. Then **T2.1: shared package schemas and validation**.
 
 ## Decisions awaiting your approval
 
-1. T4.2 results. Failed provider calls are refunded, so outages do not use up a user's daily budget.
-2. **Credits.** Please check the AstrologyAPI dashboard balance (24 calls used). The quota stays at the placeholder of 30 per user per day until real costs are known.
+1. T5.2 results. The place cache is **shared across users**. Place search results are not personal data, and sharing them saves credits.
+2. Credits: you approved spending as needed (2026-10-17). The quota stays at 30 per user per day until per-call cost is known.
 3. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.
-4. Add `UID_HASH_PEPPER` to `.env`.

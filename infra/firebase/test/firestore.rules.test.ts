@@ -21,6 +21,7 @@ const PATHS = [
   `users/${OWNER}/profiles/p1/predictions/2026-10-17`,
   `users/${OWNER}/usage/2026-10-17`,
   'places/abc123',
+  'placeIds/pl_abc123',
   'providerCalls/call1',
   'auditEvents/evt1',
   '_migrations/0001_init',

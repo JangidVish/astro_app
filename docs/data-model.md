@@ -28,6 +28,7 @@ users/{uid}
     predictions/{yyyy-mm-dd}
   usage/{yyyy-mm-dd}
 places/{queryHash}
+placeIds/{placeId}
 providerCalls/{autoId}
 auditEvents/{autoId}
 _migrations/{migrationId}
@@ -152,12 +153,13 @@ erDiagram
 
 ### 2.6 Global collections (no direct personal data)
 
-| Collection                         | Fields                                                                                                                      | TTL      |
-| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | -------- |
-| `places/{sha256(normalizedQuery)}` | `query`, `results[]`, `fetchedAt`                                                                                           | 30 days  |
-| `providerCalls/{id}`               | `endpoint`, `status`, `latencyMs`, `errorCode`, `attempt`, `uidHash`, `at`                                                  | 30 days  |
-| `auditEvents/{id}`                 | `type` (`account_created`, `account_deleted`, `profile_deleted`, `quota_exceeded`, `provider_auth_failed`), `uidHash`, `at` | 180 days |
-| `_migrations/{id}`                 | `appliedAt`, `env`, `docsTouched`                                                                                           | keep     |
+| Collection                         | Fields                                                                                                                                                                                | TTL      |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| `places/{sha256(normalizedQuery)}` | `query`, `results[]`, `fetchedAt`                                                                                                                                                     | 30 days  |
+| `placeIds/{placeId}`               | Copy of one place from a search: `placeId`, `name`, `countryCode`, `lat`, `lon`, `timezoneId`, `expireAt`. Used by `resolvePlace` so that profiles can only reference searched places | 30 days  |
+| `providerCalls/{id}`               | `endpoint`, `status`, `latencyMs`, `errorCode`, `attempt`, `uidHash`, `at`                                                                                                            | 30 days  |
+| `auditEvents/{id}`                 | `type` (`account_created`, `account_deleted`, `profile_deleted`, `quota_exceeded`, `provider_auth_failed`), `uidHash`, `at`                                                           | 180 days |
+| `_migrations/{id}`                 | `appliedAt`, `env`, `docsTouched`                                                                                                                                                     | keep     |
 
 **Not stored as entities:**
 
