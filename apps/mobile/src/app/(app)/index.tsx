@@ -22,7 +22,11 @@ export default function Profiles() {
           title: t('profiles.title'),
           headerShown: true,
           headerRight: () => (
-            <Button label="Settings" variant="link" onPress={() => router.push('/settings')} />
+            <Button
+              label={t('settings.title')}
+              variant="link"
+              onPress={() => router.push('/settings')}
+            />
           ),
         }}
       />

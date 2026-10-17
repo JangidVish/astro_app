@@ -145,6 +145,10 @@ export const en = {
   'delete.reauthAgain': 'For your security, please confirm again.',
   'delete.done': 'Your account has been deleted.',
 
+  'config.title': 'Configuration required',
+  'config.body':
+    'Set the EXPO_PUBLIC_FIREBASE_* variables (see apps/mobile/.env.example) and restart.',
+
   'common.loading': 'Loading',
   'common.retry': 'Try again',
   'common.error': 'Something went wrong.',

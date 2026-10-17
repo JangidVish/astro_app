@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M8 mobile app. T8.7 is done. Next is T8.8 (states and accessibility pass).
+- **Current milestone:** Phase 6. **M8 mobile app complete** (T8.1 to T8.8). Next is M9: T9.1 (security suite), then T9.2 and T9.3.
 
 ## Approved decisions
 
@@ -64,6 +64,7 @@
 - **T8.4 North Indian chart renderer and chart screen** (D1/D9 tabs, planet table, unknown-time view), completed 2026-10-17.
 - **T8.5 Dasha screen** and **T8.6 Daily prediction screen**, completed 2026-10-17.
 - **T8.7 Settings and account deletion** (re-authentication, then `DELETE /v1/me`), completed 2026-10-17.
+- **T8.8 States and accessibility pass** (automated a11y audit, i18n cleanup, theme discipline), completed 2026-10-17.
 - `UID_HASH_PEPPER` was generated into `.env` on 2026-10-17. The value was not displayed.
 
 ## In progress
@@ -498,6 +499,18 @@
   - when offline, keep the account and show a message.
 - **Mutation test.** Removing the forced token refresh fails the order test. Without it, the server would reject the request as a stale sign-in.
 - Settings shows the account, policy versions, the disclaimer, and the app version. The legal links follow with M0.6.
+
+**T8.8, 2026-10-17. All checks were actually run:**
+
+- **Automated accessibility audit: 8 components pass.** Each pressable element has a role, an accessible name, and a touch target of at least 44 pt. The components are Button, EmailPasswordForm, ProfileForm, ProfileCard, DashaList, PlanetTable, NorthIndianChart, and DeleteAccount.
+- **The auditor was mutation-tested:**
+  - removing a role fails 4 audits;
+  - a 30 pt button fails 4 audits;
+  - a raw hex colour fails the theme-discipline test.
+- **Hard-coded strings moved to i18n:** the "Settings" header and the configuration screen. A scan finds no other literal UI strings or raw colours.
+- **Test-harness hang found and fixed.** React Query's 5-minute GC timers kept Jest alive after a failing run. Test clients now use `gcTime: Infinity`. A failing run now ends in 5 s, and the full mobile suite takes 6 s.
+- `npm run check` passes (**778 tests**: shared 144, API 379, mobile 161, rules 94).
+- **Still not covered** (device-only, planned for M9): real screen-reader passes (VoiceOver and TalkBack), dynamic type at the largest sizes, and dark-mode screenshots.
 
 ## Outstanding risks
 

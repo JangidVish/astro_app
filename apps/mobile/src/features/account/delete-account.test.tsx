@@ -43,7 +43,9 @@ async function setup(
   overrides: Partial<AuthService> = {},
 ) {
   const { service, calls } = fakeAuth(user, overrides);
-  const queryClient = new QueryClient();
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false, gcTime: Infinity } },
+  });
   queryClient.setQueryData(['profiles', 'list'], { profiles: ['secret'] });
   const onDeleted = jest.fn();
   function Wrapper({ children }: { children: ReactNode }) {

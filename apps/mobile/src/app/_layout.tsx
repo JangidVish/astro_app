@@ -9,6 +9,7 @@ import { createFirebaseAuthService, firebaseConfigFromEnv } from '@/auth/firebas
 import { Screen, Text } from '@/components/ui';
 import { ApiProvider } from '@/lib/api-context';
 import { FIREBASE_ENV } from '@/lib/config';
+import { t } from '@/i18n/en';
 import { createQueryClient } from '@/lib/query-client';
 import { useTheme } from '@/theme/use-theme';
 
@@ -48,10 +49,8 @@ export default function RootLayout() {
           </AuthProvider>
         ) : (
           <Screen>
-            <Text variant="heading">Configuration required</Text>
-            <Text>
-              Set the EXPO_PUBLIC_FIREBASE_* variables (see apps/mobile/.env.example) and restart.
-            </Text>
+            <Text variant="heading">{t('config.title')}</Text>
+            <Text>{t('config.body')}</Text>
           </Screen>
         )}
       </ThemeProvider>
