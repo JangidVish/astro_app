@@ -46,6 +46,7 @@ export default function ProfileDetail() {
               {t('profiles.offset')}: {formatUtcOffset(p.utcOffsetMinutes)}
             </Text>
           </Card>
+          <Button label={t('chart.title')} onPress={() => router.push(`/profiles/${id}/chart`)} />
           <Button
             label={t('profile.edit')}
             variant="secondary"

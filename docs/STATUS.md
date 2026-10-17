@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M8 mobile app. T8.3 is done. Next is T8.4 (North Indian chart renderer).
+- **Current milestone:** Phase 6, M8 mobile app. T8.4 is done. Next is T8.5 and T8.6 (dasha and prediction screens).
 
 ## Approved decisions
 
@@ -61,6 +61,7 @@
 - **T8.1 Expo app scaffold** (SDK 58, expo-router, theme, typed API client), completed 2026-10-17.
 - **T8.2 Auth screens** (email/password sign-in, sign-up, reset; Sign in with Apple wired; consent gate), completed 2026-10-17.
 - **T8.3 Profiles UI** (list, create, edit, delete, place search, DST prompts, offset shown), completed 2026-10-17.
+- **T8.4 North Indian chart renderer and chart screen** (D1/D9 tabs, planet table, unknown-time view), completed 2026-10-17.
 - `UID_HASH_PEPPER` was generated into `.env` on 2026-10-17. The value was not displayed.
 
 ## In progress
@@ -460,6 +461,20 @@
   - Dates are shown as "10 May 1990", which is unambiguous across locales.
   - The time zone used is shown on the card and the detail screen (decision (a)).
   - A minimal Settings screen with sign-out was added. T8.7 extends it.
+
+**T8.4, 2026-10-17. All checks were actually run:**
+
+- **Mobile tests: 137 pass, plus 1 snapshot.** They cover:
+  - geometry: 12 cells inside the square; the kendras top (1), left (4), bottom (7), and right (10); **counter-clockwise order**; distinct regions;
+  - data, using the live API sample chart (Libra lagna): Ascendant in house 1, each graha in its house, ℞ on retrograde grahas but not on Rahu or Ketu, wrapping for crowded houses (house 9 holds 4 grahas over 2 lines), and refusal when a house is missing;
+  - the screen-reader summary;
+  - the component as one accessible image with a spoken summary;
+  - the snapshot, which was inspected and holds the correct wrapped labels;
+  - the planet table: degree formatting (12°11′), full spoken rows including retrograde, and dashes for withheld values;
+  - reading error messages, which never show invented content.
+- **Mutation test.** A clockwise layout (houses 2 and 12 swapped) fails 2 geometry tests.
+- `expo lint` is clean, the Android bundle builds, and `npm run check` passes.
+- **Not done:** a visual comparison against the provider's chart image. That costs 1 credit and needs a rendered screenshot on a device. It moves to M9 (device testing).
 
 ## Outstanding risks
 

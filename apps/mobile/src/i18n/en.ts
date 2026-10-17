@@ -92,6 +92,23 @@ export const en = {
   'profile.error.place': 'Choose the place from the search results.',
   'profile.error.limit': 'You already have 5 profiles.',
 
+  'chart.title': 'Chart',
+  'chart.d1': 'Birth chart (D1)',
+  'chart.d9': 'Navamsa (D9)',
+  'chart.planets': 'Planet positions',
+  'chart.body': 'Planet',
+  'chart.sign': 'Sign',
+  'chart.nakshatra': 'Nakshatra',
+  'chart.house': 'House',
+  'chart.ascendant': 'Ascendant',
+  'chart.retrograde': 'retrograde',
+  'chart.timeUnknown':
+    'The chart needs the exact birth time. Below are the planet signs, which do not depend on it. Add the birth time to the profile to see the full chart.',
+  'chart.noonNote': 'Calculated for 12:00 noon because the birth time is unknown.',
+  'reading.unavailable':
+    'The astrology service is not available right now. Please try again shortly.',
+  'reading.quota': 'You have reached today’s limit. Please try again tomorrow.',
+
   'common.loading': 'Loading',
   'common.retry': 'Try again',
   'common.error': 'Something went wrong.',
