@@ -9,7 +9,8 @@
     "start": "node --enable-source-maps dist/server.js",
     "typecheck": "tsc --noEmit",
     "test": "node ../../scripts/with-emulators.mjs --config ../../infra/firebase/firebase.json --only auth,firestore -- vitest run",
-    "test:unit": "vitest run --exclude \"test/integration/**\""
+    "test:unit": "vitest run --exclude \"test/integration/**\"",
+    "test:perf": "node ../../scripts/with-emulators.mjs --config ../../infra/firebase/firebase.json --only auth,firestore -- vitest run --config vitest.perf.config.ts"
   },
   "dependencies": {
     "@astro/shared": "*",

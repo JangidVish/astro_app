@@ -49,6 +49,8 @@ export class ChartsService {
   async chart(uid: string, profileId: string, type: ChartType): Promise<ChartResponse> {
     const profile = await this.deps.profiles.loadForReadings(uid, profileId);
     requireBirthTime(profile);
+    // Sequential on purpose (T9.2): in parallel, both metered calls contend on the same quota
+    // document and were slower under load, and a failed chart would still charge for the planets.
     const houses = await this.deps.cache.get(
       uid,
       profile,

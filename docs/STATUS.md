@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M9. T9.1 is done. Next is T9.2 (performance), then T9.3 (end to end).
+- **Current milestone:** Phase 6, M9. T9.1 and T9.2 are done. Next is T9.3 (end to end).
 
 ## Approved decisions
 
@@ -66,6 +66,7 @@
 - **T8.7 Settings and account deletion** (re-authentication, then `DELETE /v1/me`), completed 2026-10-17.
 - **T8.8 States and accessibility pass** (automated a11y audit, i18n cleanup, theme discipline), completed 2026-10-17.
 - **T9.1 Security suite**, completed 2026-10-17.
+- **T9.2 Performance test** (local; staging re-run pending T10), completed 2026-10-17.
 - `UID_HASH_PEPPER` was generated into `.env` on 2026-10-17. The value was not displayed.
 
 ## In progress
@@ -524,6 +525,28 @@
 - **Mutation test.** An unauthenticated `/v1/leak` route is caught, and the failure names it.
 - **`scripts/check-bundle-secrets.mjs`** (new CI job `mobile-bundle`). It builds the Android bundle and fails on any secret-looking env value or private-key marker. Locally it scanned 4.1 MB with `.env` loaded and found it clean. A planted `UID_HASH_PEPPER` marker was caught.
 - The API suite passes (**395 tests**), and `npm run check` passes.
+
+**T9.2, 2026-10-17. All checks were actually run:**
+
+- **What was run:** `npm run test:perf` (`services/api/test/perf/load.perf.ts`). This is on demand, not part of `npm test`.
+  - 50 concurrent users over real HTTP on loopback.
+  - The full app runs on the Firestore emulator with the mock provider.
+  - Each user has 2 profiles, and each profile has 4 readings (D1, D9, dasha, prediction).
+- **Results:**
+
+  | Scenario                            | Requests | p50     | p95     | p99     | Throughput | Errors |
+  | ----------------------------------- | -------- | ------- | ------- | ------- | ---------- | ------ |
+  | Cache miss (1 s simulated provider) | 400      | 1287 ms | 2520 ms | 2532 ms | 33 rps     | 0      |
+  | Cache hit                           | 4000     | 67 ms   | 118 ms  | 136 ms  | 691 rps    | 0      |
+  | Profile list                        | 500      | 65 ms   | 120 ms  | 125 ms  | 684 rps    | 0      |
+
+  Cache hits made no provider calls. **NFR-6 is met locally:** cached p95 is under 500 ms, and fresh p95 is under 4 s.
+
+- **Mutation test.** With a 2.5 s provider, the cache-miss p95 rose to 5570 ms and the test failed.
+- **Finding.** A fresh D1 or D9 chart needs two provider calls (houses, then planets), so its latency is about 2× the provider latency plus about 0.5 s.
+  - **The 4 s target holds only while live provider latency is under about 1.7 s.** Live latency is not measured yet, so re-run on staging in T10.
+- **Tried and reverted.** Fetching houses and planets in parallel made p95 _worse_ (4.5 s), because both calls contend on the user's quota document in Firestore transactions. It also charged for planets when the chart call failed, which an existing integration test caught. The code now has a comment explaining why the calls stay sequential.
+- **Caveat.** The emulator is not production Firestore, so treat these numbers as indicative.
 
 ## Outstanding risks
 
