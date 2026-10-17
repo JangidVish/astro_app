@@ -1,0 +1,5 @@
+# Maestro E2E (T9.3). Run against a staging build on an Android emulator or device:
+#   maestro test apps/mobile/.maestro -e EMAIL=e2e+<unique>@example.com -e PASSWORD=<test password>
+# Use a throwaway test account: the journey ends by deleting it.
+flows:
+  - journey.yaml

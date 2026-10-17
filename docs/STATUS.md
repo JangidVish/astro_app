@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M9. T9.1 and T9.2 are done. Next is T9.3 (end to end).
+- **Current milestone:** M9 is done except the on-device runs. Next is M10 (deploy), which needs your accounts and approval.
 
 ## Approved decisions
 
@@ -67,6 +67,7 @@
 - **T8.8 States and accessibility pass** (automated a11y audit, i18n cleanup, theme discipline), completed 2026-10-17.
 - **T9.1 Security suite**, completed 2026-10-17.
 - **T9.2 Performance test** (local; staging re-run pending T10), completed 2026-10-17.
+- **T9.3 End-to-end**: the API journey is automated and passing; the Maestro flow is written but **not run** (no device), 2026-10-17.
 - `UID_HASH_PEPPER` was generated into `.env` on 2026-10-17. The value was not displayed.
 
 ## In progress
@@ -547,6 +548,29 @@
   - **The 4 s target holds only while live provider latency is under about 1.7 s.** Live latency is not measured yet, so re-run on staging in T10.
 - **Tried and reverted.** Fetching houses and planets in parallel made p95 _worse_ (4.5 s), because both calls contend on the user's quota document in Firestore transactions. It also charged for planets when the chart call failed, which an existing integration test caught. The code now has a comment explaining why the calls stay sequential.
 - **Caveat.** The emulator is not production Firestore, so treat these numbers as indicative.
+
+**T9.3, 2026-10-17:**
+
+- **API journey, run and passing.** `services/api/test/integration/e2e-server.int.test.ts` is part of `npm test`.
+  - It starts the **real `src/server.ts`** as a child process on the emulators with the mock provider. That is the production wiring and the real `FirebaseTokenVerifier`. Provider credentials are stripped from its environment.
+  - It signs up a real Auth-emulator user, then runs these steps over HTTP:
+    1. A request without a token gets 401.
+    2. Consent.
+    3. Place search.
+    4. Create a profile (UTC offset +330).
+    5. D1 and D9 charts, then reopen D1 and confirm the cached copy is identical.
+    6. Mahadasha and antardasha.
+    7. Today's prediction.
+    8. `DELETE /v1/me` gives 204.
+  - After deletion, the Auth user is gone, the old token gets 401, and no profile documents are left.
+  - The server's own log output contains no email, name, birth date or time, uid, or token.
+  - Every response is validated against the shared zod schemas.
+- **Mutation test.** Removing `deletion` from the `server.ts` wiring was caught ("expected 404 to be 204"). No other test exercises `server.ts`.
+- **Maestro flow, not run.** `apps/mobile/.maestro/journey.yaml` (Android) covers sign-up, consent, new profile, chart D1/D9, dasha, prediction, reopening the chart, and deleting the account. The YAML parses, but there is no Maestro or Android SDK on this machine, so it has **not been run**.
+  - **Run it on a staging build in T10.**
+  - On iOS the spinner pickers need explicit swipes.
+  - The "provider failure shown" step is covered by integration tests (503 → banner) rather than Maestro, because a staging build cannot inject provider failures.
+- The API suite passes (**396 tests**).
 
 ## Outstanding risks
 

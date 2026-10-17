@@ -1,0 +1,114 @@
+# Full journey: register -> consent -> profile -> chart -> dasha -> prediction -> reopen saved
+# reading -> delete account. Selectors are testIDs and the English strings in src/i18n/en.ts.
+# Android: the date and time pickers open dialogs; "OK" accepts 1990-01-01 and 12:00.
+appId: com.placeholder.astroapp
+name: Full user journey
+---
+- launchApp:
+    clearState: true
+- tapOn: 'New here? Create an account'
+- tapOn:
+    id: email
+- inputText: ${EMAIL}
+- tapOn:
+    id: password
+- inputText: ${PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: submit
+
+# Consent
+- extendedWaitUntil:
+    visible: 'Before you begin'
+    timeout: 15000
+- tapOn:
+    id: accept
+
+# New profile
+- extendedWaitUntil:
+    visible: 'Add profile'
+    timeout: 15000
+- tapOn:
+    id: add-profile
+- tapOn:
+    id: name
+- inputText: 'Maestro Test'
+- hideKeyboard
+- tapOn:
+    id: birth-date
+- tapOn: 'OK'
+- tapOn:
+    id: birth-time
+- tapOn: 'OK'
+- tapOn:
+    id: place-query
+- inputText: 'Mumbai'
+- hideKeyboard
+- extendedWaitUntil:
+    visible: 'Mumbai.*'
+    timeout: 15000
+- tapOn: 'Mumbai.*'
+- assertVisible:
+    id: offset-preview
+- scrollUntilVisible:
+    element:
+      id: save
+- tapOn:
+    id: save
+
+# Profile list -> profile
+- extendedWaitUntil:
+    visible: 'Maestro Test'
+    timeout: 15000
+- tapOn: 'Maestro Test'
+
+# Chart (D1, then D9)
+- tapOn: 'Chart'
+- extendedWaitUntil:
+    visible:
+      id: north-indian-chart
+    timeout: 20000
+- assertVisible: 'Planet positions'
+- tapOn: 'Navamsa (D9)'
+- assertVisible:
+    id: north-indian-chart
+- back
+
+# Dasha
+- tapOn: 'Vimshottari dasha'
+- extendedWaitUntil:
+    visible: 'Current period'
+    timeout: 20000
+- back
+
+# Daily prediction
+- tapOn: 'Daily prediction'
+- extendedWaitUntil:
+    visible: 'Based on your Moon sign and nakshatra'
+    timeout: 20000
+- tapOn: 'Tomorrow'
+- assertVisible: 'Health'
+- back
+
+# Reopen a saved reading: served from the server cache, so it appears quickly.
+- tapOn: 'Chart'
+- extendedWaitUntil:
+    visible:
+      id: north-indian-chart
+    timeout: 5000
+- back
+- back
+
+# Delete account
+- tapOn: 'Settings'
+- tapOn:
+    id: start-delete
+- tapOn:
+    id: delete-password
+- inputText: ${PASSWORD}
+- hideKeyboard
+- tapOn:
+    id: delete-confirm
+- extendedWaitUntil:
+    visible: 'Sign in'
+    timeout: 20000
