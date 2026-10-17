@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M5 Places and profiles. T5.2 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T5.3 (birth profiles).
+- **Current milestone:** Phase 6, M5 Places and profiles. T5.3 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T4.3 (account deletion).
 
 ## Approved decisions
 
@@ -53,12 +53,14 @@
 - **T4.1 Users module** (`GET/PATCH /v1/me`, consent), completed 2026-10-17.
 - **T4.2 Quota module** (per-user daily provider-call budget), completed 2026-10-17.
 - **T5.2 Places module** (`GET /v1/places`, cache, `resolvePlace`), completed 2026-10-17.
+- **T5.3 Birth profiles CRUD** (`/v1/profiles`), completed 2026-10-17.
 - `UID_HASH_PEPPER` was generated into `.env` on 2026-10-17. The value was not displayed.
 
 ## In progress
 
-- T5.2 review (owner: you).
-- **Not yet wired:** the `providerCalls` metadata log (data-model 2.6). The client's `onCall` hook exists but nothing writes the records to Firestore yet. Planned with T6.1, where most provider calls happen.
+- T5.3 review (owner: you).
+- **Not yet wired:** the `providerCalls` metadata log. Planned with T6.1.
+- **Gap found:** there is no API to change which profile is primary. The contract does not have one yet. Propose adding `isPrimary: true` to `PATCH /profiles/{id}` in T8.3, when the UI needs it.
 
 ## Blocked / failed
 
@@ -302,6 +304,38 @@
 - **Bug found in my test stub and fixed.** It spread a class instance (losing its methods). It is now a `MockProvider` subclass.
 - `npm run check` passes. The API suite was green on 2 consecutive runs (296/296).
 
+**T5.3, 2026-10-17. All checks were actually run:**
+
+- **Profile tests on the Firestore emulator: 27 pass.** They cover:
+  - consent is required;
+  - create with the resolved offset, with the first profile as primary;
+  - unknown time gives noon;
+  - a forged `placeId`, raw coordinates, a future date, and "later today in India" are rejected;
+  - a NY DST gap is rejected; a NY overlap needs a choice, and with "later" stores -300;
+  - a 6th profile gets 409;
+  - **10 concurrent creates give exactly 5**;
+  - list order and the primary flag;
+  - **cross-user isolation:** read, edit, delete, and list by another user all give 404 with nothing changed, and 4 malformed or path-like IDs give 404;
+  - a name-only edit keeps the hash and readings; a birth edit changes the hash and deletes readings;
+  - switching to unknown time;
+  - an edit that becomes ambiguous is refused with nothing changed;
+  - a place change re-resolves the offset (Mumbai to London, 60);
+  - delete removes readings, decrements the count, and audits;
+  - deleting the primary promotes the oldest remaining profile;
+  - a deleted profile frees a slot;
+  - a double delete gives 404 without corrupting the count;
+  - `loadForReadings` uses noon for unknown time.
+- **Mutation tests** (each fails exactly its own target test):
+  - no ID validation;
+  - cap read outside the transaction;
+  - stale readings kept;
+  - newest profile promoted instead of oldest.
+- **Test bugs found and fixed.**
+  - A frozen test clock gave every profile the same `createdAt`, so the order tests passed by luck. A 1 s ticking clock fixes this.
+  - The promotion test could not tell oldest from newest with only 2 profiles. It now uses 3.
+  - A bad slice in my own test edit broke the file. This was caught because the test count dropped (323 to 296) and was repaired.
+- `npm run check` passes (**541 tests**). The API suite was green 3 times in a row.
+
 ## Outstanding risks
 
 | Risk                                                                                                                         | Mitigation                                                                                                                                                         |
@@ -322,6 +356,6 @@ Approve T1.3. Then **T2.1: shared package schemas and validation**.
 
 ## Decisions awaiting your approval
 
-1. T5.2 results. The place cache is **shared across users**. Place search results are not personal data, and sharing them saves credits.
-2. Credits: you approved spending as needed (2026-10-17). The quota stays at 30 per user per day until per-call cost is known.
+1. T5.3 results.
+2. Next task: **T4.3 (account deletion)**. It was deferred because it needed profiles. After it comes M6: T6.1 (charts and the providerCalls log) and T6.2 (dasha).
 3. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.

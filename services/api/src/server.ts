@@ -6,7 +6,9 @@ import { FirebaseTokenVerifier } from './modules/auth/verifier.js';
 import { placesModule } from './modules/places/routes.js';
 import { PlacesService } from './modules/places/service.js';
 import { QuotaService } from './modules/quota/service.js';
-import { usersModule } from './modules/users/routes.js';
+import { ProfilesService } from './modules/birth-profiles/service.js';
+import { profilesModule } from './modules/birth-profiles/routes.js';
+import { createUsersService, usersModule } from './modules/users/routes.js';
 
 function start(): void {
   let config;
@@ -29,12 +31,14 @@ function start(): void {
     limitPerDay: config.quotaProviderCallsPerDay,
   });
 
+  const pepper = config.uidHashPepper;
+  const users = createUsersService({ db, pepper });
+  const places = new PlacesService({ db, provider, quota });
+  const profiles = new ProfilesService({ db, users, places, pepper });
+
   const app = buildApp(config, {
     deps: { verifier: new FirebaseTokenVerifier(firebaseApp(config.firebaseProjectId)) },
-    modules: [
-      usersModule({ db, pepper: config.uidHashPepper }),
-      placesModule(new PlacesService({ db, provider, quota })),
-    ],
+    modules: [usersModule({ db, pepper }, users), placesModule(places), profilesModule(profiles)],
   });
 
   // Cloud Run sends SIGTERM before stopping an instance; finish in-flight requests first.
