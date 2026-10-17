@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M2 API foundation. T2.1 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T2.2.
+- **Current milestone:** Phase 6, M2 API foundation. T2.2 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T2.3.
 
 ## Approved decisions
 
@@ -42,10 +42,11 @@
 - **T1.2 CI workflow**: written and committed locally. **Not yet pushed or verified** (see Blocked).
 - **T1.3 Firebase emulators and deny-all Firestore rules**, completed 2026-10-17.
 - **T2.1 Shared schemas and validation**, completed 2026-10-17.
+- **T2.2 API core** (config, redacting logger, error model, `/healthz`, esbuild build), completed 2026-10-17.
 
 ## In progress
 
-- T2.1 review (owner: you).
+- T2.2 review (owner: you).
 
 ## Blocked / failed
 
@@ -98,6 +99,25 @@
 - **New guard, `check-invisible-chars`.** It is part of `npm run lint` and lint-staged. It catches planted U+202E (bidi) and U+200D in `.ts` and `.md` files, and passes on a clean repo.
 - `npm run check` passes: format, lint, typecheck, and **187 tests** (101 + 1 + 85).
 
+**T2.2, 2026-10-17. All checks were actually run:**
+
+- `@astro/api`: **37 tests pass**.
+  - Config: 14 tests covering missing variables, prod refusing the mock provider and disabled App Check, a weak pepper, and checking that values never appear in errors.
+  - Redaction and hashing: 10 tests.
+  - App via `inject`: 13 tests covering:
+    - `/healthz` and its headers;
+    - 404, malformed and empty JSON, 413 at the 16 KB boundary, 415;
+    - AppError, ZodError, and a 500 that leaks nothing;
+    - captured logs, which contain no query, token, or birth data.
+- **Mutation test.** Disabling redaction fails 8 tests, including both end-to-end log tests.
+- **Real process.**
+  - The esbuild bundle (23 KB) starts, and `/healthz` and a 404 work over HTTP.
+  - A bad config exits 1 and names the variables without their values.
+  - `tsx` dev mode works against the shared TS source.
+  - Local runs bind to 127.0.0.1 only.
+- **Not verified:** graceful SIGTERM shutdown. Git Bash cannot deliver SIGTERM to a native Windows process. This will be verified on Linux or Cloud Run in T10.
+- `npm run check` passes (223 tests). The prod `npm audit` finds 0 vulnerabilities.
+
 ## Outstanding risks
 
 | Risk                                                                                     | Mitigation                                                                                                                                                         |
@@ -116,9 +136,6 @@ Approve T1.3. Then **T2.1: shared package schemas and validation**.
 
 ## Decisions awaiting your approval
 
-1. T2.1 results. There are three contract changes:
-   - prediction date window is ±2 days from the server's UTC date (was ±1);
-   - new route `GET /profiles/{id}/planets` for unknown-time profiles;
-   - profiles reference places by `placeId` only.
+1. T2.2 results.
 2. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.
 3. Your M0 items (see `backlog.md`).
