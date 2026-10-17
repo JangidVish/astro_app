@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M5 Places and profiles. T5.3 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T4.3 (account deletion).
+- **Current milestone:** Phase 6, working through modules continuously (approved 2026-10-17). T4.3 is done. Next is T6.1 (charts and the providerCalls log).
 
 ## Approved decisions
 
@@ -54,6 +54,7 @@
 - **T4.2 Quota module** (per-user daily provider-call budget), completed 2026-10-17.
 - **T5.2 Places module** (`GET /v1/places`, cache, `resolvePlace`), completed 2026-10-17.
 - **T5.3 Birth profiles CRUD** (`/v1/profiles`), completed 2026-10-17.
+- **T4.3 Account deletion** (`DELETE /v1/me`), completed 2026-10-17.
 - `UID_HASH_PEPPER` was generated into `.env` on 2026-10-17. The value was not displayed.
 
 ## In progress
@@ -335,6 +336,21 @@
   - The promotion test could not tell oldest from newest with only 2 profiles. It now uses 3.
   - A bad slice in my own test edit broke the file. This was caught because the test count dropped (323 to 296) and was repaired.
 - `npm run check` passes (**541 tests**). The API suite was green 3 times in a row.
+
+**T4.3, 2026-10-17. All checks were actually run:**
+
+- **Deletion tests on the Firestore and Auth emulators: 8 pass.** They cover:
+  - **nothing is left behind:** a recursive scan of `users/{uid}` is empty, and the auth account is gone;
+  - exactly one pseudonymous audit event, even when the request repeats;
+  - other users are untouched;
+  - a stale sign-in (10 minutes old) gets 401 `REAUTH_REQUIRED` with nothing deleted;
+  - a user with no data;
+  - resuming an interrupted deletion, while active users are ignored.
+- **Bug found and fixed.** A repeated DELETE wrote a second audit event. A fully deleted account (no document and no auth user) is now a no-op.
+- **Mutation tests.**
+  - Skipping the recursive delete fails the 2 "nothing left" tests.
+  - Removing the re-auth check fails the stale-session test.
+- `npm run check` passes.
 
 ## Outstanding risks
 

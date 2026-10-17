@@ -8,6 +8,7 @@ import { PlacesService } from './modules/places/service.js';
 import { QuotaService } from './modules/quota/service.js';
 import { ProfilesService } from './modules/birth-profiles/service.js';
 import { profilesModule } from './modules/birth-profiles/routes.js';
+import { AccountDeletionService, FirebaseAuthAdmin } from './modules/users/deletion.js';
 import { createUsersService, usersModule } from './modules/users/routes.js';
 
 function start(): void {
@@ -35,10 +36,19 @@ function start(): void {
   const users = createUsersService({ db, pepper });
   const places = new PlacesService({ db, provider, quota });
   const profiles = new ProfilesService({ db, users, places, pepper });
+  const deletion = new AccountDeletionService({
+    db,
+    pepper,
+    authAdmin: new FirebaseAuthAdmin(firebaseApp(config.firebaseProjectId)),
+  });
 
   const app = buildApp(config, {
     deps: { verifier: new FirebaseTokenVerifier(firebaseApp(config.firebaseProjectId)) },
-    modules: [usersModule({ db, pepper }, users), placesModule(places), profilesModule(profiles)],
+    modules: [
+      usersModule({ db, pepper, deletion }, users),
+      placesModule(places),
+      profilesModule(profiles),
+    ],
   });
 
   // Cloud Run sends SIGTERM before stopping an instance; finish in-flight requests first.
