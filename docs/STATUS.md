@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M1 Project setup. T1.1 is done and awaiting approval. Next is T1.2.
+- **Current milestone:** Phase 6, M1 Project setup. T1.3 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T2.1.
 
 ## Approved decisions
 
@@ -38,15 +38,20 @@
 - Phase 5: backlog drafted. See `backlog.md`.
 - Git repository initialised, and docs pushed to GitHub.
 - Phase 5: backlog approved 2026-10-17.
-- **T1.1 Monorepo scaffold and tooling**, completed 2026-10-17. See Test results.
+- **T1.1 Monorepo scaffold and tooling**, completed 2026-10-17.
+- **T1.2 CI workflow**: written and committed locally. **Not yet pushed or verified** (see Blocked).
+- **T1.3 Firebase emulators and deny-all Firestore rules**, completed 2026-10-17.
 
 ## In progress
 
-- T1.1 review (owner: you).
+- T1.3 review (owner: you).
 
 ## Blocked / failed
 
-- None.
+- **T1.2 acceptance (a green CI run on GitHub) is pending.**
+  - Cause: the push was rejected because your GitHub token lacks the `workflow` scope.
+  - Fix: you will fix the credential and push later, per your decision on 2026-10-17. Local commits are queued until then.
+  - Once the push lands, I will check the first CI run.
 
 ## Test results
 
@@ -59,22 +64,38 @@
 - ESLint `no-console` rejects a violation (exit 1).
 - The full-history gitleaks scan finds no leaks.
 
+**T1.2, 2026-10-17:**
+
+- The workflow passes Prettier.
+- actionlint was not run, because the Docker daemon is not running.
+- **It has not run on GitHub yet.**
+
+**T1.3, 2026-10-17. All checks were actually run:**
+
+- Rules tests on the Firestore emulator: **85/85 pass**. They cover 9 paths × read, write, delete × 3 client types, plus a collection list and a server-bypass control.
+- **Mutation test.** With rules set to `allow if request.auth != null`, **56 tests fail**, which is the expected set. This shows the tests can detect a permissive rule.
+- Back-to-back runs pass. This confirms the fix for the Windows emulator-orphan bug.
+- The busy-port guard refuses to start and exits 1.
+- `npm run check` passes: format, lint, typecheck, and 87 tests.
+
 ## Outstanding risks
 
-| Risk                                                                        | Mitigation                                                        |
-| --------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| Provider credits per call are unknown, so the real cost per user is unknown | Measure with the 150 free credits in Phase 7, then set the quota  |
-| Provider rate limits are undocumented, and "abuse" can lead to suspension   | Caching, per-user quota, App Check, max-instances cap             |
-| Cross-user caching is not explicitly allowed in the provider's terms        | Ask the provider in writing before launch                         |
-| Historical timezone or DST errors would corrupt charts silently             | Local tzdb plus a fixture cross-check against `timezone_with_dst` |
-| Store compliance (Sign in with Apple, account deletion, privacy policy)     | These are built into the MVP scope and acceptance criteria        |
-| Developer accounts and legal entity are unowned (U-7)                       | Needed before staging builds reach TestFlight or Play             |
+| Risk                                                                                     | Mitigation                                                                                                                                                         |
+| ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Provider credits per call are unknown, so the real cost per user is unknown              | Measure with the 150 free credits in Phase 7, then set the quota                                                                                                   |
+| Provider rate limits are undocumented, and "abuse" can lead to suspension                | Caching, per-user quota, App Check, max-instances cap                                                                                                              |
+| Cross-user caching is not explicitly allowed in the provider's terms                     | Ask the provider in writing before launch                                                                                                                          |
+| Historical timezone or DST errors would corrupt charts silently                          | Local tzdb plus a fixture cross-check against `timezone_with_dst`                                                                                                  |
+| Store compliance (Sign in with Apple, account deletion, privacy policy)                  | These are built into the MVP scope and acceptance criteria                                                                                                         |
+| Developer accounts and legal entity are unowned (U-7)                                    | Needed before staging builds reach TestFlight or Play                                                                                                              |
+| 12 dev-only npm audit findings (8 high) in firebase-tools / firebase SDK transitive deps | Local emulator only, bound to 127.0.0.1, never shipped. The prod audit finds 0. `--force` would downgrade majors, so it was rejected. Re-check on Firebase updates |
 
 ## Next recommended task
 
-Approve T1.1. Then **T1.2: CI pipeline** (GitHub Actions).
+Approve T1.3. Then **T2.1: shared package schemas and validation**.
 
 ## Decisions awaiting your approval
 
-1. T1.1 results. Note: TypeScript is pinned to 6.0.3, not 7.0, because typescript-eslint supports only <6.1.
-2. Your M0 items (see `backlog.md`).
+1. T1.3 results, including accepting the dev-only audit findings.
+2. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.
+3. Your M0 items (see `backlog.md`).

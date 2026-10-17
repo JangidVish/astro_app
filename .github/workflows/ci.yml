@@ -33,6 +33,18 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
+      # Firestore emulator (rules tests) needs Java 21+.
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Cache Firebase emulator binaries
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/firebase/emulators
+          key: firebase-emulators-${{ hashFiles('package-lock.json') }}
+
       - run: npm ci
       - run: npm run format:check
       - run: npm run lint

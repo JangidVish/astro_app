@@ -1,0 +1,17 @@
+{
+  "name": "@astro/firebase",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Firestore rules, indexes and local emulator config",
+  "scripts": {
+    "emulators": "firebase emulators:start --project demo-astro-app",
+    "typecheck": "tsc --noEmit",
+    "test": "node ../../scripts/with-emulators.mjs --only firestore -- vitest run"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "6.0.0",
+    "firebase": "13.0.0",
+    "firebase-tools": "15.34.0"
+  }
+}

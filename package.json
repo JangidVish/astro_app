@@ -11,7 +11,8 @@
   "workspaces": [
     "packages/*",
     "services/*",
-    "apps/*"
+    "apps/*",
+    "infra/*"
   ],
   "scripts": {
     "lint": "eslint . --max-warnings=0",
@@ -21,7 +22,8 @@
     "test": "npm run test --workspaces --if-present",
     "secrets:scan": "node scripts/gitleaks.mjs detect",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run test",
-    "prepare": "husky"
+    "prepare": "husky",
+    "emulators": "npm run emulators --workspace @astro/firebase"
   },
   "lint-staged": {
     "*.{ts,tsx,js,mjs,cjs}": [
