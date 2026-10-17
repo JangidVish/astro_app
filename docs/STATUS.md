@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M3 Provider adapter. T3.4 (live spike) is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T4.1.
+- **Current milestone:** Phase 6, M4 Users. T4.1 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T4.2 (quota).
 
 ## Approved decisions
 
@@ -27,6 +27,7 @@
   - gcloud scripts instead of Terraform
   - repo structure
 - Git hosting: https://github.com/JangidVish/astro_app
+- **Pre-1948 Indian births (2026-10-17): option (a).** Use the tz database offset and show the UTC offset used on the profile. User override is deferred.
 
 ## Completed
 
@@ -49,10 +50,11 @@
 - **T3.3 Response schemas, mappers and AstrologyApiProvider**, completed 2026-10-17.
 - **T5.1 Timezone resolution library** (`packages/shared/src/time/resolve.ts`), completed 2026-10-17.
 - **T3.4 Live provider spike**, completed 2026-10-17. It used 24 live calls. Findings are in `api-provider-notes.md`.
+- **T4.1 Users module** (`GET/PATCH /v1/me`, consent), completed 2026-10-17.
 
 ## In progress
 
-- T3.4 review (owner: you).
+- T4.1 review (owner: you).
 
 ## Blocked / failed
 
@@ -234,6 +236,26 @@
 - **Live-fixture tests:** 10 pass offline. They pin the real response formats with no credits used.
 - **Credential check:** 24 saved files contain none of the credential values. The gitleaks history and staged scans are clean.
 
+**T4.1, 2026-10-17. All checks were actually run:**
+
+- **Integration tests on the Firestore emulator: 16 pass.** They cover:
+  - the first call creates the user, with consent required and no email stored;
+  - one pseudonymous `account_created` audit event (uidHash only, 180-day `expireAt`);
+  - **exactly one user under 20 concurrent first requests**;
+  - 401 without a token;
+  - a deleting user is treated as signed out;
+  - a corrupt document gives a generic 500;
+  - display names: Devanagari normalized, and clearing works;
+  - 400s for an invalid name, an empty update, an injected `uid`, and `profileCount` tampering;
+  - consent: accepted with a timestamp, the outdated version refused with 409 and nothing stored, and re-required after a policy bump;
+  - cross-user isolation;
+  - the `requireConsent` guard.
+- **Mutation tests.**
+  - Removing the policy-version check fails exactly 1 test.
+  - Reading outside the transaction fails the concurrency test.
+- **Harness bug fixed.** With 2 emulators, tests could start before the Auth emulator was ready (ECONNREFUSED). `with-emulators.mjs` now waits for the CLI's "All emulators ready" banner as well as open ports. It then ran green twice in a row (263/263).
+- **Refactor.** firebase-admin now uses one shared app for the auth verifier and Firestore.
+
 ## Outstanding risks
 
 | Risk                                                                                                                         | Mitigation                                                                                                                                                         |
@@ -254,11 +276,7 @@ Approve T1.3. Then **T2.1: shared package schemas and validation**.
 
 ## Decisions awaiting your approval
 
-1. T3.4 results.
-2. **Credits.** Please check the AstrologyAPI dashboard balance. 24 calls have been made in total (23 in the spike plus 1 follow-up). With the balance I can work out the cost per call, and from that the quota and cost per user.
-3. **Pre-1948 Indian births** (the Kolkata 1900 mismatch). Choose one:
-   - (a) keep tzdb (consistent and documented) and show the UTC offset used on the profile;
-   - (b) also let users override the offset (more work, later);
-   - (c) use the provider's `timezone_with_dst` for births before 1948. This costs a credit per profile.
-4. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.
-5. Add `UID_HASH_PEPPER` to `.env`. It is still the placeholder, and the API will not start without it.
+1. T4.1 results.
+2. **Credits.** Please check the AstrologyAPI dashboard balance. 24 calls have been used so far. This is needed to set the T4.2 quota from real numbers. Until then the placeholder is 30 calls per user per day.
+3. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.
+4. Add `UID_HASH_PEPPER` to `.env`. The API will not start without it.

@@ -3,6 +3,7 @@
 import { getApps, initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { beforeAll, describe, expect, it } from 'vitest';
+import { firebaseApp } from '../../src/common/firebase.js';
 import { FirebaseTokenVerifier, TokenRejectedError } from '../../src/modules/auth/verifier.js';
 
 const PROJECT_ID = 'demo-astro-app';
@@ -54,7 +55,7 @@ async function rejection(promise: Promise<unknown>): Promise<string> {
   throw new Error('expected the token to be rejected');
 }
 
-const verifier = new FirebaseTokenVerifier(PROJECT_ID);
+const verifier = new FirebaseTokenVerifier(firebaseApp(PROJECT_ID));
 const adminAuth = () =>
   getAuth(
     getApps().find((a) => a.name === 'test-admin') ??

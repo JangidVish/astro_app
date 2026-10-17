@@ -19,6 +19,8 @@ export const ERROR_CODES = [
   'UNAUTHENTICATED',
   'REAUTH_REQUIRED',
   'CONSENT_REQUIRED',
+  /** Consent was submitted for a policy version that is not the current one. */
+  'POLICY_VERSION_OUTDATED',
 
   // Birth data (data-model.md section 4)
   'INVALID_DATE',

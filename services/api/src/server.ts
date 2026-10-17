@@ -1,6 +1,8 @@
 import { buildApp } from './app.js';
 import { ConfigError, loadConfig } from './common/config.js';
+import { firebaseApp, firestore } from './common/firebase.js';
 import { FirebaseTokenVerifier } from './modules/auth/verifier.js';
+import { usersModule } from './modules/users/routes.js';
 
 function start(): void {
   let config;
@@ -16,7 +18,10 @@ function start(): void {
   }
 
   const app = buildApp(config, {
-    deps: { verifier: new FirebaseTokenVerifier(config.firebaseProjectId) },
+    deps: { verifier: new FirebaseTokenVerifier(firebaseApp(config.firebaseProjectId)) },
+    modules: [
+      usersModule({ db: firestore(config.firebaseProjectId), pepper: config.uidHashPepper }),
+    ],
   });
 
   // Cloud Run sends SIGTERM before stopping an instance; finish in-flight requests first.

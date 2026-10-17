@@ -54,13 +54,20 @@ function isListening({ host, port }) {
   });
 }
 
-async function waitForPorts(child) {
+// A listening port is not enough: with several emulators the CLI can still be starting others.
+// Ready means the CLI has printed its "All emulators ready" banner AND every port accepts connections.
+const READY_BANNER = 'All emulators ready';
+let bannerSeen = false;
+
+async function waitForReady(child) {
   const deadline = Date.now() + READY_TIMEOUT_MS;
   while (Date.now() < deadline) {
     if (child.exitCode !== null) throw new Error('Emulators exited before becoming ready');
-    const ready = await Promise.all(ports.map(isListening));
-    if (ready.every(Boolean)) return;
-    await new Promise((r) => setTimeout(r, 500));
+    if (bannerSeen) {
+      const ready = await Promise.all(ports.map(isListening));
+      if (ready.every(Boolean)) return;
+    }
+    await new Promise((r) => setTimeout(r, 250));
   }
   throw new Error(`Emulators not ready after ${READY_TIMEOUT_MS / 1000}s`);
 }
@@ -104,8 +111,15 @@ function runSync(file, args, options) {
 const emulators = run(
   'npx',
   ['firebase', 'emulators:start', '--project', PROJECT_ID, '--only', only, '--config', configPath],
-  { stdio: ['ignore', 'inherit', 'inherit'], detached: !isWindows },
+  { stdio: ['ignore', 'pipe', 'inherit'], detached: !isWindows },
 );
+// Echo emulator output while watching for the ready banner (it may be split across chunks).
+let recentOutput = '';
+emulators.stdout.on('data', (chunk) => {
+  process.stdout.write(chunk);
+  recentOutput = (recentOutput + chunk.toString()).slice(-4096);
+  if (recentOutput.includes(READY_BANNER)) bannerSeen = true;
+});
 
 const cleanup = () => killTree(emulators);
 process.on('SIGINT', () => {
@@ -119,7 +133,7 @@ process.on('SIGTERM', () => {
 
 let exitCode = 1;
 try {
-  await waitForPorts(emulators);
+  await waitForReady(emulators);
   const env = { ...process.env, GCLOUD_PROJECT: PROJECT_ID };
   for (const p of ports) {
     if (p.name === 'firestore') env['FIRESTORE_EMULATOR_HOST'] = `${p.host}:${String(p.port)}`;

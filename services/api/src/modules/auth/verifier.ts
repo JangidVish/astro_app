@@ -1,4 +1,4 @@
-import { getApps, initializeApp, type App } from 'firebase-admin/app';
+import type { App } from 'firebase-admin/app';
 import { getAppCheck } from 'firebase-admin/app-check';
 import { getAuth } from 'firebase-admin/auth';
 
@@ -61,12 +61,7 @@ function errorCode(error: unknown): string | undefined {
  * (Application Default Credentials); locally, FIREBASE_AUTH_EMULATOR_HOST routes to the emulator.
  */
 export class FirebaseTokenVerifier implements TokenVerifier {
-  private readonly app: App;
-
-  constructor(projectId: string) {
-    this.app =
-      getApps().find((a) => a.name === 'astro-api') ?? initializeApp({ projectId }, 'astro-api');
-  }
+  constructor(private readonly app: App) {}
 
   async verifyIdToken(token: string): Promise<VerifiedIdentity> {
     try {

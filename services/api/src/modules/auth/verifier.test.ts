@@ -25,7 +25,7 @@ beforeEach(() => {
 describe('FirebaseTokenVerifier.verifyIdToken', () => {
   it('always asks firebase-admin to check revocation', async () => {
     verifyIdToken.mockResolvedValue({ uid: 'u1', auth_time: 123 });
-    const result = await new FirebaseTokenVerifier('p').verifyIdToken('tok');
+    const result = await new FirebaseTokenVerifier({ name: 'test' } as never).verifyIdToken('tok');
     expect(verifyIdToken).toHaveBeenCalledWith('tok', true);
     expect(result).toEqual({ uid: 'u1', authTime: 123 });
   });
@@ -39,9 +39,9 @@ describe('FirebaseTokenVerifier.verifyIdToken', () => {
     ['auth/some-new-token-problem', 'id_token_invalid'],
   ])('maps %s to rejection reason %s', async (code, reason) => {
     verifyIdToken.mockRejectedValue(firebaseError(code));
-    await expect(new FirebaseTokenVerifier('p').verifyIdToken('tok')).rejects.toEqual(
-      new TokenRejectedError(reason as never),
-    );
+    await expect(
+      new FirebaseTokenVerifier({ name: 'test' } as never).verifyIdToken('tok'),
+    ).rejects.toEqual(new TokenRejectedError(reason as never));
   });
 
   it.each([
@@ -50,30 +50,32 @@ describe('FirebaseTokenVerifier.verifyIdToken', () => {
     ['error without code', new Error('socket hang up')],
   ])('treats %s as unavailable (503), not as a bad token', async (_label, error) => {
     verifyIdToken.mockRejectedValue(error);
-    await expect(new FirebaseTokenVerifier('p').verifyIdToken('tok')).rejects.toBeInstanceOf(
-      VerifierUnavailableError,
-    );
+    await expect(
+      new FirebaseTokenVerifier({ name: 'test' } as never).verifyIdToken('tok'),
+    ).rejects.toBeInstanceOf(VerifierUnavailableError);
   });
 });
 
 describe('FirebaseTokenVerifier.verifyAppCheckToken', () => {
   it('passes a valid token', async () => {
     verifyToken.mockResolvedValue({ appId: 'app' });
-    await expect(new FirebaseTokenVerifier('p').verifyAppCheckToken('ac')).resolves.toBeUndefined();
+    await expect(
+      new FirebaseTokenVerifier({ name: 'test' } as never).verifyAppCheckToken('ac'),
+    ).resolves.toBeUndefined();
     expect(verifyToken).toHaveBeenCalledWith('ac');
   });
 
   it('rejects an invalid token', async () => {
     verifyToken.mockRejectedValue(firebaseError('app-check/invalid-argument'));
-    await expect(new FirebaseTokenVerifier('p').verifyAppCheckToken('ac')).rejects.toEqual(
-      new TokenRejectedError('app_check_invalid'),
-    );
+    await expect(
+      new FirebaseTokenVerifier({ name: 'test' } as never).verifyAppCheckToken('ac'),
+    ).rejects.toEqual(new TokenRejectedError('app_check_invalid'));
   });
 
   it('treats internal or network errors as unavailable', async () => {
     verifyToken.mockRejectedValue(firebaseError('app-check/internal-error'));
-    await expect(new FirebaseTokenVerifier('p').verifyAppCheckToken('ac')).rejects.toBeInstanceOf(
-      VerifierUnavailableError,
-    );
+    await expect(
+      new FirebaseTokenVerifier({ name: 'test' } as never).verifyAppCheckToken('ac'),
+    ).rejects.toBeInstanceOf(VerifierUnavailableError);
   });
 });
