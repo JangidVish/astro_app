@@ -1,7 +1,11 @@
 import { buildApp } from './app.js';
 import { ConfigError, loadConfig } from './common/config.js';
 import { firebaseApp, firestore } from './common/firebase.js';
+import { ProviderCallLog } from './modules/astrology-provider/call-log.js';
 import { createProvider } from './modules/astrology-provider/factory.js';
+import { chartsModule } from './modules/charts/routes.js';
+import { ChartsService } from './modules/charts/service.js';
+import { ReadingsCache } from './modules/readings/cache.js';
 import { FirebaseTokenVerifier } from './modules/auth/verifier.js';
 import { placesModule } from './modules/places/routes.js';
 import { PlacesService } from './modules/places/service.js';
@@ -25,7 +29,11 @@ function start(): void {
   }
 
   const db = firestore(config.firebaseProjectId);
-  const provider = createProvider(config);
+  const callLog = new ProviderCallLog(db, (error: unknown) => {
+    const reason = error instanceof Error ? error.message : 'unknown';
+    process.stderr.write(`providerCalls write failed: ${reason}\n`);
+  });
+  const provider = createProvider(config, { onCall: callLog.record });
   const quota = new QuotaService({
     db,
     pepper: config.uidHashPepper,
@@ -36,6 +44,8 @@ function start(): void {
   const users = createUsersService({ db, pepper });
   const places = new PlacesService({ db, provider, quota });
   const profiles = new ProfilesService({ db, users, places, pepper });
+  const cache = new ReadingsCache({ db, quota, source: provider.source });
+  const charts = new ChartsService({ profiles, provider, cache });
   const deletion = new AccountDeletionService({
     db,
     pepper,
@@ -48,6 +58,7 @@ function start(): void {
       usersModule({ db, pepper, deletion }, users),
       placesModule(places),
       profilesModule(profiles),
+      chartsModule(charts),
     ],
   });
 

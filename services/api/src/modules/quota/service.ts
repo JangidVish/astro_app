@@ -2,6 +2,7 @@ import { FieldValue, Timestamp, type Firestore } from 'firebase-admin/firestore'
 import { auditInTransaction } from '../../common/audit.js';
 import { AppError } from '../../common/errors.js';
 import { uidHash } from '../../common/hashing.js';
+import { runWithContext } from '../../common/request-context.js';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 /** Usage counters are only needed for the current day; TTL removes them after a week. */
@@ -99,7 +100,8 @@ export class QuotaService {
   async runMetered<T>(uid: string, call: () => Promise<T>): Promise<T> {
     const { day } = await this.reserve(uid);
     try {
-      return await call();
+      // Lets the provider call log attribute the call to this user (pseudonymously).
+      return await runWithContext({ uidHash: uidHash(uid, this.deps.pepper) }, call);
     } catch (error) {
       await this.refund(uid, day).catch(() => undefined);
       throw error;

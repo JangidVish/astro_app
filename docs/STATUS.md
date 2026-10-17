@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, working through modules continuously (approved 2026-10-17). T4.3 is done. Next is T6.1 (charts and the providerCalls log).
+- **Current milestone:** Phase 6, working through modules continuously. T6.1 is done. Next is T6.2 (dasha).
 
 ## Approved decisions
 
@@ -55,12 +55,12 @@
 - **T5.2 Places module** (`GET /v1/places`, cache, `resolvePlace`), completed 2026-10-17.
 - **T5.3 Birth profiles CRUD** (`/v1/profiles`), completed 2026-10-17.
 - **T4.3 Account deletion** (`DELETE /v1/me`), completed 2026-10-17.
+- **T6.1 Charts, planets, readings cache, providerCalls log**, completed 2026-10-17.
 - `UID_HASH_PEPPER` was generated into `.env` on 2026-10-17. The value was not displayed.
 
 ## In progress
 
 - T5.3 review (owner: you).
-- **Not yet wired:** the `providerCalls` metadata log. Planned with T6.1.
 - **Gap found:** there is no API to change which profile is primary. The contract does not have one yet. Propose adding `isPrimary: true` to `PATCH /profiles/{id}` in T8.3, when the UI needs it.
 
 ## Blocked / failed
@@ -350,6 +350,31 @@
 - **Mutation tests.**
   - Skipping the recursive delete fails the 2 "nothing left" tests.
   - Removing the re-auth check fails the stale-session test.
+- `npm run check` passes.
+
+**T6.1, 2026-10-17. All checks were actually run:**
+
+- **Chart, planet, and call-log tests on the Firestore emulator: 18 pass.** They cover:
+  - the contract shape;
+  - cache hits make no provider call and use no quota;
+  - D9 is cached separately while the planet table is shared;
+  - **5 concurrent requests make 1 provider call**;
+  - unknown time gives 409 with no call;
+  - a birth edit triggers a refetch;
+  - provider down gives 503, nothing cached, the quota refunded, and a retry succeeds;
+  - malformed data gives 502;
+  - a cache entry from a different source is never served;
+  - corrupt cache data is refetched;
+  - **no result is stored if the profile changed mid-fetch** (gated provider);
+  - another user's profile gives 404 with no call;
+  - an invalid chart type gives 400;
+  - for unknown time the planets are masked (no Lagna, no degrees, houses, or padas);
+  - the providerCalls log records metadata with `uidHash` from the request context and a 30-day expiry, with no uid.
+- **Mutation tests** (each fails exactly its own target test):
+  - the hash guard on write;
+  - the source check;
+  - in-flight de-duplication;
+  - unknown-time masking.
 - `npm run check` passes.
 
 ## Outstanding risks
