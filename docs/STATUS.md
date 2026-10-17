@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M2 API foundation. T2.3 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T3.1.
+- **Current milestone:** Phase 6, M3 Provider adapter. T3.1 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T3.2.
 
 ## Approved decisions
 
@@ -44,10 +44,11 @@
 - **T2.1 Shared schemas and validation**, completed 2026-10-17.
 - **T2.2 API core** (config, redacting logger, error model, `/healthz`, esbuild build), completed 2026-10-17.
 - **T2.3 Auth module** (Firebase ID token and App Check on `/v1`), completed 2026-10-17.
+- **T3.1 Provider interface and MockProvider**, completed 2026-10-17.
 
 ## In progress
 
-- T2.3 review (owner: you).
+- T3.1 review (owner: you).
 
 ## Blocked / failed
 
@@ -137,6 +138,26 @@
 - `npm run check` passes (**262 tests**). The prod audit finds 0. The full audit still shows the same 12 dev-only findings.
 - **Deviation from the backlog:** auth-failure logs are not rate-limited. Each failure is one small warn line. Volume at our scale is far below the Cloud Logging free tier. Revisit if abuse appears.
 
+**T3.1, 2026-10-17. All checks were actually run:**
+
+- **Provider module: 46 tests pass.**
+  - Contract: every fixture parses against the shared zod schemas.
+  - Consistency:
+    - houses follow the Lagna, and padas follow the degrees;
+    - D1 houses match the planet table;
+    - Sun, Moon, and Lagna match the documented AstrologyAPI sample;
+    - Mahadashas are 9, contiguous, total 120 years, start with Ketu (Moon in Ashwini), and contain the birth instant;
+    - Antardashas exactly fill their Mahadasha.
+  - Labelling: every result is marked `source: 'mock'`, and the prediction text starts with `[MOCK]`.
+  - Input checks: NaN, out-of-range values, and a bad offset all give `bad_request`.
+  - Failure injection: all 8 kinds, plus one-shot, persistent, reset, and the call log.
+  - Error mapping: each kind maps to the right API error, operator alerts fire only for auth and quota, and user messages never name an endpoint or credentials.
+  - Factory: the prod guard works even when config validation is bypassed.
+- **Bug found and fixed.** The mock threw failures synchronously, unlike a real async provider. It now always returns rejected promises, and a regression test covers this.
+- **Mutation test.** Removing the factory's prod guard is caught.
+- `npm run check` passes (**308 tests**).
+- **Deviation from the backlog.** Mock fixtures are TypeScript built to match the documented samples. Raw provider-JSON fixtures arrive with the mappers in T3.3.
+
 ## Outstanding risks
 
 | Risk                                                                                     | Mitigation                                                                                                                                                         |
@@ -156,6 +177,6 @@ Approve T1.3. Then **T2.1: shared package schemas and validation**.
 
 ## Decisions awaiting your approval
 
-1. T2.3 results.
+1. T3.1 results.
 2. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.
-3. Your M0 items (see `backlog.md`).
+3. Your M0 items (see `backlog.md`). **M0.1 (AstrologyAPI account) is needed before T3.4.**
