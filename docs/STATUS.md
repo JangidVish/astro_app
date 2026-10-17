@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M8 mobile app. T8.4 is done. Next is T8.5 and T8.6 (dasha and prediction screens).
+- **Current milestone:** Phase 6, M8 mobile app. T8.5 and T8.6 are done. Next is T8.7 (settings, account deletion).
 
 ## Approved decisions
 
@@ -62,6 +62,7 @@
 - **T8.2 Auth screens** (email/password sign-in, sign-up, reset; Sign in with Apple wired; consent gate), completed 2026-10-17.
 - **T8.3 Profiles UI** (list, create, edit, delete, place search, DST prompts, offset shown), completed 2026-10-17.
 - **T8.4 North Indian chart renderer and chart screen** (D1/D9 tabs, planet table, unknown-time view), completed 2026-10-17.
+- **T8.5 Dasha screen** and **T8.6 Daily prediction screen**, completed 2026-10-17.
 - `UID_HASH_PEPPER` was generated into `.env` on 2026-10-17. The value was not displayed.
 
 ## In progress
@@ -475,6 +476,15 @@
 - **Mutation test.** A clockwise layout (houses 2 and 12 swapped) fails 2 geometry tests.
 - `expo lint` is clean, the Android bundle builds, and `npm run check` passes.
 - **Not done:** a visual comparison against the provider's chart image. That costs 1 credit and needs a rendered screenshot on a device. It moves to M9 (device testing).
+
+**T8.5 and T8.6, 2026-10-17. All checks were actually run:**
+
+- **Mobile tests: 146 pass (9 new).** They cover:
+  - dates: inclusive start and exclusive end (matching the server), unambiguous formatting, period length, and local dates across month and year ends;
+  - Dasha list: the current Maha and Antar periods are marked, the current one opens by default, **other sub-periods load only on request, and once**, the expanded state is announced, and a failure shows a clear error rather than invented periods;
+  - prediction: the basis (Moon sign and nakshatra), all six sections verbatim, the noon note shown only for unknown time, the disclaimer, and the "not available for this day" message for the server's birth-place window.
+- **Mutation test.** An inclusive period end fails the boundary test.
+- `expo lint` is clean, the Android bundle builds, and `npm run check` passes.
 
 ## Outstanding risks
 

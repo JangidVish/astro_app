@@ -46,7 +46,12 @@ export default function ProfileDetail() {
               {t('profiles.offset')}: {formatUtcOffset(p.utcOffsetMinutes)}
             </Text>
           </Card>
+          <Button
+            label={t('prediction.title')}
+            onPress={() => router.push(`/profiles/${id}/prediction`)}
+          />
           <Button label={t('chart.title')} onPress={() => router.push(`/profiles/${id}/chart`)} />
+          <Button label={t('dasha.title')} onPress={() => router.push(`/profiles/${id}/dasha`)} />
           <Button
             label={t('profile.edit')}
             variant="secondary"

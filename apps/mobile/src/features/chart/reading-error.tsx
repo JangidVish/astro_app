@@ -19,6 +19,10 @@ export function readingErrorMessage(error: unknown): MessageKey {
       return 'common.offline';
     case 'BIRTH_TIME_REQUIRED':
       return 'chart.timeUnknown';
+    case 'VALIDATION_FAILED':
+      return error.details.some((d) => d.code === 'PREDICTION_DATE_OUT_OF_RANGE')
+        ? 'prediction.notAvailable'
+        : 'common.error';
     default:
       return 'common.error';
   }
