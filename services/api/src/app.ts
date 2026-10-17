@@ -5,8 +5,21 @@ import { MAX_BODY_BYTES, toValidationDetails, type ApiError } from '@astro/share
 import type { Config } from './common/config.js';
 import { AppError } from './common/errors.js';
 import { loggerOptions } from './common/logger.js';
+import { addAuthHook, decorateAuth } from './modules/auth/hook.js';
+import type { TokenVerifier } from './modules/auth/verifier.js';
+
+/** External services the app depends on. Real implementations in server.ts; fakes in tests. */
+export interface AppDeps {
+  verifier: TokenVerifier;
+}
+
+/** Registers routes inside the authenticated /v1 scope. One per feature module. */
+export type V1Module = (scope: FastifyInstance) => void | Promise<void>;
 
 export interface BuildAppOptions {
+  deps: AppDeps;
+  /** Feature route modules, mounted under /v1 behind authentication. */
+  modules?: readonly V1Module[];
   /** Test hook: capture log output instead of writing to stdout. */
   logStream?: { write(line: string): void };
 }
@@ -51,7 +64,7 @@ function toAppError(error: unknown): AppError | null {
   return null; // unexpected: becomes 500
 }
 
-export function buildApp(config: Config, options: BuildAppOptions = {}): FastifyInstance {
+export function buildApp(config: Config, options: BuildAppOptions): FastifyInstance {
   const logger = loggerOptions(config.logLevel);
   const app = Fastify({
     logger: options.logStream ? { ...logger, stream: options.logStream } : logger,
@@ -87,6 +100,19 @@ export function buildApp(config: Config, options: BuildAppOptions = {}): Fastify
 
   /** Liveness probe for Cloud Run and uptime checks. Public, reveals nothing about the build. */
   app.get('/healthz', () => ({ status: 'ok' }));
+
+  // Everything under /v1 requires a verified Firebase ID token (and App Check when enforced).
+  decorateAuth(app);
+  void app.register(
+    async (v1) => {
+      addAuthHook(v1, {
+        verifier: options.deps.verifier,
+        appCheckEnforced: config.appCheckEnforced,
+      });
+      for (const registerModule of options.modules ?? []) await registerModule(v1);
+    },
+    { prefix: '/v1' },
+  );
 
   return app;
 }

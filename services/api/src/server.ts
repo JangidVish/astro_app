@@ -1,5 +1,6 @@
 import { buildApp } from './app.js';
 import { ConfigError, loadConfig } from './common/config.js';
+import { FirebaseTokenVerifier } from './modules/auth/verifier.js';
 
 function start(): void {
   let config;
@@ -14,7 +15,9 @@ function start(): void {
     throw error;
   }
 
-  const app = buildApp(config);
+  const app = buildApp(config, {
+    deps: { verifier: new FirebaseTokenVerifier(config.firebaseProjectId) },
+  });
 
   // Cloud Run sends SIGTERM before stopping an instance; finish in-flight requests first.
   for (const signal of ['SIGTERM', 'SIGINT'] as const) {

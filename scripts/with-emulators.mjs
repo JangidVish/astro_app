@@ -5,8 +5,9 @@
 // running after exit (port stays taken, next run fails). Here we own the process tree and
 // kill all of it: `taskkill /T` on Windows, the process group on POSIX.
 //
-// Usage (from a workspace that contains firebase.json):
+// Usage:
 //   node ../../scripts/with-emulators.mjs --only firestore -- vitest run
+//   node ../../scripts/with-emulators.mjs --config ../../infra/firebase/firebase.json --only auth -- vitest run
 import { spawn, spawnSync } from 'node:child_process';
 import { connect } from 'node:net';
 import { readFileSync } from 'node:fs';
@@ -31,7 +32,11 @@ if (!only) {
   process.exit(2);
 }
 
-const config = JSON.parse(readFileSync(resolve('firebase.json'), 'utf8'));
+const configIndex = emulatorArgs.indexOf('--config');
+const configPath = resolve(
+  configIndex === -1 ? 'firebase.json' : (emulatorArgs[configIndex + 1] ?? ''),
+);
+const config = JSON.parse(readFileSync(configPath, 'utf8'));
 const ports = only.split(',').map((name) => {
   const entry = config.emulators?.[name];
   if (!entry?.port) throw new Error(`firebase.json has no emulators.${name}.port`);
@@ -98,7 +103,7 @@ function runSync(file, args, options) {
 
 const emulators = run(
   'npx',
-  ['firebase', 'emulators:start', '--project', PROJECT_ID, '--only', only],
+  ['firebase', 'emulators:start', '--project', PROJECT_ID, '--only', only, '--config', configPath],
   { stdio: ['ignore', 'inherit', 'inherit'], detached: !isWindows },
 );
 

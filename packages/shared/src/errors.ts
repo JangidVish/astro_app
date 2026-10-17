@@ -12,6 +12,8 @@ export const ERROR_CODES = [
   'PAYLOAD_TOO_LARGE',
   'NOT_FOUND',
   'INTERNAL',
+  /** A dependency (e.g. Firebase Auth) is temporarily unreachable; safe to retry. */
+  'SERVICE_UNAVAILABLE',
 
   // Auth and account
   'UNAUTHENTICATED',

@@ -31,6 +31,10 @@ const envSchema = z
     APP_CHECK_ENFORCED: booleanString.default(true),
 
     QUOTA_PROVIDER_CALLS_PER_DAY: z.coerce.number().int().min(1).max(10_000).default(30),
+
+    // Set only for local/test. With these set, firebase-admin trusts emulator (unsigned) tokens.
+    FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
+    FIRESTORE_EMULATOR_HOST: z.string().optional(),
   })
   .superRefine((env, ctx) => {
     const deployed = env.APP_ENV === 'staging' || env.APP_ENV === 'prod';
@@ -40,6 +44,17 @@ const envSchema = z
         path: ['ASTRO_PROVIDER'],
         message: 'mock provider is not allowed in prod',
       });
+    }
+    if (deployed) {
+      for (const key of ['FIREBASE_AUTH_EMULATOR_HOST', 'FIRESTORE_EMULATOR_HOST'] as const) {
+        if (env[key] !== undefined) {
+          ctx.addIssue({
+            code: 'custom',
+            path: [key],
+            message: 'must not be set in staging or prod (emulators accept unsigned tokens)',
+          });
+        }
+      }
     }
     if (deployed && !env.APP_CHECK_ENFORCED) {
       ctx.addIssue({

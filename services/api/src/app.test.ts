@@ -21,7 +21,15 @@ let logLines: string[];
 
 beforeEach(async () => {
   logLines = [];
-  app = buildApp(config, { logStream: { write: (line) => logLines.push(line) } });
+  app = buildApp(config, {
+    deps: {
+      verifier: {
+        verifyIdToken: () => Promise.reject(new Error('not used in these tests')),
+        verifyAppCheckToken: () => Promise.reject(new Error('not used in these tests')),
+      },
+    },
+    logStream: { write: (line) => logLines.push(line) },
+  });
 
   // Test-only routes exercising each error path.
   app.post('/echo', (request) => ({ received: request.body }));

@@ -8,11 +8,13 @@
     "build": "esbuild src/server.ts --bundle --platform=node --target=node24 --format=esm --sourcemap --external:fastify --external:zod --outfile=dist/server.js",
     "start": "node --enable-source-maps dist/server.js",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "node ../../scripts/with-emulators.mjs --config ../../infra/firebase/firebase.json --only auth -- vitest run",
+    "test:unit": "vitest run --exclude \"test/integration/**\""
   },
   "dependencies": {
     "@astro/shared": "*",
     "fastify": "5.12.7",
+    "firebase-admin": "14.5.0",
     "zod": "4.6.7"
   },
   "devDependencies": {

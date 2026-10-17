@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M2 API foundation. T2.2 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T2.3.
+- **Current milestone:** Phase 6, M2 API foundation. T2.3 is done and awaiting approval. T1.2 is waiting on GitHub verification. Next is T3.1.
 
 ## Approved decisions
 
@@ -43,10 +43,11 @@
 - **T1.3 Firebase emulators and deny-all Firestore rules**, completed 2026-10-17.
 - **T2.1 Shared schemas and validation**, completed 2026-10-17.
 - **T2.2 API core** (config, redacting logger, error model, `/healthz`, esbuild build), completed 2026-10-17.
+- **T2.3 Auth module** (Firebase ID token and App Check on `/v1`), completed 2026-10-17.
 
 ## In progress
 
-- T2.2 review (owner: you).
+- T2.3 review (owner: you).
 
 ## Blocked / failed
 
@@ -118,6 +119,24 @@
 - **Not verified:** graceful SIGTERM shutdown. Git Bash cannot deliver SIGTERM to a native Windows process. This will be verified on Linux or Cloud Run in T10.
 - `npm run check` passes (223 tests). The prod `npm audit` finds 0 vulnerabilities.
 
+**T2.3, 2026-10-17. All checks were actually run:**
+
+- **Hook tests (fake verifier): 17 pass.** They cover:
+  - a valid token;
+  - uid hints in a header, query, or body being ignored;
+  - 8 rejection cases, each giving the same generic 401 with the reason logged;
+  - 503 when verification is unavailable;
+  - no tokens in logs;
+  - `/healthz` staying public;
+  - App Check enforced (missing, forged, and valid, with order verified) and App Check off;
+  - config refusing emulator variables in prod.
+- **firebase-admin unit tests (mocked): 13 pass.** They assert `checkRevoked = true` and the error mapping (401 vs 503).
+- **Integration against the Auth emulator: 9 pass.** Covers a real token, plus expired, wrong-project, malformed, revoked, disabled-user, and deleted-user tokens.
+- **Mutation tests.**
+  - Turning off `checkRevoked` was **not** caught by the emulator tests. firebase-admin always checks revocation in emulator mode (`base-auth.js:121`). The mocked unit test now catches it.
+- `npm run check` passes (**262 tests**). The prod audit finds 0. The full audit still shows the same 12 dev-only findings.
+- **Deviation from the backlog:** auth-failure logs are not rate-limited. Each failure is one small warn line. Volume at our scale is far below the Cloud Logging free tier. Revisit if abuse appears.
+
 ## Outstanding risks
 
 | Risk                                                                                     | Mitigation                                                                                                                                                         |
@@ -127,6 +146,7 @@
 | Cross-user caching is not explicitly allowed in the provider's terms                     | Ask the provider in writing before launch                                                                                                                          |
 | Historical timezone or DST errors would corrupt charts silently                          | Local tzdb plus a fixture cross-check against `timezone_with_dst`                                                                                                  |
 | Store compliance (Sign in with Apple, account deletion, privacy policy)                  | These are built into the MVP scope and acceptance criteria                                                                                                         |
+| Emulator env vars in a deployed env would make firebase-admin accept unsigned tokens     | Config refuses `FIREBASE_AUTH_EMULATOR_HOST` / `FIRESTORE_EMULATOR_HOST` in staging and prod (tested)                                                              |
 | Developer accounts and legal entity are unowned (U-7)                                    | Needed before staging builds reach TestFlight or Play                                                                                                              |
 | 12 dev-only npm audit findings (8 high) in firebase-tools / firebase SDK transitive deps | Local emulator only, bound to 127.0.0.1, never shipped. The prod audit finds 0. `--force` would downgrade majors, so it was rejected. Re-check on Firebase updates |
 
@@ -136,6 +156,6 @@ Approve T1.3. Then **T2.1: shared package schemas and validation**.
 
 ## Decisions awaiting your approval
 
-1. T2.2 results.
+1. T2.3 results.
 2. Fix the GitHub credential (`workflow` scope), then push. T1.2 is verified after that.
 3. Your M0 items (see `backlog.md`).
