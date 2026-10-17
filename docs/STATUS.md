@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6. **M8 mobile app complete** (T8.1 to T8.8). Next is M9: T9.1 (security suite), then T9.2 and T9.3.
+- **Current milestone:** Phase 6, M9. T9.1 is done. Next is T9.2 (performance), then T9.3 (end to end).
 
 ## Approved decisions
 
@@ -65,6 +65,7 @@
 - **T8.5 Dasha screen** and **T8.6 Daily prediction screen**, completed 2026-10-17.
 - **T8.7 Settings and account deletion** (re-authentication, then `DELETE /v1/me`), completed 2026-10-17.
 - **T8.8 States and accessibility pass** (automated a11y audit, i18n cleanup, theme discipline), completed 2026-10-17.
+- **T9.1 Security suite**, completed 2026-10-17.
 - `UID_HASH_PEPPER` was generated into `.env` on 2026-10-17. The value was not displayed.
 
 ## In progress
@@ -511,6 +512,18 @@
 - **Test-harness hang found and fixed.** React Query's 5-minute GC timers kept Jest alive after a failing run. Test clients now use `gcTime: Infinity`. A failing run now ends in 5 s, and the full mobile suite takes 6 s.
 - `npm run check` passes (**778 tests**: shared 144, API 379, mobile 161, rules 94).
 - **Still not covered** (device-only, planned for M9): real screen-reader passes (VoiceOver and TalkBack), dynamic type at the largest sizes, and dark-mode screenshots.
+
+**T9.1, 2026-10-17. All checks were actually run:**
+
+- **Security suite: 16 tests on the Firestore emulator.**
+  - **Every `/v1` route requires auth.** Routes are discovered from Fastify (14), not hand-listed. Each answers 401 without a token, with no provider calls.
+  - A forged token gives 401.
+  - **Cross-user isolation:** 8 per-profile routes (GET, PATCH, and DELETE on the profile; chart; planets; dasha; antardasha; prediction) all answer 404 to another user. No name or place leaks, there are no provider calls, the victim's document is unchanged, and the attacker's list is empty.
+  - **Path injection:** 7 malicious IDs on 6 routes, plus 4 malicious mahadasha values. All are refused with no provider calls.
+  - **End-to-end log redaction:** a full journey produces logs with no name, place query, birth date or time, coordinates, uid, or token.
+- **Mutation test.** An unauthenticated `/v1/leak` route is caught, and the failure names it.
+- **`scripts/check-bundle-secrets.mjs`** (new CI job `mobile-bundle`). It builds the Android bundle and fails on any secret-looking env value or private-key marker. Locally it scanned 4.1 MB with `.env` loaded and found it clean. A planted `UID_HASH_PEPPER` marker was caught.
+- The API suite passes (**395 tests**), and `npm run check` passes.
 
 ## Outstanding risks
 

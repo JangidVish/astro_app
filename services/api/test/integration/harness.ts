@@ -21,6 +21,7 @@ import { predictionsModule } from '../../src/modules/predictions/routes.js';
 import { PredictionsService } from '../../src/modules/predictions/service.js';
 import { QuotaService } from '../../src/modules/quota/service.js';
 import { ReadingsCache } from '../../src/modules/readings/cache.js';
+import { AccountDeletionService } from '../../src/modules/users/deletion.js';
 import { createUsersService, usersModule } from '../../src/modules/users/routes.js';
 
 export const PROJECT_ID = 'demo-astro-app';
@@ -44,7 +45,10 @@ export interface Harness {
   setNow(at: Date): void;
 }
 
-export async function createHarness(provider: MockProvider = new MockProvider()): Promise<Harness> {
+export async function createHarness(
+  provider: MockProvider = new MockProvider(),
+  options: { logLines?: string[]; logLevel?: string } = {},
+): Promise<Harness> {
   if (!process.env['FIRESTORE_EMULATOR_HOST']) throw new Error('Run via npm test (emulators)');
   const pepper = randomBytes(32);
   let base = new Date('2026-10-17T12:00:00Z').getTime();
@@ -58,17 +62,36 @@ export async function createHarness(provider: MockProvider = new MockProvider())
     UID_HASH_PEPPER: pepper.toString('base64'),
     FIREBASE_PROJECT_ID: PROJECT_ID,
     APP_CHECK_ENFORCED: 'false',
-    LOG_LEVEL: 'silent',
+    LOG_LEVEL: options.logLevel ?? 'silent',
   });
   const quota = new QuotaService({ db, pepper, limitPerDay: 100, now });
   const users = createUsersService({ db, pepper, now });
   const places = new PlacesService({ db, provider, quota, now });
   const profiles = new ProfilesService({ db, users, places, pepper, now });
   const cache = new ReadingsCache({ db, quota, source: provider.source, now });
+  const logLines = options.logLines;
   const app = buildApp(config, {
+    ...(logLines ? { logStream: { write: (line: string) => logLines.push(line) } } : {}),
     deps: { verifier },
     modules: [
-      usersModule({ db, pepper, now }, users),
+      usersModule(
+        {
+          db,
+          pepper,
+          now,
+          // Auth accounts are not created in these tests; deletion only needs a no-op admin.
+          deletion: new AccountDeletionService({
+            db,
+            pepper,
+            now,
+            authAdmin: {
+              deleteUser: () => Promise.resolve(),
+              exists: () => Promise.resolve(false),
+            },
+          }),
+        },
+        users,
+      ),
       placesModule(places),
       profilesModule(profiles),
       chartsModule(new ChartsService({ profiles, provider, cache })),
