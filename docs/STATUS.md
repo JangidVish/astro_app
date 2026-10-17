@@ -1,7 +1,7 @@
 # Project Status
 
 - **Last updated:** 2026-10-17
-- **Current milestone:** Phase 6, M8 mobile app. T8.2 is done. Next is T8.3 (profiles UI).
+- **Current milestone:** Phase 6, M8 mobile app. T8.3 is done. Next is T8.4 (North Indian chart renderer).
 
 ## Approved decisions
 
@@ -60,6 +60,7 @@
 - **T7.1 Daily prediction** (`/prediction?date=`, birth-place "today" mapping), completed 2026-10-17.
 - **T8.1 Expo app scaffold** (SDK 58, expo-router, theme, typed API client), completed 2026-10-17.
 - **T8.2 Auth screens** (email/password sign-in, sign-up, reset; Sign in with Apple wired; consent gate), completed 2026-10-17.
+- **T8.3 Profiles UI** (list, create, edit, delete, place search, DST prompts, offset shown), completed 2026-10-17.
 - `UID_HASH_PEPPER` was generated into `.env` on 2026-10-17. The value was not displayed.
 
 ## In progress
@@ -439,6 +440,26 @@
   3. **App Check in the app** needs the native module, so it moves to T10. The API still enforces App Check in staging and prod, so **staging will reject the app until T10 is done**.
   4. `typedRoutes` is off, because its generated types would make CI typecheck non-deterministic.
 - **Not yet tested end to end:** real sign-in against the Auth emulator from a running app (simulator or device). That is part of M9 (Maestro).
+
+**T8.3, 2026-10-17. All checks were actually run:**
+
+- **Mobile tests: 114 pass.** They cover:
+  - birth checks on the device, using the same resolver as the server: incomplete, OK (330), NY gap, NY overlap with both offsets and a choice, future, and unknown time;
+  - building and validating input: missing fields, gap and overlap blocking, and name rules;
+  - mapping server details onto fields;
+  - update diffs: nothing, name only, time pair, place;
+  - offset formatting with a real minus sign;
+  - **the picker wall-clock round trip, independent of the device time zone**;
+  - form components: the offset preview, the unknown-time toggle, the overlap prompt (refused until a choice is made, then sent), the gap explanation, server field errors, the profile-limit message, and **debounced place search** (fewer than 3 characters makes no call; rapid typing makes 1 call with the final value);
+  - the profile card's accessible summary.
+- **UX bug found and fixed.** A server error on an already-selected place (for example an expired place cache) was not shown, because the selected view ignored the error. It is now shown.
+- **Mutation test.** Removing the overlap block fails 2 tests (model and component).
+- `expo lint` is clean, the Android bundle builds, and `npm run check` passes.
+- **Design choices:**
+  - Pickers run in UTC and are read as wall-clock values, so the device time zone never shifts a birth date or time.
+  - Dates are shown as "10 May 1990", which is unambiguous across locales.
+  - The time zone used is shown on the card and the detail screen (decision (a)).
+  - A minimal Settings screen with sign-out was added. T8.7 extends it.
 
 ## Outstanding risks
 
