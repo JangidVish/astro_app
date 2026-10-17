@@ -50,6 +50,10 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
+      - name: Production API bundle boots and serves the full journey
+        run: |
+          npm run build --workspace @astro/api
+          E2E_SERVER_BUNDLE=1 npm test --workspace @astro/api -- test/integration/e2e-server.int.test.ts
       # Deployed server code must have no high/critical advisories. The mobile toolchain (Expo CLI,
       # Metro) carries unpatched upstream advisories in build-time tooling; block only criticals there.
       - name: Audit API and shared runtime dependencies

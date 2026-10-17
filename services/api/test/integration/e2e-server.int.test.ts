@@ -82,7 +82,11 @@ beforeAll(async () => {
   const inherited = Object.fromEntries(
     Object.entries(process.env).filter(([key]) => !key.startsWith('ASTROLOGYAPI_')),
   );
-  server = spawn(process.execPath, ['--import', 'tsx', 'src/server.ts'], {
+  // E2E_SERVER_BUNDLE=1 runs the built production bundle (npm run build) instead of the sources.
+  const args = process.env['E2E_SERVER_BUNDLE']
+    ? ['--enable-source-maps', 'dist/server.js']
+    : ['--import', 'tsx', 'src/server.ts'];
+  server = spawn(process.execPath, args, {
     env: {
       ...inherited,
       APP_ENV: 'local',

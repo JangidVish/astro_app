@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --env-file-if-exists=../../.env --watch --import tsx src/server.ts",
-    "build": "esbuild src/server.ts --bundle --platform=node --target=node24 --format=esm --sourcemap --external:fastify --external:zod --outfile=dist/server.js",
+    "build": "esbuild src/server.ts --bundle --platform=node --target=node24 --format=esm --sourcemap --external:fastify --external:zod --external:firebase-admin --outfile=dist/server.js",
     "start": "node --enable-source-maps dist/server.js",
     "typecheck": "tsc --noEmit",
     "test": "node ../../scripts/with-emulators.mjs --config ../../infra/firebase/firebase.json --only auth,firestore -- vitest run",
