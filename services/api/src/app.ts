@@ -33,6 +33,40 @@ const SECURITY_HEADERS: Record<string, string> = {
   'x-frame-options': 'DENY',
 };
 
+/**
+ * Local development only: lets the app's web build (served by Expo on this computer, a different
+ * port) call the API from a browser. Never enabled in test, staging or prod; the native app does
+ * not need CORS.
+ */
+function isLocalDevOrigin(origin: string | undefined): origin is string {
+  if (!origin) return false;
+  try {
+    const url = new URL(origin);
+    return url.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(url.hostname);
+  } catch {
+    return false;
+  }
+}
+
+function addLocalDevCors(app: FastifyInstance): void {
+  app.addHook('onRequest', async (request, reply) => {
+    const origin = request.headers.origin;
+    if (!isLocalDevOrigin(origin)) return;
+    void reply.headers({ 'access-control-allow-origin': origin, vary: 'Origin' });
+    if (request.method === 'OPTIONS') {
+      // Preflight: answer before authentication, which would otherwise reject it.
+      await reply
+        .headers({
+          'access-control-allow-methods': 'GET, POST, PATCH, DELETE',
+          'access-control-allow-headers': 'authorization, content-type, x-firebase-appcheck',
+          'access-control-max-age': '600',
+        })
+        .status(204)
+        .send();
+    }
+  });
+}
+
 function errorBody(error: AppError): ApiError {
   return {
     error: {
@@ -81,6 +115,8 @@ export function buildApp(config: Config, options: BuildAppOptions): FastifyInsta
     reply.header('x-request-id', request.id);
     return payload;
   });
+
+  if (config.env === 'local') addLocalDevCors(app);
 
   app.setErrorHandler((error, request, reply) => {
     const appError = toAppError(error);

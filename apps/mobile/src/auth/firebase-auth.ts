@@ -3,6 +3,7 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Crypto from 'expo-crypto';
 import { getApps, initializeApp } from 'firebase/app';
 import {
+  browserLocalPersistence,
   connectAuthEmulator,
   createUserWithEmailAndPassword,
   EmailAuthProvider,
@@ -87,7 +88,11 @@ export function createFirebaseAuthService(config: FirebasePublicConfig): AuthSer
       projectId: config.projectId,
       appId: config.appId,
     });
-  const auth = initializeAuth(app, { persistence: getReactNativePersistence(AsyncStorage) });
+  // The web build of firebase/auth has no getReactNativePersistence (it exists only in the
+  // React Native build Metro picks for iOS and Android), so the browser keeps the session itself.
+  const persistence =
+    Platform.OS === 'web' ? browserLocalPersistence : getReactNativePersistence(AsyncStorage);
+  const auth = initializeAuth(app, { persistence });
   if (config.authEmulatorUrl)
     connectAuthEmulator(auth, config.authEmulatorUrl, { disableWarnings: true });
 

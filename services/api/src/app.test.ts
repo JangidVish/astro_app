@@ -213,3 +213,67 @@ describe('logging', () => {
     expect(all).not.toContain('19.0728');
   });
 });
+
+describe('CORS for the local web build', () => {
+  const verifier = {
+    verifyIdToken: () => Promise.reject(new Error('unused')),
+    verifyAppCheckToken: () => Promise.reject(new Error('unused')),
+  };
+  function appFor(env: 'local' | 'test' | 'staging') {
+    const extra = env === 'staging' ? { APP_CHECK_ENFORCED: 'true' } : {};
+    return buildApp(
+      loadConfig({
+        APP_ENV: env,
+        ASTRO_PROVIDER: 'mock',
+        UID_HASH_PEPPER: randomBytes(32).toString('base64'),
+        FIREBASE_PROJECT_ID: 'demo-astro-app',
+        APP_CHECK_ENFORCED: 'false',
+        LOG_LEVEL: 'silent',
+        ...extra,
+      }),
+      { deps: { verifier }, modules: [(v1) => void v1.get('/me', () => ({}))] },
+    );
+  }
+  const preflight = {
+    method: 'OPTIONS' as const,
+    url: '/v1/me',
+    headers: {
+      origin: 'http://localhost:8081',
+      'access-control-request-method': 'GET',
+      'access-control-request-headers': 'authorization',
+    },
+  };
+
+  it('local: answers the preflight before auth and allows the dev origin', async () => {
+    const local = appFor('local');
+    const res = await local.inject(preflight);
+    expect(res.statusCode).toBe(204);
+    expect(res.headers['access-control-allow-origin']).toBe('http://localhost:8081');
+    expect(res.headers['access-control-allow-headers']).toContain('authorization');
+    const get = await local.inject({
+      method: 'GET',
+      url: '/v1/me',
+      headers: { origin: 'http://127.0.0.1:8081' },
+    });
+    expect(get.statusCode).toBe(401); // CORS never bypasses authentication
+    expect(get.headers['access-control-allow-origin']).toBe('http://127.0.0.1:8081');
+    await local.close();
+  });
+
+  it('local: other origins get no CORS headers', async () => {
+    const local = appFor('local');
+    for (const origin of ['https://evil.example', 'http://192.168.0.5:8081', 'null']) {
+      const res = await local.inject({ ...preflight, headers: { ...preflight.headers, origin } });
+      expect(res.headers['access-control-allow-origin']).toBeUndefined();
+    }
+    await local.close();
+  });
+
+  it.each(['test', 'staging'] as const)('%s: no CORS at all', async (env) => {
+    const other = appFor(env);
+    const res = await other.inject(preflight);
+    expect(res.headers['access-control-allow-origin']).toBeUndefined();
+    expect(res.statusCode).not.toBe(204);
+    await other.close();
+  });
+});
