@@ -207,15 +207,23 @@ export function SegmentedTabs<T extends string>({
   options,
   value,
   onChange,
+  as = 'tabs',
+  label,
 }: {
   options: readonly SegmentOption<T>[];
   value: T;
   onChange: (value: T) => void;
+  /** "tabs" switches content below; "radio" picks a setting (e.g. the theme). */
+  as?: 'tabs' | 'radio';
+  /** Accessible name of the group, needed when used as a radio group. */
+  label?: string;
 }) {
   const { colors } = useTheme();
+  const radio = as === 'radio';
   return (
     <View
-      accessibilityRole="tablist"
+      accessibilityLabel={label}
+      accessibilityRole={radio ? 'radiogroup' : 'tablist'}
       style={[styles.segments, { backgroundColor: colors.surfaceAlt }]}
     >
       {options.map((option) => {
@@ -224,8 +232,8 @@ export function SegmentedTabs<T extends string>({
           <Pressable
             key={option.value}
             onPress={() => onChange(option.value)}
-            accessibilityRole="tab"
-            accessibilityState={{ selected }}
+            accessibilityRole={radio ? 'radio' : 'tab'}
+            accessibilityState={radio ? { checked: selected } : { selected }}
             accessibilityLabel={option.label}
             style={[
               styles.segment,

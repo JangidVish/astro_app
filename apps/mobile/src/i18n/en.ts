@@ -171,12 +171,18 @@ export const en = {
   'settings.legal': 'Legal',
   'settings.version': 'App version',
   'settings.deleteAccount': 'Delete account',
+  'settings.appearance': 'Appearance',
+  'settings.theme.light': 'Light',
+  'settings.theme.dark': 'Dark',
+  'settings.theme.system': 'Auto',
+  'settings.dangerZone': 'Danger zone',
   'delete.title': 'Delete your account',
   'delete.body':
     'This permanently deletes your account, all birth profiles, charts and saved readings. It cannot be undone.',
   'delete.passwordPrompt': 'Enter your password to confirm.',
   'delete.applePrompt': 'Confirm with Sign in with Apple to continue.',
   'delete.confirm': 'Delete my account',
+  'delete.cancel': 'Cancel and keep my account',
   'delete.reauthAgain': 'For your security, please confirm again.',
   'delete.done': 'Your account has been deleted.',
 

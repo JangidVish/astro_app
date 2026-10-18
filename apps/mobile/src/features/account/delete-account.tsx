@@ -1,20 +1,30 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useAuth } from '@/auth/auth-context';
 import { messageFor } from '@/auth/messages';
 import { Button, ErrorBanner, TextField } from '@/components/form';
-import { Card, Text } from '@/components/ui';
+import { Card, Icon, Text } from '@/components/ui';
 import { t } from '@/i18n/en';
 import { ApiError } from '@/lib/api-client';
 import { useApi } from '@/lib/api-context';
+import { spacing } from '@/theme/tokens';
+import { useTheme } from '@/theme/use-theme';
 
 /**
  * Account deletion (FR-2; Apple guideline 5.1.1(v)). Re-authenticates first, refreshes the ID token
  * so the server sees a recent sign-in, deletes, then clears local data and signs out.
  */
-export function DeleteAccount({ onDeleted }: { onDeleted: () => void }) {
+export function DeleteAccount({
+  onDeleted,
+  onCancel,
+}: {
+  onDeleted: () => void;
+  /** Leaves the deletion step without doing anything. */
+  onCancel?: () => void;
+}) {
   const api = useApi();
+  const { colors } = useTheme();
   const { state, service } = useAuth();
   const queryClient = useQueryClient();
   const [password, setPassword] = useState('');
@@ -51,10 +61,17 @@ export function DeleteAccount({ onDeleted }: { onDeleted: () => void }) {
   }
 
   return (
-    <View style={{ gap: 16 }}>
-      <Card>
-        <Text variant="subheading">{t('delete.title')}</Text>
-        <Text>{t('delete.body')}</Text>
+    <View style={styles.wrap}>
+      <Card
+        style={[styles.card, { backgroundColor: colors.dangerSoft, borderColor: 'transparent' }]}
+      >
+        <View style={styles.row}>
+          <Icon name="gpp-maybe" color="onDangerSoft" size={28} />
+          <Text variant="subheading" color="onDangerSoft" style={styles.flex}>
+            {t('delete.title')}
+          </Text>
+        </View>
+        <Text color="onDangerSoft">{t('delete.body')}</Text>
       </Card>
       <ErrorBanner message={error} />
       {usesPassword ? (
@@ -64,6 +81,7 @@ export function DeleteAccount({ onDeleted }: { onDeleted: () => void }) {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
+          revealable
           autoComplete="current-password"
           testID="delete-password"
         />
@@ -73,10 +91,27 @@ export function DeleteAccount({ onDeleted }: { onDeleted: () => void }) {
       <Button
         label={t('delete.confirm')}
         variant="danger"
+        icon="delete-forever"
         onPress={() => void remove()}
         loading={busy}
         testID="delete-confirm"
       />
+      {onCancel && (
+        <Button
+          label={t('delete.cancel')}
+          variant="secondary"
+          icon="arrow-back"
+          onPress={onCancel}
+          disabled={busy}
+        />
+      )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  wrap: { gap: spacing.md },
+  card: { gap: spacing.sm, padding: spacing.lg },
+  row: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  flex: { flex: 1 },
+});

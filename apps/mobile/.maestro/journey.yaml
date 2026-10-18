@@ -77,14 +77,14 @@ name: Full user journey
 # Dasha
 - tapOn: 'Vimshottari dasha'
 - extendedWaitUntil:
-    visible: 'Current period'
+    visible: 'Now'
     timeout: 20000
 - back
 
 # Daily prediction
 - tapOn: 'Daily prediction'
 - extendedWaitUntil:
-    visible: 'Based on your Moon sign and nakshatra'
+    visible: 'Personal life'
     timeout: 20000
 - tapOn: 'Tomorrow'
 - assertVisible: 'Health'
