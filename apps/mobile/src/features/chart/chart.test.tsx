@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react-native';
 import { GRAHAS, SIGNS, type ChartHouse, type PlanetPosition } from '@astro/shared';
 import { ApiError } from '@/lib/api-client';
-import { NorthIndianChart } from './north-indian-chart';
+import { palettes } from '@/theme/tokens';
+import { BODY_COLOR, NorthIndianChart } from './north-indian-chart';
 import {
   describeChart,
   northIndianCells,
@@ -188,6 +189,15 @@ describe('NorthIndianChart component', () => {
       <NorthIndianChart houses={houses} planets={planets} title="D1" size={320} />,
     );
     expect(view.toJSON()).toMatchSnapshot();
+  });
+});
+
+describe('chart colours', () => {
+  it.each(['light', 'dark'] as const)('gives every body its own colour (%s)', (mode) => {
+    const bodies = ['Ascendant', ...GRAHAS] as const;
+    const colours = bodies.map((b) => palettes[mode][BODY_COLOR[b]]);
+    expect(new Set(colours).size).toBe(bodies.length);
+    expect(colours).not.toContain(palettes[mode].chartRetro);
   });
 });
 

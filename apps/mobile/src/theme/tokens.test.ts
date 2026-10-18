@@ -23,15 +23,40 @@ const NON_TEXT_PAIRS: [ColorName, ColorName][] = [
   ['border', 'surface'],
   ['border', 'background'],
   ['border', 'surfaceAlt'],
-  ['chartLine', 'surface'],
+  ['chartLine', 'chartBg'],
+  ['chartLine', 'chartLagna'],
 ];
+// Everything written on the chart, on both chart grounds (ordinary houses and the Lagna).
+const CHART_TEXT: ColorName[] = [
+  'chartSign',
+  'chartAscendant',
+  'chartRetro',
+  'grahaSun',
+  'grahaMoon',
+  'grahaMars',
+  'grahaMercury',
+  'grahaJupiter',
+  'grahaVenus',
+  'grahaSaturn',
+  'grahaRahu',
+  'grahaKetu',
+];
+const CHART_TEXT_PAIRS: [ColorName, ColorName][] = CHART_TEXT.flatMap((fg) => [
+  [fg, 'chartBg'] as [ColorName, ColorName],
+  [fg, 'chartLagna'] as [ColorName, ColorName],
+]);
+// The legend under the chart sits on the screen background.
+const LEGEND_PAIRS: [ColorName, ColorName][] = CHART_TEXT.map((fg) => [fg, 'background']);
 
 describe.each(['light', 'dark'] as const)('%s palette', (mode) => {
   const p = palettes[mode];
 
-  it.each(TEXT_PAIRS)('%s on %s meets 4.5:1', (fg, bg) => {
-    expect(contrastRatio(p[fg], p[bg])).toBeGreaterThanOrEqual(4.5);
-  });
+  it.each([...TEXT_PAIRS, ...CHART_TEXT_PAIRS, ...LEGEND_PAIRS])(
+    '%s on %s meets 4.5:1',
+    (fg, bg) => {
+      expect(contrastRatio(p[fg], p[bg])).toBeGreaterThanOrEqual(4.5);
+    },
+  );
 
   it.each(NON_TEXT_PAIRS)('%s on %s meets 3:1', (fg, bg) => {
     expect(contrastRatio(p[fg], p[bg])).toBeGreaterThanOrEqual(3);

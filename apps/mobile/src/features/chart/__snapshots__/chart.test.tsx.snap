@@ -5,6 +5,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
   accessibilityLabel="D1. House 1, Libra: Ascendant. House 2, Scorpio. House 3, Sagittarius. House 4, Capricorn: Ketu. House 5, Aquarius. House 6, Pisces. House 7, Aries: Moon. House 8, Taurus: Jupiter, Saturn. House 9, Gemini: Sun, Mars, Mercury, Venus. House 10, Cancer: Rahu. House 11, Leo. House 12, Virgo"
   accessibilityRole="image"
   accessible={true}
+  style={
+    {
+      "alignItems": "center",
+      "gap": 16,
+    }
+  }
   testID="north-indian-chart"
 >
   <RNSVGSvgView
@@ -45,10 +51,33 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         d="M0 0 320 0 320 320 0 320z"
         fill={
           {
-            "payload": 4294967295,
+            "payload": 4294964448,
             "type": 0,
           }
         }
+        propList={
+          [
+            "fill",
+          ]
+        }
+      />
+      <RNSVGPath
+        d="M160 0 240 80 160 160 80 80z"
+        fill={
+          {
+            "payload": 4294959282,
+            "type": 0,
+          }
+        }
+        propList={
+          [
+            "fill",
+          ]
+        }
+      />
+      <RNSVGPath
+        d="M0 0 320 0 320 320 0 320z"
+        fill={null}
         propList={
           [
             "fill",
@@ -58,11 +87,11 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         }
         stroke={
           {
-            "payload": 4282068879,
+            "payload": 4290920716,
             "type": 0,
           }
         }
-        strokeWidth={2}
+        strokeWidth={2.5}
       />
       <RNSVGLine
         fill={
@@ -79,7 +108,7 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         }
         stroke={
           {
-            "payload": 4282068879,
+            "payload": 4290920716,
             "type": 0,
           }
         }
@@ -104,7 +133,7 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         }
         stroke={
           {
-            "payload": 4282068879,
+            "payload": 4290920716,
             "type": 0,
           }
         }
@@ -126,7 +155,7 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         }
         stroke={
           {
-            "payload": 4282068879,
+            "payload": 4290920716,
             "type": 0,
           }
         }
@@ -147,7 +176,7 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4283057520,
+              "payload": 4286204434,
               "type": 0,
             }
           }
@@ -197,21 +226,16 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4288301574,
+              "payload": 4278190080,
               "type": 0,
             }
           }
           font={
             {
               "fontSize": 17,
-              "fontWeight": "600",
+              "fontWeight": "700",
               "textAnchor": "middle",
             }
-          }
-          propList={
-            [
-              "fill",
-            ]
           }
           rotate={[]}
           x={
@@ -231,11 +255,16 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
             dy={[]}
             fill={
               {
-                "payload": 4278190080,
+                "payload": 4286258718,
                 "type": 0,
               }
             }
             font={{}}
+            propList={
+              [
+                "fill",
+              ]
+            }
             rotate={[]}
             x={[]}
             y={[]}
@@ -257,7 +286,7 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4283057520,
+              "payload": 4286204434,
               "type": 0,
             }
           }
@@ -316,7 +345,7 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4283057520,
+              "payload": 4286204434,
               "type": 0,
             }
           }
@@ -375,7 +404,7 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4283057520,
+              "payload": 4286204434,
               "type": 0,
             }
           }
@@ -425,21 +454,16 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4279965248,
+              "payload": 4278190080,
               "type": 0,
             }
           }
           font={
             {
               "fontSize": 17,
-              "fontWeight": "600",
+              "fontWeight": "700",
               "textAnchor": "middle",
             }
-          }
-          propList={
-            [
-              "fill",
-            ]
           }
           rotate={[]}
           x={
@@ -459,11 +483,16 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
             dy={[]}
             fill={
               {
-                "payload": 4278190080,
+                "payload": 4285219875,
                 "type": 0,
               }
             }
             font={{}}
+            propList={
+              [
+                "fill",
+              ]
+            }
             rotate={[]}
             x={[]}
             y={[]}
@@ -485,7 +514,7 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4283057520,
+              "payload": 4286204434,
               "type": 0,
             }
           }
@@ -544,7 +573,7 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4283057520,
+              "payload": 4286204434,
               "type": 0,
             }
           }
@@ -603,7 +632,7 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4283057520,
+              "payload": 4286204434,
               "type": 0,
             }
           }
@@ -653,21 +682,16 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4279965248,
+              "payload": 4278190080,
               "type": 0,
             }
           }
           font={
             {
               "fontSize": 17,
-              "fontWeight": "600",
+              "fontWeight": "700",
               "textAnchor": "middle",
             }
-          }
-          propList={
-            [
-              "fill",
-            ]
           }
           rotate={[]}
           x={
@@ -687,11 +711,16 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
             dy={[]}
             fill={
               {
-                "payload": 4278190080,
+                "payload": 4281294218,
                 "type": 0,
               }
             }
             font={{}}
+            propList={
+              [
+                "fill",
+              ]
+            }
             rotate={[]}
             x={[]}
             y={[]}
@@ -713,7 +742,7 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4283057520,
+              "payload": 4286204434,
               "type": 0,
             }
           }
@@ -763,21 +792,16 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4279965248,
+              "payload": 4278190080,
               "type": 0,
             }
           }
           font={
             {
               "fontSize": 17,
-              "fontWeight": "600",
+              "fontWeight": "700",
               "textAnchor": "middle",
             }
-          }
-          propList={
-            [
-              "fill",
-            ]
           }
           rotate={[]}
           x={
@@ -792,16 +816,41 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           }
         >
           <RNSVGTSpan
-            content="Ju Sa"
+            content="Ju"
             dx={[]}
             dy={[]}
             fill={
               {
-                "payload": 4278190080,
+                "payload": 4286208512,
                 "type": 0,
               }
             }
             font={{}}
+            propList={
+              [
+                "fill",
+              ]
+            }
+            rotate={[]}
+            x={[]}
+            y={[]}
+          />
+          <RNSVGTSpan
+            content=" Sa"
+            dx={[]}
+            dy={[]}
+            fill={
+              {
+                "payload": 4280232555,
+                "type": 0,
+              }
+            }
+            font={{}}
+            propList={
+              [
+                "fill",
+              ]
+            }
             rotate={[]}
             x={[]}
             y={[]}
@@ -823,7 +872,7 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4283057520,
+              "payload": 4286204434,
               "type": 0,
             }
           }
@@ -873,21 +922,16 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4279965248,
+              "payload": 4278190080,
               "type": 0,
             }
           }
           font={
             {
               "fontSize": 17,
-              "fontWeight": "600",
+              "fontWeight": "700",
               "textAnchor": "middle",
             }
-          }
-          propList={
-            [
-              "fill",
-            ]
           }
           rotate={[]}
           x={
@@ -902,16 +946,41 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           }
         >
           <RNSVGTSpan
-            content="Su Ma"
+            content="Su"
             dx={[]}
             dy={[]}
             fill={
               {
-                "payload": 4278190080,
+                "payload": 4288429320,
                 "type": 0,
               }
             }
             font={{}}
+            propList={
+              [
+                "fill",
+              ]
+            }
+            rotate={[]}
+            x={[]}
+            y={[]}
+          />
+          <RNSVGTSpan
+            content=" Ma"
+            dx={[]}
+            dy={[]}
+            fill={
+              {
+                "payload": 4289995544,
+                "type": 0,
+              }
+            }
+            font={{}}
+            propList={
+              [
+                "fill",
+              ]
+            }
             rotate={[]}
             x={[]}
             y={[]}
@@ -924,21 +993,16 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4279965248,
+              "payload": 4278190080,
               "type": 0,
             }
           }
           font={
             {
               "fontSize": 17,
-              "fontWeight": "600",
+              "fontWeight": "700",
               "textAnchor": "middle",
             }
-          }
-          propList={
-            [
-              "fill",
-            ]
           }
           rotate={[]}
           x={
@@ -953,16 +1017,61 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           }
         >
           <RNSVGTSpan
-            content="Me℞ Ve"
+            content="Me"
             dx={[]}
             dy={[]}
             fill={
               {
-                "payload": 4278190080,
+                "payload": 4279332922,
                 "type": 0,
               }
             }
             font={{}}
+            propList={
+              [
+                "fill",
+              ]
+            }
+            rotate={[]}
+            x={[]}
+            y={[]}
+          />
+          <RNSVGTSpan
+            content="℞"
+            dx={[]}
+            dy={[]}
+            fill={
+              {
+                "payload": 4278935927,
+                "type": 0,
+              }
+            }
+            font={{}}
+            propList={
+              [
+                "fill",
+              ]
+            }
+            rotate={[]}
+            x={[]}
+            y={[]}
+          />
+          <RNSVGTSpan
+            content=" Ve"
+            dx={[]}
+            dy={[]}
+            fill={
+              {
+                "payload": 4288880762,
+                "type": 0,
+              }
+            }
+            font={{}}
+            propList={
+              [
+                "fill",
+              ]
+            }
             rotate={[]}
             x={[]}
             y={[]}
@@ -984,7 +1093,7 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4283057520,
+              "payload": 4286204434,
               "type": 0,
             }
           }
@@ -1034,21 +1143,16 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4279965248,
+              "payload": 4278190080,
               "type": 0,
             }
           }
           font={
             {
               "fontSize": 17,
-              "fontWeight": "600",
+              "fontWeight": "700",
               "textAnchor": "middle",
             }
-          }
-          propList={
-            [
-              "fill",
-            ]
           }
           rotate={[]}
           x={
@@ -1068,11 +1172,16 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
             dy={[]}
             fill={
               {
-                "payload": 4278190080,
+                "payload": 4283124572,
                 "type": 0,
               }
             }
             font={{}}
+            propList={
+              [
+                "fill",
+              ]
+            }
             rotate={[]}
             x={[]}
             y={[]}
@@ -1094,7 +1203,7 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4283057520,
+              "payload": 4286204434,
               "type": 0,
             }
           }
@@ -1153,7 +1262,7 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           dy={[]}
           fill={
             {
-              "payload": 4283057520,
+              "payload": 4286204434,
               "type": 0,
             }
           }
@@ -1199,5 +1308,524 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
       </RNSVGGroup>
     </RNSVGGroup>
   </RNSVGSvgView>
+  <View
+    style={
+      {
+        "columnGap": 16,
+        "flexDirection": "row",
+        "flexWrap": "wrap",
+        "justifyContent": "center",
+        "rowGap": 4,
+      }
+    }
+    testID="chart-legend"
+  >
+    <View
+      style={
+        {
+          "alignItems": "baseline",
+          "flexDirection": "row",
+          "gap": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "fontSize": 15,
+              "fontWeight": "600",
+              "lineHeight": 22,
+            },
+            {
+              "color": "#7B1E1E",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        As
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "fontSize": 13,
+              "fontWeight": "400",
+              "lineHeight": 18,
+            },
+            {
+              "color": "#4A4570",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Ascendant
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "alignItems": "baseline",
+          "flexDirection": "row",
+          "gap": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "fontSize": 15,
+              "fontWeight": "600",
+              "lineHeight": 22,
+            },
+            {
+              "color": "#9C3D08",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Su
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "fontSize": 13,
+              "fontWeight": "400",
+              "lineHeight": 18,
+            },
+            {
+              "color": "#4A4570",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Sun
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "alignItems": "baseline",
+          "flexDirection": "row",
+          "gap": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "fontSize": 15,
+              "fontWeight": "600",
+              "lineHeight": 22,
+            },
+            {
+              "color": "#2F5D8A",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Mo
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "fontSize": 13,
+              "fontWeight": "400",
+              "lineHeight": 18,
+            },
+            {
+              "color": "#4A4570",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Moon
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "alignItems": "baseline",
+          "flexDirection": "row",
+          "gap": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "fontSize": 15,
+              "fontWeight": "600",
+              "lineHeight": 22,
+            },
+            {
+              "color": "#B42318",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Ma
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "fontSize": 13,
+              "fontWeight": "400",
+              "lineHeight": 18,
+            },
+            {
+              "color": "#4A4570",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Mars
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "alignItems": "baseline",
+          "flexDirection": "row",
+          "gap": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "fontSize": 15,
+              "fontWeight": "600",
+              "lineHeight": 22,
+            },
+            {
+              "color": "#11703A",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Me
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "fontSize": 13,
+              "fontWeight": "400",
+              "lineHeight": 18,
+            },
+            {
+              "color": "#4A4570",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Mercury
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "alignItems": "baseline",
+          "flexDirection": "row",
+          "gap": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "fontSize": 15,
+              "fontWeight": "600",
+              "lineHeight": 22,
+            },
+            {
+              "color": "#7A5A00",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Ju
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "fontSize": 13,
+              "fontWeight": "400",
+              "lineHeight": 18,
+            },
+            {
+              "color": "#4A4570",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Jupiter
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "alignItems": "baseline",
+          "flexDirection": "row",
+          "gap": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "fontSize": 15,
+              "fontWeight": "600",
+              "lineHeight": 22,
+            },
+            {
+              "color": "#A3207A",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Ve
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "fontSize": 13,
+              "fontWeight": "400",
+              "lineHeight": 18,
+            },
+            {
+              "color": "#4A4570",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Venus
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "alignItems": "baseline",
+          "flexDirection": "row",
+          "gap": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "fontSize": 15,
+              "fontWeight": "600",
+              "lineHeight": 22,
+            },
+            {
+              "color": "#1F2A6B",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Sa
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "fontSize": 13,
+              "fontWeight": "400",
+              "lineHeight": 18,
+            },
+            {
+              "color": "#4A4570",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Saturn
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "alignItems": "baseline",
+          "flexDirection": "row",
+          "gap": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "fontSize": 15,
+              "fontWeight": "600",
+              "lineHeight": 22,
+            },
+            {
+              "color": "#4B4B5C",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Ra
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "fontSize": 13,
+              "fontWeight": "400",
+              "lineHeight": 18,
+            },
+            {
+              "color": "#4A4570",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Rahu
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "alignItems": "baseline",
+          "flexDirection": "row",
+          "gap": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "fontSize": 15,
+              "fontWeight": "600",
+              "lineHeight": 22,
+            },
+            {
+              "color": "#6B4423",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Ke
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "fontSize": 13,
+              "fontWeight": "400",
+              "lineHeight": 18,
+            },
+            {
+              "color": "#4A4570",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Ketu
+      </Text>
+    </View>
+    <View
+      style={
+        {
+          "alignItems": "baseline",
+          "flexDirection": "row",
+          "gap": 4,
+        }
+      }
+    >
+      <Text
+        style={
+          [
+            {
+              "fontSize": 15,
+              "fontWeight": "600",
+              "lineHeight": 22,
+            },
+            {
+              "color": "#0B6177",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        ℞
+      </Text>
+      <Text
+        style={
+          [
+            {
+              "fontSize": 13,
+              "fontWeight": "400",
+              "lineHeight": 18,
+            },
+            {
+              "color": "#4A4570",
+              "fontFamily": "system-ui",
+            },
+            undefined,
+          ]
+        }
+      >
+        Retrograde
+      </Text>
+    </View>
+  </View>
 </View>
 `;

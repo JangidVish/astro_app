@@ -102,6 +102,7 @@ export const en = {
   'chart.house': 'House',
   'chart.ascendant': 'Ascendant',
   'chart.retrograde': 'retrograde',
+  'chart.legendRetrograde': 'Retrograde',
   'chart.timeUnknown':
     'The chart needs the exact birth time. Below are the planet signs, which do not depend on it. Add the birth time to the profile to see the full chart.',
   'chart.noonNote': 'Calculated for 12:00 noon because the birth time is unknown.',

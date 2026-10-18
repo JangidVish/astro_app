@@ -16,6 +16,16 @@ export interface HouseCell {
   readonly signAt: Point;
   /** Graha labels, e.g. "Sa℞", one per body. */
   readonly labels: readonly string[];
+  /** The same bodies with their abbreviation and retrograde flag, for colouring each label. */
+  readonly entries: readonly ChartEntry[];
+}
+
+export interface ChartEntry {
+  readonly body: ChartBody;
+  /** Abbreviation without the retrograde mark, e.g. "Sa". */
+  readonly abbreviation: string;
+  /** Shown with ℞ (never for Rahu and Ketu, which always move backwards). */
+  readonly retrograde: boolean;
 }
 
 export const ABBREVIATIONS: Record<ChartBody, string> = {
@@ -32,7 +42,7 @@ export const ABBREVIATIONS: Record<ChartBody, string> = {
 };
 
 /** Retrograde mark (U+211E). Rahu and Ketu always move backwards, so it is not shown for them. */
-const RETRO = '℞';
+export const RETRO = '℞';
 
 function centroid(points: readonly Point[]): Point {
   const sum = points.reduce((acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }), { x: 0, y: 0 });
@@ -96,6 +106,11 @@ export function northIndianLayout(
     const data = houses.find((h) => h.house === house);
     if (!data) throw new Error(`chart is missing house ${String(house)}`);
     const bodies: ChartBody[] = house === 1 ? ['Ascendant', ...data.bodies] : [...data.bodies];
+    const entries = bodies.map((body) => ({
+      body,
+      abbreviation: ABBREVIATIONS[body],
+      retrograde: retro.has(body) && body !== 'Rahu' && body !== 'Ketu',
+    }));
     const labelAt = centroid(polygon);
     // The cell's inner corner: its vertex closest to the chart centre (the centre itself for the
     // diamonds). Aiming at the chart centre instead pushed corner-triangle numbers into the
@@ -108,20 +123,22 @@ export function northIndianLayout(
       labelAt,
       // Sign number sits between the label and the cell's inner corner.
       signAt: towards(labelAt, inner, 0.55),
-      labels: bodies.map((b) => {
-        const nodes = b === 'Rahu' || b === 'Ketu';
-        return `${ABBREVIATIONS[b]}${retro.has(b) && !nodes ? RETRO : ''}`;
-      }),
+      labels: entries.map((e) => `${e.abbreviation}${e.retrograde ? RETRO : ''}`),
+      entries,
     };
   });
 }
 
+/** Splits items into lines of at most `perLine`, so crowded houses stay inside their cell. */
+export function chunkLines<T>(items: readonly T[], perLine: number): T[][] {
+  const lines: T[][] = [];
+  for (let i = 0; i < items.length; i += perLine) lines.push(items.slice(i, i + perLine));
+  return lines;
+}
+
 /** Splits labels into lines so crowded houses stay inside their cell. */
 export function wrapLabels(labels: readonly string[], perLine: number): string[] {
-  const lines: string[] = [];
-  for (let i = 0; i < labels.length; i += perLine)
-    lines.push(labels.slice(i, i + perLine).join(' '));
-  return lines;
+  return chunkLines(labels, perLine).map((line) => line.join(' '));
 }
 
 /** Short spoken summary for screen readers, e.g. "House 1, Libra: Ascendant. House 7, Aries: Moon." */

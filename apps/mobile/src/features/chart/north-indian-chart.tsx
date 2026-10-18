@@ -1,9 +1,18 @@
 import { useMemo } from 'react';
-import { Platform, useWindowDimensions, View } from 'react-native';
-import Svg, { G, Line, Polygon, Text as SvgText } from 'react-native-svg';
-import type { ChartHouse, PlanetPosition } from '@astro/shared';
+import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
+import Svg, { G, Line, Polygon, Text as SvgText, TSpan } from 'react-native-svg';
+import { GRAHAS, type ChartBody, type ChartHouse, type PlanetPosition } from '@astro/shared';
+import { Text } from '@/components/ui';
+import { t } from '@/i18n/en';
+import { spacing, type ColorName } from '@/theme/tokens';
 import { useTheme } from '@/theme/use-theme';
-import { describeChart, northIndianLayout, wrapLabels } from './north-indian-layout';
+import {
+  ABBREVIATIONS,
+  chunkLines,
+  describeChart,
+  northIndianLayout,
+  RETRO,
+} from './north-indian-layout';
 
 export interface NorthIndianChartProps {
   houses: readonly ChartHouse[];
@@ -14,16 +23,32 @@ export interface NorthIndianChartProps {
   size?: number;
 }
 
-/**
- * North Indian chart drawn with SVG from API data. It is exposed to screen readers as one image
- * with a spoken summary; the planet table beside it is the full accessible alternative.
- */
+/** Traditional colour of each body on the chart (theme tokens, contrast-tested on the chart). */
+export const BODY_COLOR: Record<ChartBody, ColorName> = {
+  Ascendant: 'chartAscendant',
+  Sun: 'grahaSun',
+  Moon: 'grahaMoon',
+  Mars: 'grahaMars',
+  Mercury: 'grahaMercury',
+  Jupiter: 'grahaJupiter',
+  Venus: 'grahaVenus',
+  Saturn: 'grahaSaturn',
+  Rahu: 'grahaRahu',
+  Ketu: 'grahaKetu',
+};
+
 /** SVG text does not inherit the page font on web; use the stack react-native-web uses for Text. */
 const FONT_FAMILY =
   Platform.OS === 'web'
     ? '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
     : undefined;
 
+/**
+ * North Indian chart drawn with SVG from API data, in the traditional saffron style with each
+ * graha in its own colour. It is exposed to screen readers as one image with a spoken summary;
+ * the planet table beside it is the full accessible alternative. Colour is never the only cue:
+ * every body keeps its abbreviation and retrograde bodies keep the ℞ mark.
+ */
 export function NorthIndianChart({ houses, planets, title, size }: NorthIndianChartProps) {
   const { colors } = useTheme();
   const { width, fontScale } = useWindowDimensions();
@@ -35,6 +60,7 @@ export function NorthIndianChart({ houses, planets, title, size }: NorthIndianCh
   const labelSize = Math.round((side / 26) * scale);
   const signSize = Math.round((side / 34) * scale);
   const s = side;
+  const lagna = cells.find((c) => c.house === 1);
 
   return (
     <View
@@ -42,13 +68,24 @@ export function NorthIndianChart({ houses, planets, title, size }: NorthIndianCh
       accessibilityRole="image"
       accessibilityLabel={`${title}. ${describeChart(houses)}`}
       testID="north-indian-chart"
+      style={styles.wrapper}
     >
       <Svg width={s} height={s} viewBox={`0 0 ${String(s)} ${String(s)}`}>
         <Polygon
           points={`0,0 ${String(s)},0 ${String(s)},${String(s)} 0,${String(s)}`}
-          fill={colors.surface}
+          fill={colors.chartBg}
+        />
+        {lagna && (
+          <Polygon
+            points={lagna.polygon.map((p) => `${String(p.x)},${String(p.y)}`).join(' ')}
+            fill={colors.chartLagna}
+          />
+        )}
+        <Polygon
+          points={`0,0 ${String(s)},0 ${String(s)},${String(s)} 0,${String(s)}`}
+          fill="none"
           stroke={colors.chartLine}
-          strokeWidth={2}
+          strokeWidth={2.5}
         />
         <Line x1={0} y1={0} x2={s} y2={s} stroke={colors.chartLine} strokeWidth={1.5} />
         <Line x1={s} y1={0} x2={0} y2={s} stroke={colors.chartLine} strokeWidth={1.5} />
@@ -61,7 +98,7 @@ export function NorthIndianChart({ houses, planets, title, size }: NorthIndianCh
         {cells.map((cell) => {
           // Diamonds (houses 1, 4, 7, 10) are roomier than the corner triangles.
           const perLine = [1, 4, 7, 10].includes(cell.house) ? 3 : 2;
-          const lines = wrapLabels(cell.labels, perLine);
+          const lines = chunkLines(cell.entries, perLine);
           const lineHeight = labelSize * 1.15;
           const top = cell.labelAt.y - ((lines.length - 1) * lineHeight) / 2;
           return (
@@ -73,7 +110,7 @@ export function NorthIndianChart({ houses, planets, title, size }: NorthIndianCh
                 y={cell.signAt.y}
                 fontSize={signSize}
                 fontFamily={FONT_FAMILY}
-                fill={colors.textMuted}
+                fill={colors.chartSign}
                 textAnchor="middle"
                 alignmentBaseline="middle"
               >
@@ -81,27 +118,74 @@ export function NorthIndianChart({ houses, planets, title, size }: NorthIndianCh
               </SvgText>
               {lines.map((line, i) => (
                 <SvgText
-                  key={line}
+                  key={line.map((e) => e.body).join('-')}
                   x={cell.labelAt.x}
                   y={top + i * lineHeight}
                   fontSize={labelSize}
                   fontFamily={FONT_FAMILY}
-                  fontWeight="600"
-                  fill={
-                    line.startsWith('As') && i === 0 && cell.house === 1
-                      ? colors.accent
-                      : colors.text
-                  }
+                  fontWeight="700"
                   textAnchor="middle"
                   alignmentBaseline="middle"
                 >
-                  {line}
+                  {line.flatMap((entry, j) => [
+                    <TSpan key={entry.body} fill={colors[BODY_COLOR[entry.body]]}>
+                      {`${j > 0 ? ' ' : ''}${entry.abbreviation}`}
+                    </TSpan>,
+                    ...(entry.retrograde
+                      ? [
+                          <TSpan key={`${entry.body}-retro`} fill={colors.chartRetro}>
+                            {RETRO}
+                          </TSpan>,
+                        ]
+                      : []),
+                  ])}
                 </SvgText>
               ))}
             </G>
           );
         })}
       </Svg>
+      <ChartLegend />
     </View>
   );
 }
+
+/** Key to the colours and marks used on the chart. */
+function ChartLegend() {
+  const items: { key: string; mark: string; name: string; color: ColorName }[] = [
+    {
+      key: 'As',
+      mark: ABBREVIATIONS.Ascendant,
+      name: t('chart.ascendant'),
+      color: 'chartAscendant',
+    },
+    ...GRAHAS.map((g) => ({ key: g, mark: ABBREVIATIONS[g], name: g, color: BODY_COLOR[g] })),
+    { key: 'retro', mark: RETRO, name: t('chart.legendRetrograde'), color: 'chartRetro' },
+  ];
+  return (
+    <View style={styles.legend} testID="chart-legend">
+      {items.map((item) => (
+        <View key={item.key} style={styles.legendItem}>
+          <Text variant="label" color={item.color}>
+            {item.mark}
+          </Text>
+          <Text variant="caption" color="textMuted">
+            {item.name}
+          </Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  wrapper: { alignItems: 'center', gap: spacing.md },
+  legend: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    columnGap: spacing.md,
+    rowGap: spacing.xs,
+  },
+  legendItem: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.xs },
+});
