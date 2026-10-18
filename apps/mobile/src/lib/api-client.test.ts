@@ -1,5 +1,5 @@
 import { ApiError, createApiClient } from './api-client';
-import { resolveApiBaseUrl } from './config';
+import { devHostFrom, resolveApiBaseUrl, resolveAuthEmulatorUrl } from './config';
 
 type Recorded = { url: string; init: RequestInit };
 
@@ -128,5 +128,36 @@ describe('resolveApiBaseUrl', () => {
   });
   it('requires https for release builds', () => {
     expect(() => resolveApiBaseUrl('http://api.example.test', false)).toThrow(/https/);
+  });
+  it('uses the dev machine address in development, so a real phone reaches the API', () => {
+    expect(resolveApiBaseUrl(undefined, true, '192.168.0.105')).toBe('http://192.168.0.105:8080');
+    expect(resolveApiBaseUrl('http://10.0.0.9:9000', true, '192.168.0.105')).toBe(
+      'http://10.0.0.9:9000',
+    );
+  });
+});
+
+describe('devHostFrom', () => {
+  it.each([
+    ['192.168.0.105:8081', '192.168.0.105'],
+    ['localhost:8081', 'localhost'],
+    [undefined, '127.0.0.1'],
+    [null, '127.0.0.1'],
+    ['', '127.0.0.1'],
+  ])('%j -> %s', (hostUri, host) => {
+    expect(devHostFrom(hostUri)).toBe(host);
+  });
+});
+
+describe('resolveAuthEmulatorUrl', () => {
+  it('"auto" points at the Auth emulator on the dev machine', () => {
+    expect(resolveAuthEmulatorUrl('auto', true, '192.168.0.105')).toBe('http://192.168.0.105:9099');
+  });
+  it('keeps an explicit URL and leaves the emulator off when unset', () => {
+    expect(resolveAuthEmulatorUrl('http://10.0.2.2:9099', true)).toBe('http://10.0.2.2:9099');
+    expect(resolveAuthEmulatorUrl(undefined, true)).toBeUndefined();
+  });
+  it('never uses an emulator in release builds', () => {
+    expect(resolveAuthEmulatorUrl('auto', false, '192.168.0.105')).toBeUndefined();
   });
 });

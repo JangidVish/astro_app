@@ -35,45 +35,55 @@ This guide covers operating and developing the Astro app. Read it with:
 
 2. Copy `.env.example` to `.env`. It works as is for mock mode. To use the real provider, set `ASTRO_PROVIDER=astrologyapi` and add your credentials. `.env` is git-ignored; never commit it or paste its values anywhere.
 3. Copy `apps/mobile/.env.example` to `apps/mobile/.env`. The demo values work with the emulators.
-4. Run each of these in its own terminal:
-   - the emulators:
+4. Start the backend. One command starts the Auth and Firestore emulators and the API (with auto-reload):
 
-     ```bash
-     npm run emulators
-     ```
+   ```bash
+   npm run dev:lan
+   ```
 
-     This starts Auth on 9099 and Firestore on 8085, with the UI at http://127.0.0.1:4000.
+   The API and the Auth emulator are reachable from your Wi-Fi so a real phone can use them. The Firestore emulator and the emulator UI (http://127.0.0.1:4000) stay on this PC only. **Use it only on a network you trust**: the Auth emulator accepts unsigned tokens.
 
-   - the API:
+   Loopback only (no phone): run `npm run emulators` in one terminal, then in another:
 
-     ```bash
-     FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 FIRESTORE_EMULATOR_HOST=127.0.0.1:8085 npm run dev --workspace @astro/api
-     ```
+   ```bash
+   FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099 FIRESTORE_EMULATOR_HOST=127.0.0.1:8085 npm run dev --workspace @astro/api
+   ```
 
-   - the app:
+5. Start the app in a second terminal:
 
-     ```bash
-     npm run start --workspace @astro/mobile
-     ```
+   ```bash
+   npm run start --workspace @astro/mobile
+   ```
 
-     Use `10.0.2.2:8080` as the API URL on the Android emulator.
+   - **Real phone:** install **Expo Go**, put the phone on the same Wi-Fi, and scan the QR code. Use the Camera app on iOS, or Expo Go on Android.
+   - **Android emulator:** press `a`.
+
+   The app reaches the API and the Auth emulator at the same computer address it loaded from, so no IP needs configuring. This is why `EXPO_PUBLIC_API_URL` stays unset and `EXPO_PUBLIC_FIREBASE_AUTH_EMULATOR_URL=auto`.
+
+**If the phone can't connect:**
+
+- **Windows firewall.** Allow Node.js and Java on **Private** networks when Windows asks. Also set the Wi-Fi's network profile to Private (Settings → Network → Wi-Fi → Properties).
+- **Expo picked the wrong network adapter.** The QR code should show your Wi-Fi address (for example `192.168.x.x`), not a VPN or WSL adapter. If it doesn't, set `REACT_NATIVE_PACKAGER_HOSTNAME=<your Wi-Fi IP>` before starting Expo.
+- **Network isolation.** Guest and office networks often stop devices from seeing each other. Use a home network or a phone hotspot instead.
+- **Tunnel mode won't work.** `expo start --tunnel` serves the app through the internet, but the API stays on your Wi-Fi, so the app still can't reach it.
 
 ## 3. Environment variables
 
 **API** (validated at startup by `services/api/src/common/config.ts`; startup fails, naming the variable, if any value is invalid):
 
-| Variable                                                 | Required                            | Notes                                                                                         |
-| -------------------------------------------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------- |
-| `APP_ENV`                                                | yes                                 | `local`, `test`, `staging` or `prod`                                                          |
-| `PORT`                                                   | no (8080)                           | Cloud Run sets it                                                                             |
-| `LOG_LEVEL`                                              | no (`info`)                         | Logs are JSON with personal data redacted                                                     |
-| `ASTRO_PROVIDER`                                         | yes                                 | `astrologyapi` or `mock`. **`mock` is refused in prod**                                       |
-| `ASTROLOGYAPI_USER_ID`, `ASTROLOGYAPI_API_KEY`           | when the provider is `astrologyapi` | **Secret.** Kept in Secret Manager when deployed                                              |
-| `UID_HASH_PEPPER`                                        | yes                                 | **Secret.** 32+ random bytes, base64. Use one per environment and never rotate it casually    |
-| `FIREBASE_PROJECT_ID`                                    | yes                                 |                                                                                               |
-| `APP_CHECK_ENFORCED`                                     | no (true)                           | **Must be true** in staging and prod (enforced)                                               |
-| `QUOTA_PROVIDER_CALLS_PER_DAY`                           | no (30)                             | Provider calls per user per UTC day. **This is a placeholder:** set it from real credit costs |
-| `FIREBASE_AUTH_EMULATOR_HOST`, `FIRESTORE_EMULATOR_HOST` | local and test only                 | **Refused in staging and prod**, because with them set firebase-admin trusts unsigned tokens  |
+| Variable                                                 | Required                            | Notes                                                                                                                              |
+| -------------------------------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `APP_ENV`                                                | yes                                 | `local`, `test`, `staging` or `prod`                                                                                               |
+| `PORT`                                                   | no (8080)                           | Cloud Run sets it                                                                                                                  |
+| `LOG_LEVEL`                                              | no (`info`)                         | Logs are JSON with personal data redacted                                                                                          |
+| `ASTRO_PROVIDER`                                         | yes                                 | `astrologyapi` or `mock`. **`mock` is refused in prod**                                                                            |
+| `ASTROLOGYAPI_USER_ID`, `ASTROLOGYAPI_API_KEY`           | when the provider is `astrologyapi` | **Secret.** Kept in Secret Manager when deployed                                                                                   |
+| `UID_HASH_PEPPER`                                        | yes                                 | **Secret.** 32+ random bytes, base64. Use one per environment and never rotate it casually                                         |
+| `FIREBASE_PROJECT_ID`                                    | yes                                 |                                                                                                                                    |
+| `APP_CHECK_ENFORCED`                                     | no (true)                           | **Must be true** in staging and prod (enforced)                                                                                    |
+| `LISTEN_ON_LAN`                                          | no (false)                          | `true` makes the API listen on all interfaces, for phone testing. **Allowed only when `APP_ENV=local`**; `npm run dev:lan` sets it |
+| `QUOTA_PROVIDER_CALLS_PER_DAY`                           | no (30)                             | Provider calls per user per UTC day. **This is a placeholder:** set it from real credit costs                                      |
+| `FIREBASE_AUTH_EMULATOR_HOST`, `FIRESTORE_EMULATOR_HOST` | local and test only                 | **Refused in staging and prod**, because with them set firebase-admin trusts unsigned tokens                                       |
 
 **Mobile:** the `EXPO_PUBLIC_*` variables in `apps/mobile/.env.example` are public identifiers that get inlined into the bundle. **Never put a secret in an `EXPO_PUBLIC_*` variable.** CI's `mobile-bundle` job fails if a secret value ends up in the bundle.
 

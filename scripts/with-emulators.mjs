@@ -44,7 +44,9 @@ const config = JSON.parse(readFileSync(configPath, 'utf8'));
 const ports = only.split(',').map((name) => {
   const entry = config.emulators?.[name];
   if (!entry?.port) throw new Error(`firebase.json has no emulators.${name}.port`);
-  return { name, host: entry.host ?? '127.0.0.1', port: entry.port };
+  // An emulator bound to all interfaces (0.0.0.0) is still reached locally via loopback.
+  const host = !entry.host || entry.host === '0.0.0.0' ? '127.0.0.1' : entry.host;
+  return { name, host, port: entry.port };
 });
 
 function isListening({ host, port }) {

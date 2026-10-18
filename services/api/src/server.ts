@@ -81,9 +81,10 @@ function start(): void {
     });
   }
 
-  // Cloud Run requires listening on all interfaces; locally, stay on loopback so the dev server
-  // is not reachable from the LAN.
-  const host = config.env === 'staging' || config.env === 'prod' ? '0.0.0.0' : '127.0.0.1';
+  // Cloud Run requires listening on all interfaces. Locally, stay on loopback so the dev server
+  // is not reachable from the LAN, unless LISTEN_ON_LAN opts in (testing on a real phone).
+  const deployed = config.env === 'staging' || config.env === 'prod';
+  const host = deployed || config.listenOnLan ? '0.0.0.0' : '127.0.0.1';
   app.listen({ host, port: config.port }).catch((error: unknown) => {
     app.log.fatal({ err: error }, 'failed to start');
     process.exit(1);

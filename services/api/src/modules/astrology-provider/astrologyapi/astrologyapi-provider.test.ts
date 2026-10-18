@@ -165,6 +165,7 @@ describe('createProvider: real provider', () => {
     firebaseProjectId: 'p',
     appCheckEnforced: true,
     quotaProviderCallsPerDay: 30,
+    listenOnLan: false,
   };
 
   it('builds AstrologyApiProvider with the call hook wired through', async () => {

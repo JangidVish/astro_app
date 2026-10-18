@@ -586,6 +586,24 @@
   - The Node image is pinned to **24.13.0**, and `.nvmrc` was changed to match. CI and prod now share the same tzdata, which closes the earlier risk.
 - **`infra/gcp/*.sh` and `.github/workflows/deploy.yml`.** The scripts pass `bash -n` syntax checks. The GitHub action SHAs were looked up from the GitHub API, not guessed. **None of this has run**: gcloud is not installed here, and running it needs your accounts.
 
+**Phone testing on the local network, 2026-10-18.**
+
+- **What was added:**
+  - `npm run dev:lan` starts the emulators and the API so a real phone on the same Wi-Fi can reach them. The API uses `LISTEN_ON_LAN`, which is allowed only when `APP_ENV=local` (tested). The Auth emulator listens on all interfaces; the Firestore emulator and the UI stay on loopback.
+  - The app now finds the API and the Auth emulator automatically in development. It uses the address of the computer it loaded from (Expo `hostUri`). `EXPO_PUBLIC_FIREBASE_AUTH_EMULATOR_URL=auto` selects this, and it is ignored in release builds (tested).
+- **Verified over the LAN IP** (192.168.0.105) on spare ports, because your own emulators were using the default ones:
+  - `/healthz` returned 200;
+  - `/v1/me` returned 401 without a token;
+  - sign-up through the Auth emulator returned 200;
+  - `/v1/me` returned 200 with that token;
+  - the Firestore emulator refused the connection.
+- **Checks run:**
+  - lint, typecheck and format;
+  - tests: shared 144, API unit 249, mobile 170;
+  - the mobile bundle secret check: clean.
+- **Not run this time:** the emulator integration suites, because your running emulators held the ports. Run `npm run check` once they are stopped.
+- **Not yet done:** testing on a real phone (you).
+
 ## Outstanding risks
 
 | Risk                                                                                                                                                                                                     | Mitigation                                                                                                                                                         |

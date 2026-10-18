@@ -32,6 +32,9 @@ const envSchema = z
 
     QUOTA_PROVIDER_CALLS_PER_DAY: z.coerce.number().int().min(1).max(10_000).default(30),
 
+    // Local only: listen on all interfaces so a phone on the same Wi-Fi can reach the dev API.
+    LISTEN_ON_LAN: booleanString.default(false),
+
     // Set only for local/test. With these set, firebase-admin trusts emulator (unsigned) tokens.
     FIREBASE_AUTH_EMULATOR_HOST: z.string().optional(),
     FIRESTORE_EMULATOR_HOST: z.string().optional(),
@@ -63,6 +66,13 @@ const envSchema = z
         message: 'must be true in staging and prod',
       });
     }
+    if (env.LISTEN_ON_LAN && env.APP_ENV !== 'local') {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['LISTEN_ON_LAN'],
+        message: 'is for local development only',
+      });
+    }
     if (env.ASTRO_PROVIDER === 'astrologyapi') {
       for (const key of ['ASTROLOGYAPI_USER_ID', 'ASTROLOGYAPI_API_KEY'] as const) {
         if (!env[key]) {
@@ -87,6 +97,7 @@ export interface Config {
   readonly firebaseProjectId: string;
   readonly appCheckEnforced: boolean;
   readonly quotaProviderCallsPerDay: number;
+  readonly listenOnLan: boolean;
 }
 
 /** Thrown when environment variables are invalid. The message names variables, never values. */
@@ -126,5 +137,6 @@ export function loadConfig(source: NodeJS.ProcessEnv = process.env): Config {
     firebaseProjectId: env.FIREBASE_PROJECT_ID,
     appCheckEnforced: env.APP_CHECK_ENFORCED,
     quotaProviderCallsPerDay: env.QUOTA_PROVIDER_CALLS_PER_DAY,
+    listenOnLan: env.LISTEN_ON_LAN,
   });
 }

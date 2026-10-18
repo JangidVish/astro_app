@@ -15,6 +15,7 @@ function config(overrides: Partial<Config>): Config {
     firebaseProjectId: 'demo-astro-app',
     appCheckEnforced: false,
     quotaProviderCallsPerDay: 30,
+    listenOnLan: false,
     ...overrides,
   };
 }

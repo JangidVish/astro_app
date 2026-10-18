@@ -57,6 +57,16 @@ describe('loadConfig', () => {
     }
   });
 
+  it('LISTEN_ON_LAN is off by default and allowed only for local development', () => {
+    expect(loadConfig(base).listenOnLan).toBe(false);
+    expect(loadConfig({ ...base, LISTEN_ON_LAN: 'true' }).listenOnLan).toBe(true);
+    for (const env of ['test', 'staging']) {
+      expect(problems({ ...base, APP_ENV: env, LISTEN_ON_LAN: 'true' })).toContain(
+        'LISTEN_ON_LAN: is for local development only',
+      );
+    }
+  });
+
   it('refuses the mock provider in prod', () => {
     const found = problems({ ...base, APP_ENV: 'prod', APP_CHECK_ENFORCED: 'true' });
     expect(found).toContain('ASTRO_PROVIDER: mock provider is not allowed in prod');
