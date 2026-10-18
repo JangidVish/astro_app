@@ -1,10 +1,12 @@
 import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import type { PlanetPosition } from '@astro/shared';
-import { Text } from '@/components/ui';
+import { Card, Text } from '@/components/ui';
 import { t } from '@/i18n/en';
-import { spacing } from '@/theme/tokens';
+import { radius, spacing } from '@/theme/tokens';
 import { useTheme } from '@/theme/use-theme';
+import { BODY_COLOR } from './north-indian-chart';
+import { ABBREVIATIONS } from './north-indian-layout';
 
 /** 12.1895 -> "12°11′" (degrees and arc-minutes, as astrologers read positions). */
 export function formatDegree(degree: number | null): string {
@@ -34,19 +36,35 @@ const Row = memo(function Row({ planet }: { planet: PlanetPosition }) {
     <View
       accessible
       accessibilityLabel={spoken}
-      style={[styles.row, { borderBottomColor: colors.border }]}
+      style={[styles.row, { borderBottomColor: colors.hairline }]}
     >
-      <Text variant="label" style={styles.name}>
-        {name}
-        {retro ? ' ℞' : ''}
-      </Text>
-      <Text style={styles.cell}>
-        {planet.sign} {formatDegree(planet.degreeInSign)}
-      </Text>
+      <View style={styles.name}>
+        <View style={[styles.badge, { backgroundColor: colors.chartBg }]}>
+          <Text variant="caption" style={{ color: colors[BODY_COLOR[planet.body]] }}>
+            {ABBREVIATIONS[planet.body]}
+          </Text>
+        </View>
+        <Text variant="label" style={styles.shrink}>
+          {name}
+          {retro ? (
+            <Text variant="label" color="chartRetro">
+              {' ℞'}
+            </Text>
+          ) : null}
+        </Text>
+      </View>
+      <View style={styles.cell}>
+        <Text>{planet.sign}</Text>
+        <Text variant="caption" color="textMuted">
+          {formatDegree(planet.degreeInSign)}
+        </Text>
+      </View>
       <Text style={styles.cell} color="textMuted">
         {nakshatra}
       </Text>
-      <Text style={styles.house}>{planet.house ?? '—'}</Text>
+      <Text variant="label" color="primary" style={styles.house}>
+        {planet.house ? `H${String(planet.house)}` : '—'}
+      </Text>
     </View>
   );
 });
@@ -54,42 +72,53 @@ const Row = memo(function Row({ planet }: { planet: PlanetPosition }) {
 /** The accessible, text alternative to the chart drawing (one row per body). */
 export function PlanetTable({ planets }: { planets: readonly PlanetPosition[] }) {
   return (
-    <View accessibilityRole="list" accessibilityLabel={t('chart.planets')}>
-      <View
-        style={styles.row}
-        importantForAccessibility="no-hide-descendants"
-        accessibilityElementsHidden
-      >
-        <Text variant="caption" color="textMuted" style={styles.name}>
-          {t('chart.body')}
-        </Text>
-        <Text variant="caption" color="textMuted" style={styles.cell}>
-          {t('chart.sign')}
-        </Text>
-        <Text variant="caption" color="textMuted" style={styles.cell}>
-          {t('chart.nakshatra')}
-        </Text>
-        <Text variant="caption" color="textMuted" style={styles.house}>
-          {t('chart.house')}
-        </Text>
+    <Card style={styles.table}>
+      <View accessibilityRole="list" accessibilityLabel={t('chart.planets')}>
+        <View
+          style={styles.row}
+          importantForAccessibility="no-hide-descendants"
+          accessibilityElementsHidden
+        >
+          <Text variant="caption" color="textMuted" style={styles.name}>
+            {t('chart.body')}
+          </Text>
+          <Text variant="caption" color="textMuted" style={styles.cell}>
+            {t('chart.sign')}
+          </Text>
+          <Text variant="caption" color="textMuted" style={styles.cell}>
+            {t('chart.nakshatra')}
+          </Text>
+          <Text variant="caption" color="textMuted" style={styles.house}>
+            {t('chart.house')}
+          </Text>
+        </View>
+        {planets.map((p) => (
+          <Row key={p.body} planet={p} />
+        ))}
       </View>
-      {planets.map((p) => (
-        <Row key={p.body} planet={p} />
-      ))}
-    </View>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     alignItems: 'center',
     paddingVertical: spacing.sm,
     gap: spacing.sm,
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  name: { flexBasis: 92, flexGrow: 0 },
-  cell: { flex: 1, minWidth: 96 },
-  house: { width: 40, textAlign: 'right' },
+  table: { paddingVertical: spacing.xs, gap: 0 },
+  name: { flexBasis: 100, flexGrow: 0, flexDirection: 'row', alignItems: 'center', gap: 6 },
+  badge: {
+    minWidth: 30,
+    borderRadius: radius.sm,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    alignItems: 'center',
+  },
+  shrink: { flexShrink: 1 },
+  // Columns shrink and their text wraps, so the row never breaks across lines.
+  cell: { flex: 1, minWidth: 0 },
+  house: { width: 44, textAlign: 'right' },
 });

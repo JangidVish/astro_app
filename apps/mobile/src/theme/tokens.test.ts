@@ -56,8 +56,12 @@ const CHART_TEXT_PAIRS: [ColorName, ColorName][] = CHART_TEXT.flatMap((fg) => [
   [fg, 'chartBg'] as [ColorName, ColorName],
   [fg, 'chartLagna'] as [ColorName, ColorName],
 ]);
-// The legend under the chart sits on the screen background.
-const LEGEND_PAIRS: [ColorName, ColorName][] = CHART_TEXT.map((fg) => [fg, 'background']);
+// Legend pills and table badges: chart colours on the surface; names on the chart ground.
+const LEGEND_PAIRS: [ColorName, ColorName][] = [
+  ...CHART_TEXT.map((fg): [ColorName, ColorName] => [fg, 'surface']),
+  ['textMuted', 'chartBg'],
+  ['text', 'chartBg'],
+];
 
 describe.each(['light', 'dark'] as const)('%s palette', (mode) => {
   const p = palettes[mode];

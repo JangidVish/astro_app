@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
-import { Platform, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Svg, { G, Line, Polygon, Text as SvgText, TSpan } from 'react-native-svg';
 import { GRAHAS, type ChartBody, type ChartHouse, type PlanetPosition } from '@astro/shared';
 import { Text } from '@/components/ui';
 import { t } from '@/i18n/en';
-import { spacing, type ColorName } from '@/theme/tokens';
+import { fonts, radius, spacing, type ColorName } from '@/theme/tokens';
 import { useTheme } from '@/theme/use-theme';
 import {
   ABBREVIATIONS,
@@ -37,11 +37,9 @@ export const BODY_COLOR: Record<ChartBody, ColorName> = {
   Ketu: 'grahaKetu',
 };
 
-/** SVG text does not inherit the page font on web; use the stack react-native-web uses for Text. */
-const FONT_FAMILY =
-  Platform.OS === 'web'
-    ? '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
-    : undefined;
+/** SVG text does not inherit the app font, so the chart names Inter's faces explicitly. */
+const LABEL_FONT = fonts.semibold;
+const SIGN_FONT = fonts.medium;
 
 /**
  * North Indian chart drawn with SVG from API data, in the traditional saffron style with each
@@ -52,7 +50,8 @@ const FONT_FAMILY =
 export function NorthIndianChart({ houses, planets, title, size }: NorthIndianChartProps) {
   const { colors } = useTheme();
   const { width, fontScale } = useWindowDimensions();
-  const side = size ?? Math.min(width - 32, 480);
+  // Screen padding (2 × 16) plus the saffron panel's padding (2 × 8).
+  const side = size ?? Math.min(width - 48, 480);
   const cells = useMemo(() => northIndianLayout(houses, planets, side), [houses, planets, side]);
 
   // Text grows with the user's text-size setting, within limits so labels still fit their cell.
@@ -68,7 +67,7 @@ export function NorthIndianChart({ houses, planets, title, size }: NorthIndianCh
       accessibilityRole="image"
       accessibilityLabel={`${title}. ${describeChart(houses)}`}
       testID="north-indian-chart"
-      style={styles.wrapper}
+      style={[styles.wrapper, { backgroundColor: colors.chartBg }]}
     >
       <Svg width={s} height={s} viewBox={`0 0 ${String(s)} ${String(s)}`}>
         <Polygon
@@ -109,7 +108,7 @@ export function NorthIndianChart({ houses, planets, title, size }: NorthIndianCh
                 x={cell.signAt.x}
                 y={cell.signAt.y}
                 fontSize={signSize}
-                fontFamily={FONT_FAMILY}
+                fontFamily={SIGN_FONT}
                 fill={colors.chartSign}
                 textAnchor="middle"
                 alignmentBaseline="middle"
@@ -122,8 +121,7 @@ export function NorthIndianChart({ houses, planets, title, size }: NorthIndianCh
                   x={cell.labelAt.x}
                   y={top + i * lineHeight}
                   fontSize={labelSize}
-                  fontFamily={FONT_FAMILY}
-                  fontWeight="700"
+                  fontFamily={LABEL_FONT}
                   textAnchor="middle"
                   alignmentBaseline="middle"
                 >
@@ -152,6 +150,7 @@ export function NorthIndianChart({ houses, planets, title, size }: NorthIndianCh
 
 /** Key to the colours and marks used on the chart. */
 function ChartLegend() {
+  const { colors } = useTheme();
   const items: { key: string; mark: string; name: string; color: ColorName }[] = [
     {
       key: 'As',
@@ -165,7 +164,7 @@ function ChartLegend() {
   return (
     <View style={styles.legend} testID="chart-legend">
       {items.map((item) => (
-        <View key={item.key} style={styles.legendItem}>
+        <View key={item.key} style={[styles.legendItem, { backgroundColor: colors.surface }]}>
           <Text variant="label" color={item.color}>
             {item.mark}
           </Text>
@@ -179,13 +178,20 @@ function ChartLegend() {
 }
 
 const styles = StyleSheet.create({
-  wrapper: { alignItems: 'center', gap: spacing.md },
+  wrapper: { alignItems: 'center', gap: spacing.md, borderRadius: radius.lg, padding: spacing.sm },
   legend: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    columnGap: spacing.md,
-    rowGap: spacing.xs,
+    gap: spacing.xs,
+    paddingBottom: spacing.xs,
   },
-  legendItem: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.xs },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: spacing.xs,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+  },
 });
