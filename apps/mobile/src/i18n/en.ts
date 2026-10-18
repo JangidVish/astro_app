@@ -65,6 +65,10 @@ export const en = {
   'profiles.primary': 'Primary',
   'profiles.timeUnknown': 'Time unknown',
   'profiles.offset': 'Time zone used',
+  'profiles.dateTime': 'Date & time',
+  'profiles.birthplace': 'Birthplace',
+  'profiles.count': '{count} of {max} saved',
+  'profiles.emptyTitle': 'Start with your birth details',
   'profile.new': 'New profile',
   'profile.edit': 'Edit profile',
   'profile.name': 'Name',
@@ -176,4 +180,11 @@ export type MessageKey = keyof typeof en;
 
 export function t(key: MessageKey): string {
   return en[key];
+}
+
+/** A string with {placeholders} filled in, e.g. tf('profiles.count', { count: 2, max: 5 }). */
+export function tf(key: MessageKey, values: Record<string, string | number>): string {
+  return en[key].replace(/\{(\w+)\}/g, (match, name: string) =>
+    name in values ? String(values[name]) : match,
+  );
 }
