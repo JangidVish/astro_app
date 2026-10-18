@@ -137,6 +137,27 @@ describe('northIndianLayout (data)', () => {
     expect(labels(10)).toEqual(['Ra']);
   });
 
+  it('draws every label and sign number inside its own house', () => {
+    // Convex cells: a point is inside when it is on the same side of every edge.
+    const inside = (p: { x: number; y: number }, poly: readonly { x: number; y: number }[]) => {
+      const sides = poly.map((a, i) => {
+        const b = poly[(i + 1) % poly.length] ?? a;
+        return Math.sign((b.x - a.x) * (p.y - a.y) - (b.y - a.y) * (p.x - a.x));
+      });
+      return sides.every((s) => s >= 0) || sides.every((s) => s <= 0);
+    };
+    for (const cell of layout) {
+      expect({ house: cell.house, label: inside(cell.labelAt, cell.polygon) }).toEqual({
+        house: cell.house,
+        label: true,
+      });
+      expect({ house: cell.house, sign: inside(cell.signAt, cell.polygon) }).toEqual({
+        house: cell.house,
+        sign: true,
+      });
+    }
+  });
+
   it('wraps crowded houses', () => {
     expect(wrapLabels(['Su', 'Ma', 'Me', 'Ve', 'Ju'], 2)).toEqual(['Su Ma', 'Me Ve', 'Ju']);
   });

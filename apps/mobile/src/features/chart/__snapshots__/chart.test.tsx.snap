@@ -132,7 +132,14 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         }
         strokeWidth={1.5}
       />
-      <View>
+      <RNSVGGroup
+        fill={
+          {
+            "payload": 4278190080,
+            "type": 0,
+          }
+        }
+      >
         <RNSVGText
           alignmentBaseline="middle"
           content={null}
@@ -234,8 +241,15 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
             y={[]}
           />
         </RNSVGText>
-      </View>
-      <View>
+      </RNSVGGroup>
+      <RNSVGGroup
+        fill={
+          {
+            "payload": 4278190080,
+            "type": 0,
+          }
+        }
+      >
         <RNSVGText
           alignmentBaseline="middle"
           content={null}
@@ -261,12 +275,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           rotate={[]}
           x={
             [
-              124,
+              80,
             ]
           }
           y={
             [
-              100.00000000000001,
+              56,
             ]
           }
         >
@@ -286,8 +300,15 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
             y={[]}
           />
         </RNSVGText>
-      </View>
-      <View>
+      </RNSVGGroup>
+      <RNSVGGroup
+        fill={
+          {
+            "payload": 4278190080,
+            "type": 0,
+          }
+        }
+      >
         <RNSVGText
           alignmentBaseline="middle"
           content={null}
@@ -313,12 +334,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           rotate={[]}
           x={
             [
-              100.00000000000001,
+              56,
             ]
           }
           y={
             [
-              124,
+              80,
             ]
           }
         >
@@ -338,8 +359,15 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
             y={[]}
           />
         </RNSVGText>
-      </View>
-      <View>
+      </RNSVGGroup>
+      <RNSVGGroup
+        fill={
+          {
+            "payload": 4278190080,
+            "type": 0,
+          }
+        }
+      >
         <RNSVGText
           alignmentBaseline="middle"
           content={null}
@@ -441,8 +469,15 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
             y={[]}
           />
         </RNSVGText>
-      </View>
-      <View>
+      </RNSVGGroup>
+      <RNSVGGroup
+        fill={
+          {
+            "payload": 4278190080,
+            "type": 0,
+          }
+        }
+      >
         <RNSVGText
           alignmentBaseline="middle"
           content={null}
@@ -468,12 +503,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           rotate={[]}
           x={
             [
-              100.00000000000001,
+              56,
             ]
           }
           y={
             [
-              196,
+              240,
             ]
           }
         >
@@ -493,8 +528,15 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
             y={[]}
           />
         </RNSVGText>
-      </View>
-      <View>
+      </RNSVGGroup>
+      <RNSVGGroup
+        fill={
+          {
+            "payload": 4278190080,
+            "type": 0,
+          }
+        }
+      >
         <RNSVGText
           alignmentBaseline="middle"
           content={null}
@@ -520,12 +562,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           rotate={[]}
           x={
             [
-              124,
+              80,
             ]
           }
           y={
             [
-              220,
+              264,
             ]
           }
         >
@@ -545,8 +587,15 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
             y={[]}
           />
         </RNSVGText>
-      </View>
-      <View>
+      </RNSVGGroup>
+      <RNSVGGroup
+        fill={
+          {
+            "payload": 4278190080,
+            "type": 0,
+          }
+        }
+      >
         <RNSVGText
           alignmentBaseline="middle"
           content={null}
@@ -648,8 +697,15 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
             y={[]}
           />
         </RNSVGText>
-      </View>
-      <View>
+      </RNSVGGroup>
+      <RNSVGGroup
+        fill={
+          {
+            "payload": 4278190080,
+            "type": 0,
+          }
+        }
+      >
         <RNSVGText
           alignmentBaseline="middle"
           content={null}
@@ -675,12 +731,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           rotate={[]}
           x={
             [
-              196,
+              240,
             ]
           }
           y={
             [
-              220,
+              264,
             ]
           }
         >
@@ -751,8 +807,15 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
             y={[]}
           />
         </RNSVGText>
-      </View>
-      <View>
+      </RNSVGGroup>
+      <RNSVGGroup
+        fill={
+          {
+            "payload": 4278190080,
+            "type": 0,
+          }
+        }
+      >
         <RNSVGText
           alignmentBaseline="middle"
           content={null}
@@ -778,12 +841,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           rotate={[]}
           x={
             [
-              220,
+              264,
             ]
           }
           y={
             [
-              196,
+              240,
             ]
           }
         >
@@ -905,8 +968,15 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
             y={[]}
           />
         </RNSVGText>
-      </View>
-      <View>
+      </RNSVGGroup>
+      <RNSVGGroup
+        fill={
+          {
+            "payload": 4278190080,
+            "type": 0,
+          }
+        }
+      >
         <RNSVGText
           alignmentBaseline="middle"
           content={null}
@@ -1008,8 +1078,15 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
             y={[]}
           />
         </RNSVGText>
-      </View>
-      <View>
+      </RNSVGGroup>
+      <RNSVGGroup
+        fill={
+          {
+            "payload": 4278190080,
+            "type": 0,
+          }
+        }
+      >
         <RNSVGText
           alignmentBaseline="middle"
           content={null}
@@ -1035,12 +1112,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           rotate={[]}
           x={
             [
-              220,
+              264,
             ]
           }
           y={
             [
-              124,
+              80,
             ]
           }
         >
@@ -1060,8 +1137,15 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
             y={[]}
           />
         </RNSVGText>
-      </View>
-      <View>
+      </RNSVGGroup>
+      <RNSVGGroup
+        fill={
+          {
+            "payload": 4278190080,
+            "type": 0,
+          }
+        }
+      >
         <RNSVGText
           alignmentBaseline="middle"
           content={null}
@@ -1087,12 +1171,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
           rotate={[]}
           x={
             [
-              196,
+              240,
             ]
           }
           y={
             [
-              100.00000000000001,
+              56,
             ]
           }
         >
@@ -1112,7 +1196,7 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
             y={[]}
           />
         </RNSVGText>
-      </View>
+      </RNSVGGroup>
     </RNSVGGroup>
   </RNSVGSvgView>
 </View>

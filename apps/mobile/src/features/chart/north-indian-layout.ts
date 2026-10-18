@@ -91,18 +91,23 @@ export function northIndianLayout(
 ): HouseCell[] {
   const retro = new Set(planets.filter((p) => p.isRetrograde).map((p) => p.body));
   const center = { x: size / 2, y: size / 2 };
+  const distance = (a: Point, b: Point) => Math.hypot(a.x - b.x, a.y - b.y);
   return northIndianCells(size).map(({ house, polygon }) => {
     const data = houses.find((h) => h.house === house);
     if (!data) throw new Error(`chart is missing house ${String(house)}`);
     const bodies: ChartBody[] = house === 1 ? ['Ascendant', ...data.bodies] : [...data.bodies];
     const labelAt = centroid(polygon);
+    // The cell's inner corner: its vertex closest to the chart centre (the centre itself for the
+    // diamonds). Aiming at the chart centre instead pushed corner-triangle numbers into the
+    // neighbouring house.
+    const inner = polygon.reduce((a, b) => (distance(b, center) < distance(a, center) ? b : a));
     return {
       house,
       signNumber: data.signNumber,
       polygon,
       labelAt,
-      // Sign number sits between the label and the chart centre (the cell's inner corner).
-      signAt: towards(labelAt, center, 0.55),
+      // Sign number sits between the label and the cell's inner corner.
+      signAt: towards(labelAt, inner, 0.55),
       labels: bodies.map((b) => {
         const nodes = b === 'Rahu' || b === 'Ketu';
         return `${ABBREVIATIONS[b]}${retro.has(b) && !nodes ? RETRO : ''}`;

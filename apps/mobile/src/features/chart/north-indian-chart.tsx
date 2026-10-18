@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { useWindowDimensions, View } from 'react-native';
-import Svg, { Line, Polygon, Text as SvgText } from 'react-native-svg';
+import { Platform, useWindowDimensions, View } from 'react-native';
+import Svg, { G, Line, Polygon, Text as SvgText } from 'react-native-svg';
 import type { ChartHouse, PlanetPosition } from '@astro/shared';
 import { useTheme } from '@/theme/use-theme';
 import { describeChart, northIndianLayout, wrapLabels } from './north-indian-layout';
@@ -18,6 +18,12 @@ export interface NorthIndianChartProps {
  * North Indian chart drawn with SVG from API data. It is exposed to screen readers as one image
  * with a spoken summary; the planet table beside it is the full accessible alternative.
  */
+/** SVG text does not inherit the page font on web; use the stack react-native-web uses for Text. */
+const FONT_FAMILY =
+  Platform.OS === 'web'
+    ? '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif'
+    : undefined;
+
 export function NorthIndianChart({ houses, planets, title, size }: NorthIndianChartProps) {
   const { colors } = useTheme();
   const { width, fontScale } = useWindowDimensions();
@@ -59,11 +65,14 @@ export function NorthIndianChart({ houses, planets, title, size }: NorthIndianCh
           const lineHeight = labelSize * 1.15;
           const top = cell.labelAt.y - ((lines.length - 1) * lineHeight) / 2;
           return (
-            <View key={cell.house}>
+            // An SVG group: a React Native View here is a <div> inside <svg> on web, which
+            // browsers do not render, leaving the chart without any labels.
+            <G key={cell.house}>
               <SvgText
                 x={cell.signAt.x}
                 y={cell.signAt.y}
                 fontSize={signSize}
+                fontFamily={FONT_FAMILY}
                 fill={colors.textMuted}
                 textAnchor="middle"
                 alignmentBaseline="middle"
@@ -76,6 +85,7 @@ export function NorthIndianChart({ houses, planets, title, size }: NorthIndianCh
                   x={cell.labelAt.x}
                   y={top + i * lineHeight}
                   fontSize={labelSize}
+                  fontFamily={FONT_FAMILY}
                   fontWeight="600"
                   fill={
                     line.startsWith('As') && i === 0 && cell.house === 1
@@ -88,7 +98,7 @@ export function NorthIndianChart({ houses, planets, title, size }: NorthIndianCh
                   {line}
                 </SvgText>
               ))}
-            </View>
+            </G>
           );
         })}
       </Svg>
