@@ -21,6 +21,7 @@ export const en = {
   'auth.signUp.haveAccountPrompt': 'Already have an account?',
   'auth.signUp.signIn': 'Sign in',
   'auth.reset.title': 'Reset password',
+  'auth.reset.intro': 'Enter your email address and we’ll send you a link to reset your password.',
   'auth.reset.submit': 'Send reset link',
   'auth.reset.sent': 'If an account exists for that email, a reset link is on its way.',
   'auth.reset.back': 'Back to sign in',
@@ -52,6 +53,10 @@ export const en = {
   'consent.terms': 'Terms of use',
   'consent.disclaimer': 'Astrological readings are for guidance and entertainment.',
   'consent.accept': 'I agree',
+  'consent.dataTitle': 'Your birth details',
+  'consent.guidanceTitle': 'Guidance',
+  'consent.documents': 'Policies',
+  'consent.version': 'Version',
 
   'profiles.title': 'Profiles',
   'profiles.add': 'Add profile',

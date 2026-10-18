@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text as RNText,
   View,
+  type StyleProp,
   type TextProps as RNTextProps,
   type ViewStyle,
 } from 'react-native';
@@ -97,7 +98,7 @@ export function Card({
   tone = 'default',
 }: {
   children: ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   tone?: 'default' | 'muted';
 }) {
   const { colors, scheme } = useTheme();
