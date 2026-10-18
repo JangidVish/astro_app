@@ -4,7 +4,7 @@ import { Card, Screen, Text } from '@/components/ui';
 import { useDasha } from '@/features/chart/hooks';
 import { ReadingError } from '@/features/chart/reading-error';
 import { useProfile } from '@/features/profiles/hooks';
-import { DashaList } from '@/features/readings/dasha-list';
+import { DashaList, LifetimeBar } from '@/features/readings/dasha-list';
 import { t } from '@/i18n/en';
 
 export default function DashaScreen() {
@@ -27,7 +27,12 @@ export default function DashaScreen() {
           {dasha.isError && (
             <ReadingError error={dasha.error} onRetry={() => void dasha.refetch()} />
           )}
-          {dasha.data && <DashaList profileId={id} periods={dasha.data.mahadashas} />}
+          {dasha.data && (
+            <>
+              <LifetimeBar periods={dasha.data.mahadashas} />
+              <DashaList profileId={id} periods={dasha.data.mahadashas} />
+            </>
+          )}
         </>
       )}
     </Screen>

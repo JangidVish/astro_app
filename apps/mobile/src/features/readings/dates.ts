@@ -28,3 +28,18 @@ export function localIsoDate(now: Date, offsetDays: number): string {
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${String(d.getFullYear())}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
+
+/** Short length for a sub-period: "7 months" under a year, else "1.4 years". */
+export function periodLength(period: DashaPeriod): string {
+  const days = (Date.parse(period.end) - Date.parse(period.start)) / (24 * 60 * 60 * 1000);
+  if (days < 365) {
+    const months = Math.max(1, Math.round(days / 30.44));
+    return `${String(months)} ${months === 1 ? 'month' : 'months'}`;
+  }
+  return `${(days / 365.25).toFixed(1)} years`;
+}
+
+/** Calendar year of an instant, in the device's time zone. */
+export function yearOf(iso: string): number {
+  return new Date(iso).getFullYear();
+}

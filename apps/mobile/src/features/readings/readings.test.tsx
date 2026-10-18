@@ -6,8 +6,8 @@ import { ApiError, type ApiClient } from '@/lib/api-client';
 import { ApiProvider } from '@/lib/api-context';
 import { t } from '@/i18n/en';
 import { readingErrorMessage } from '@/features/chart/reading-error';
-import { DashaList } from './dasha-list';
-import { formatInstant, isCurrent, localIsoDate, periodYears } from './dates';
+import { DashaList, LifetimeBar } from './dasha-list';
+import { formatInstant, isCurrent, localIsoDate, periodLength, periodYears } from './dates';
 import { PredictionView } from './prediction-view';
 
 const periods: DashaPeriod[] = [
@@ -43,6 +43,18 @@ describe('date helpers', () => {
   it('formats dates unambiguously and period lengths in years', () => {
     expect(formatInstant('2024-08-23T13:24:00Z')).toMatch(/23 Aug 2024/);
     expect(periodYears(periods[2]!)).toBe('7.0 years');
+  });
+
+  it('gives sub-period lengths in months under a year', () => {
+    expect(
+      periodLength({ lord: 'Sun', start: '2026-01-01T00:00:00Z', end: '2026-07-01T00:00:00Z' }),
+    ).toBe('6 months');
+    expect(
+      periodLength({ lord: 'Sun', start: '2026-01-01T00:00:00Z', end: '2026-01-20T00:00:00Z' }),
+    ).toBe('1 month');
+    expect(
+      periodLength({ lord: 'Sun', start: '2026-01-01T00:00:00Z', end: '2027-07-02T00:00:00Z' }),
+    ).toBe('1.5 years');
   });
 
   it('local dates shift by whole days across month and year ends', () => {
@@ -109,6 +121,15 @@ describe('DashaList', () => {
       wrapper: wrapper({ getAntardashas }),
     });
     expect(await screen.findByText(t('reading.unavailable'))).toBeTruthy();
+  });
+});
+
+describe('LifetimeBar', () => {
+  it('speaks the cycle and where today falls', async () => {
+    await render(<LifetimeBar periods={periods} now={NOW} />);
+    expect(
+      screen.getByLabelText(/^Lifetime: \d{4} – \d{4}\. You are here: Ketu Mahadasha$/),
+    ).toBeTruthy();
   });
 });
 
