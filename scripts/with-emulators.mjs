@@ -11,6 +11,7 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { connect } from 'node:net';
 import { readFileSync } from 'node:fs';
+import { EOL } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 
@@ -102,12 +103,38 @@ function killTree(child) {
   }
 }
 
+/** PID listening on a local TCP port, or null if it cannot be determined. */
+function portOwner(port) {
+  const result = isWindows
+    ? spawnSync('netstat', ['-ano', '-p', 'TCP'], { encoding: 'utf8' })
+    : spawnSync('lsof', ['-nP', `-iTCP:${String(port)}`, '-sTCP:LISTEN', '-t'], {
+        encoding: 'utf8',
+      });
+  if (result.status !== 0 || !result.stdout) return null;
+  const lines = result.stdout.split(EOL).map((l) => l.trim());
+  if (!isWindows) return lines[0] || null;
+  // netstat columns: proto, local address, foreign address, state, PID.
+  const row = lines
+    .map((l) => l.split(' ').filter(Boolean))
+    .find((cols) => cols[3] === 'LISTENING' && cols[1]?.endsWith(`:${String(port)}`));
+  return row?.[4] ?? null;
+}
+
 // Refuse to start if a previous run left something on our ports: tests would hit a stale emulator.
 for (const p of ports) {
   if (await isListening(p)) {
     console.error(
       `Port ${p.port} (${p.name} emulator) is already in use. Stop the process holding it and retry.`,
     );
+    const pid = portOwner(p.port);
+    if (pid) {
+      // Often an emulator left behind by `firebase emulators:start` after Ctrl+C on Windows.
+      console.error(
+        isWindows
+          ? `  Held by PID ${pid}. Stop it with (PowerShell): Stop-Process -Id ${pid}`
+          : `  Held by PID ${pid}. Stop it with: kill ${pid}`,
+      );
+    }
     process.exit(1);
   }
 }
