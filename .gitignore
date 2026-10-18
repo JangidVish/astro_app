@@ -46,3 +46,6 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+# Browser automation output (Playwright MCP)
+.playwright-mcp/
