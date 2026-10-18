@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Switch, View } from 'react-native';
+import { StyleSheet, Switch, View } from 'react-native';
 import { RELATIONS, type ProfileCreateInput, type Relation } from '@astro/shared';
-import { Button, ErrorBanner, TextField } from '@/components/form';
-import { Card, Text } from '@/components/ui';
+import { Button, Chip, ErrorBanner, TextField } from '@/components/form';
+import { Card, Icon, Text } from '@/components/ui';
 import { t, type MessageKey } from '@/i18n/en';
 import { ApiError } from '@/lib/api-client';
-import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
+import { MIN_TOUCH, spacing } from '@/theme/tokens';
 import { useTheme } from '@/theme/use-theme';
 import { DateTimeField } from './date-time-field';
 import { formatUtcOffset } from './format';
@@ -24,38 +24,8 @@ export interface ProfileFormProps {
   onSubmit: (input: ProfileCreateInput) => Promise<unknown>;
 }
 
-function Chip({
-  label,
-  selected,
-  onPress,
-}: {
-  label: string;
-  selected: boolean;
-  onPress: () => void;
-}) {
-  const { colors } = useTheme();
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="radio"
-      accessibilityState={{ selected }}
-      accessibilityLabel={label}
-      style={[
-        styles.chip,
-        {
-          borderColor: selected ? colors.primary : colors.border,
-          backgroundColor: selected ? colors.primary : colors.surface,
-        },
-      ]}
-    >
-      <Text variant="label" style={{ color: selected ? colors.onPrimary : colors.text }}>
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
-
 export function ProfileForm({ initial, submitLabel, onSubmit }: ProfileFormProps) {
+  const { colors } = useTheme();
   const [form, setForm] = useState<ProfileFormState>(initial);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<MessageKey | null>(null);
@@ -132,27 +102,38 @@ export function ProfileForm({ initial, submitLabel, onSubmit }: ProfileFormProps
         testID="birth-date"
       />
 
-      <View style={styles.switchRow}>
-        <Text style={styles.flex}>{t('profile.timeKnown')}</Text>
-        <Switch
-          value={form.timeKnown}
-          onValueChange={(timeKnown) => set({ timeKnown, offsetChoice: null })}
-          accessibilityLabel={t('profile.timeKnown')}
-          testID="time-known"
-        />
-      </View>
-      {form.timeKnown ? (
-        <DateTimeField
-          mode="time"
-          label={t('profile.birthTime')}
-          value={form.birthTime}
-          onChange={(birthTime) => set({ birthTime, offsetChoice: null })}
-          error={err('birthTime')}
-          testID="birth-time"
-        />
-      ) : (
-        <Text color="textMuted">{t('profile.timeUnknownNote')}</Text>
-      )}
+      <Card>
+        <View style={styles.switchRow}>
+          <View style={styles.flex}>
+            <Text variant="label">{t('profile.timeKnown')}</Text>
+            <Text variant="caption" color="textMuted">
+              {t('profile.timeKnownHint')}
+            </Text>
+          </View>
+          <Switch
+            value={form.timeKnown}
+            onValueChange={(timeKnown) => set({ timeKnown, offsetChoice: null })}
+            trackColor={{ true: colors.primary, false: colors.border }}
+            thumbColor={colors.surface}
+            // react-native-web colours the "on" thumb with its own prop.
+            {...{ activeThumbColor: colors.surface }}
+            accessibilityLabel={t('profile.timeKnown')}
+            testID="time-known"
+          />
+        </View>
+        {form.timeKnown ? (
+          <DateTimeField
+            mode="time"
+            label={t('profile.birthTime')}
+            value={form.birthTime}
+            onChange={(birthTime) => set({ birthTime, offsetChoice: null })}
+            error={err('birthTime')}
+            testID="birth-time"
+          />
+        ) : (
+          <Text color="textMuted">{t('profile.timeUnknownNote')}</Text>
+        )}
+      </Card>
 
       <PlaceSearch
         value={form.place}
@@ -190,12 +171,21 @@ export function ProfileForm({ initial, submitLabel, onSubmit }: ProfileFormProps
         </Text>
       )}
       {check.kind === 'ok' && (
-        <Text color="textMuted" testID="offset-preview">
-          {t('profile.offsetPreview')}: {formatUtcOffset(check.utcOffsetMinutes)}
-        </Text>
+        <View style={styles.preview}>
+          <Icon name="schedule" color="accent" size={18} />
+          <Text color="textMuted" testID="offset-preview" style={styles.flex}>
+            {t('profile.offsetPreview')}: {formatUtcOffset(check.utcOffsetMinutes)}
+          </Text>
+        </View>
       )}
 
-      <Button label={submitLabel} onPress={() => void submit()} loading={saving} testID="save" />
+      <Button
+        label={submitLabel}
+        icon="check"
+        onPress={() => void submit()}
+        loading={saving}
+        testID="save"
+      />
     </View>
   );
 }
@@ -204,13 +194,7 @@ const styles = StyleSheet.create({
   form: { gap: spacing.md },
   group: { gap: spacing.xs },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
-  chip: {
-    minHeight: MIN_TOUCH,
-    borderWidth: 1,
-    borderRadius: radius.lg,
-    paddingHorizontal: spacing.md,
-    justifyContent: 'center',
-  },
   switchRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, minHeight: MIN_TOUCH },
+  preview: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   flex: { flex: 1 },
 });

@@ -2,7 +2,7 @@ import DateTimePicker, { type DateTimePickerEvent } from '@react-native-communit
 import { useState } from 'react';
 import { Platform, Pressable, StyleSheet, View } from 'react-native';
 import type { BirthDate, BirthTime } from '@astro/shared';
-import { Text } from '@/components/ui';
+import { Icon, Text } from '@/components/ui';
 import { MIN_TOUCH, radius, spacing } from '@/theme/tokens';
 import { useTheme } from '@/theme/use-theme';
 import {
@@ -67,13 +67,13 @@ function WebDateTimeInput(props: Props) {
       aria-invalid={props.error ? true : undefined}
       data-testid={props.testID}
       style={{
-        minHeight: MIN_TOUCH,
+        minHeight: MIN_TOUCH + 4,
         boxSizing: 'border-box',
         borderWidth: 1,
         borderStyle: 'solid',
         borderRadius: radius.md,
         borderColor: props.error ? colors.danger : colors.border,
-        backgroundColor: colors.surface,
+        backgroundColor: colors.surfaceAlt,
         color: colors.text,
         colorScheme: scheme, // the browser's picker follows the app's light or dark theme
         paddingLeft: spacing.md,
@@ -145,11 +145,14 @@ export function DateTimeField(props: Props) {
           styles.box,
           {
             borderColor: props.error ? colors.danger : colors.border,
-            backgroundColor: colors.surface,
+            backgroundColor: colors.surfaceAlt,
           },
         ]}
       >
-        <Text color={display ? 'text' : 'textMuted'}>{display ?? '—'}</Text>
+        <Text color={display ? 'text' : 'textMuted'} style={styles.value}>
+          {display ?? '—'}
+        </Text>
+        <Icon name={props.mode === 'date' ? 'calendar-today' : 'schedule'} />
       </Pressable>
       {open && (
         <DateTimePicker
@@ -175,10 +178,13 @@ export function DateTimeField(props: Props) {
 const styles = StyleSheet.create({
   field: { gap: spacing.xs },
   box: {
-    minHeight: MIN_TOUCH,
+    minHeight: MIN_TOUCH + 4,
     borderWidth: 1,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
+  value: { flex: 1 },
 });

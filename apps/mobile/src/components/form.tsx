@@ -1,11 +1,13 @@
 import { forwardRef, useState, type ComponentRef, type ReactNode } from 'react';
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   StyleSheet,
   TextInput,
   View,
   type TextInputProps,
+  type TextStyle,
 } from 'react-native';
 import { t } from '@/i18n/en';
 import { MIN_TOUCH, radius, spacing, typography, type ColorName } from '@/theme/tokens';
@@ -25,6 +27,12 @@ export interface ButtonProps {
   accessibilityHint?: string;
   testID?: string;
 }
+
+/**
+ * Web only: the browser's own focus ring sits inside our field. Focus is shown on the whole field
+ * instead (indigo border). React Native's types do not list "none", but react-native-web accepts it.
+ */
+const NO_BROWSER_OUTLINE = (Platform.OS === 'web' ? { outlineStyle: 'none' } : {}) as TextStyle;
 
 const BUTTON_COLORS: Record<ButtonVariant, { bg: ColorName | null; fg: ColorName }> = {
   primary: { bg: 'primary', fg: 'onPrimary' },
@@ -93,9 +101,13 @@ export interface TextFieldProps extends TextInputProps {
 
 /** Labelled, filled input; the error is shown under the field and announced with it. */
 export const TextField = forwardRef<ComponentRef<typeof TextInput>, TextFieldProps>(
-  function TextField({ label, error, hint, icon, revealable, style, ...rest }, ref) {
+  function TextField(
+    { label, error, hint, icon, revealable, style, onFocus, onBlur, ...rest },
+    ref,
+  ) {
     const { colors } = useTheme();
     const [revealed, setRevealed] = useState(false);
+    const [focused, setFocused] = useState(false);
     const description = error ?? hint;
     const secure = rest.secureTextEntry === true && !revealed;
     return (
@@ -107,7 +119,10 @@ export const TextField = forwardRef<ComponentRef<typeof TextInput>, TextFieldPro
             {
               backgroundColor: colors.surfaceAlt,
               // Kept visible (3:1) so the field is recognisable as an input (WCAG 1.4.11).
-              borderColor: error ? colors.danger : colors.border,
+              // Focus is shown on the whole field (the browser's inner outline is turned off).
+              borderColor: error ? colors.danger : focused ? colors.primary : colors.border,
+              borderWidth: focused ? 2 : 1,
+              paddingHorizontal: focused ? spacing.md - 1 : spacing.md,
             },
           ]}
         >
@@ -117,7 +132,21 @@ export const TextField = forwardRef<ComponentRef<typeof TextInput>, TextFieldPro
             accessibilityHint={description ?? undefined}
             accessibilityState={{ disabled: rest.editable === false }}
             placeholderTextColor={colors.textMuted}
-            style={[styles.input, typography.body, { color: colors.text }, style]}
+            style={[
+              styles.input,
+              NO_BROWSER_OUTLINE,
+              typography.body,
+              { color: colors.text },
+              style,
+            ]}
+            onFocus={(event) => {
+              setFocused(true);
+              onFocus?.(event);
+            }}
+            onBlur={(event) => {
+              setFocused(false);
+              onBlur?.(event);
+            }}
             {...rest}
             secureTextEntry={secure}
           />

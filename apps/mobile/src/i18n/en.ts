@@ -81,6 +81,7 @@ export const en = {
   'profile.birthDate': 'Date of birth',
   'profile.birthTime': 'Time of birth',
   'profile.timeKnown': 'I know the exact birth time',
+  'profile.timeKnownHint': 'Needed for the ascendant (Lagna), houses and dasha.',
   'profile.timeUnknownNote':
     'Without the time we can show planet signs and your daily prediction, but not the ascendant, houses or dasha.',
   'profile.place': 'Place of birth',
