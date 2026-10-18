@@ -1333,13 +1333,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_600SemiBold",
               "fontSize": 15,
-              "fontWeight": "600",
-              "lineHeight": 22,
+              "lineHeight": 20,
             },
             {
               "color": "#7B1E1E",
-              "fontFamily": "system-ui",
             },
             undefined,
           ]
@@ -1351,13 +1350,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_500Medium",
               "fontSize": 13,
-              "fontWeight": "400",
               "lineHeight": 18,
             },
             {
-              "color": "#4A4570",
-              "fontFamily": "system-ui",
+              "color": "#474552",
             },
             undefined,
           ]
@@ -1379,13 +1377,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_600SemiBold",
               "fontSize": 15,
-              "fontWeight": "600",
-              "lineHeight": 22,
+              "lineHeight": 20,
             },
             {
               "color": "#9C3D08",
-              "fontFamily": "system-ui",
             },
             undefined,
           ]
@@ -1397,13 +1394,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_500Medium",
               "fontSize": 13,
-              "fontWeight": "400",
               "lineHeight": 18,
             },
             {
-              "color": "#4A4570",
-              "fontFamily": "system-ui",
+              "color": "#474552",
             },
             undefined,
           ]
@@ -1425,13 +1421,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_600SemiBold",
               "fontSize": 15,
-              "fontWeight": "600",
-              "lineHeight": 22,
+              "lineHeight": 20,
             },
             {
               "color": "#2F5D8A",
-              "fontFamily": "system-ui",
             },
             undefined,
           ]
@@ -1443,13 +1438,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_500Medium",
               "fontSize": 13,
-              "fontWeight": "400",
               "lineHeight": 18,
             },
             {
-              "color": "#4A4570",
-              "fontFamily": "system-ui",
+              "color": "#474552",
             },
             undefined,
           ]
@@ -1471,13 +1465,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_600SemiBold",
               "fontSize": 15,
-              "fontWeight": "600",
-              "lineHeight": 22,
+              "lineHeight": 20,
             },
             {
               "color": "#B42318",
-              "fontFamily": "system-ui",
             },
             undefined,
           ]
@@ -1489,13 +1482,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_500Medium",
               "fontSize": 13,
-              "fontWeight": "400",
               "lineHeight": 18,
             },
             {
-              "color": "#4A4570",
-              "fontFamily": "system-ui",
+              "color": "#474552",
             },
             undefined,
           ]
@@ -1517,13 +1509,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_600SemiBold",
               "fontSize": 15,
-              "fontWeight": "600",
-              "lineHeight": 22,
+              "lineHeight": 20,
             },
             {
               "color": "#11703A",
-              "fontFamily": "system-ui",
             },
             undefined,
           ]
@@ -1535,13 +1526,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_500Medium",
               "fontSize": 13,
-              "fontWeight": "400",
               "lineHeight": 18,
             },
             {
-              "color": "#4A4570",
-              "fontFamily": "system-ui",
+              "color": "#474552",
             },
             undefined,
           ]
@@ -1563,13 +1553,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_600SemiBold",
               "fontSize": 15,
-              "fontWeight": "600",
-              "lineHeight": 22,
+              "lineHeight": 20,
             },
             {
               "color": "#7A5A00",
-              "fontFamily": "system-ui",
             },
             undefined,
           ]
@@ -1581,13 +1570,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_500Medium",
               "fontSize": 13,
-              "fontWeight": "400",
               "lineHeight": 18,
             },
             {
-              "color": "#4A4570",
-              "fontFamily": "system-ui",
+              "color": "#474552",
             },
             undefined,
           ]
@@ -1609,13 +1597,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_600SemiBold",
               "fontSize": 15,
-              "fontWeight": "600",
-              "lineHeight": 22,
+              "lineHeight": 20,
             },
             {
               "color": "#A3207A",
-              "fontFamily": "system-ui",
             },
             undefined,
           ]
@@ -1627,13 +1614,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_500Medium",
               "fontSize": 13,
-              "fontWeight": "400",
               "lineHeight": 18,
             },
             {
-              "color": "#4A4570",
-              "fontFamily": "system-ui",
+              "color": "#474552",
             },
             undefined,
           ]
@@ -1655,13 +1641,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_600SemiBold",
               "fontSize": 15,
-              "fontWeight": "600",
-              "lineHeight": 22,
+              "lineHeight": 20,
             },
             {
               "color": "#1F2A6B",
-              "fontFamily": "system-ui",
             },
             undefined,
           ]
@@ -1673,13 +1658,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_500Medium",
               "fontSize": 13,
-              "fontWeight": "400",
               "lineHeight": 18,
             },
             {
-              "color": "#4A4570",
-              "fontFamily": "system-ui",
+              "color": "#474552",
             },
             undefined,
           ]
@@ -1701,13 +1685,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_600SemiBold",
               "fontSize": 15,
-              "fontWeight": "600",
-              "lineHeight": 22,
+              "lineHeight": 20,
             },
             {
               "color": "#4B4B5C",
-              "fontFamily": "system-ui",
             },
             undefined,
           ]
@@ -1719,13 +1702,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_500Medium",
               "fontSize": 13,
-              "fontWeight": "400",
               "lineHeight": 18,
             },
             {
-              "color": "#4A4570",
-              "fontFamily": "system-ui",
+              "color": "#474552",
             },
             undefined,
           ]
@@ -1747,13 +1729,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_600SemiBold",
               "fontSize": 15,
-              "fontWeight": "600",
-              "lineHeight": 22,
+              "lineHeight": 20,
             },
             {
               "color": "#6B4423",
-              "fontFamily": "system-ui",
             },
             undefined,
           ]
@@ -1765,13 +1746,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_500Medium",
               "fontSize": 13,
-              "fontWeight": "400",
               "lineHeight": 18,
             },
             {
-              "color": "#4A4570",
-              "fontFamily": "system-ui",
+              "color": "#474552",
             },
             undefined,
           ]
@@ -1793,13 +1773,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_600SemiBold",
               "fontSize": 15,
-              "fontWeight": "600",
-              "lineHeight": 22,
+              "lineHeight": 20,
             },
             {
               "color": "#0B6177",
-              "fontFamily": "system-ui",
             },
             undefined,
           ]
@@ -1811,13 +1790,12 @@ exports[`NorthIndianChart component renders consistently (snapshot) 1`] = `
         style={
           [
             {
+              "fontFamily": "Inter_500Medium",
               "fontSize": 13,
-              "fontWeight": "400",
               "lineHeight": 18,
             },
             {
-              "color": "#4A4570",
-              "fontFamily": "system-ui",
+              "color": "#474552",
             },
             undefined,
           ]

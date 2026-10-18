@@ -1,4 +1,4 @@
-import { forwardRef, type ComponentRef } from 'react';
+import { forwardRef, useState, type ComponentRef, type ReactNode } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -7,25 +7,39 @@ import {
   View,
   type TextInputProps,
 } from 'react-native';
-import { MIN_TOUCH, radius, spacing, typography } from '@/theme/tokens';
+import { t } from '@/i18n/en';
+import { MIN_TOUCH, radius, spacing, typography, type ColorName } from '@/theme/tokens';
 import { useTheme } from '@/theme/use-theme';
-import { Text } from './ui';
+import { Icon, Text, type IconName } from './ui';
+
+export type ButtonVariant = 'primary' | 'secondary' | 'link' | 'danger' | 'dangerSoft';
 
 export interface ButtonProps {
   label: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'link' | 'danger';
+  variant?: ButtonVariant;
+  /** Leading icon; decorative, the label stays the accessible name. */
+  icon?: IconName;
   loading?: boolean;
   disabled?: boolean;
   accessibilityHint?: string;
   testID?: string;
 }
 
+const BUTTON_COLORS: Record<ButtonVariant, { bg: ColorName | null; fg: ColorName }> = {
+  primary: { bg: 'primary', fg: 'onPrimary' },
+  secondary: { bg: 'surfaceAlt', fg: 'primary' },
+  link: { bg: null, fg: 'primary' },
+  danger: { bg: 'danger', fg: 'onDanger' },
+  dangerSoft: { bg: 'dangerSoft', fg: 'onDangerSoft' },
+};
+
 /** Button with a 44 pt minimum target; disabled and announced as busy while loading. */
 export function Button({
   label,
   onPress,
   variant = 'primary',
+  icon,
   loading = false,
   disabled = false,
   accessibilityHint,
@@ -33,10 +47,7 @@ export function Button({
 }: ButtonProps) {
   const { colors } = useTheme();
   const inactive = disabled || loading;
-  const filled = variant === 'primary' || variant === 'danger';
-  const background =
-    variant === 'primary' ? colors.primary : variant === 'danger' ? colors.danger : 'transparent';
-  const foreground = filled ? colors.onPrimary : variant === 'link' ? colors.primary : colors.text;
+  const { bg, fg: foreground } = BUTTON_COLORS[variant];
 
   return (
     <Pressable
@@ -49,16 +60,22 @@ export function Button({
       accessibilityState={{ disabled: inactive, busy: loading }}
       style={({ pressed }) => [
         styles.button,
-        variant !== 'link' && { borderColor: filled ? background : colors.border, borderWidth: 1 },
-        { backgroundColor: background, opacity: inactive ? 0.6 : pressed ? 0.85 : 1 },
+        variant === 'link' && styles.link,
+        {
+          backgroundColor: bg ? colors[bg] : 'transparent',
+          opacity: inactive ? 0.55 : pressed ? 0.85 : 1,
+        },
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={foreground} />
+        <ActivityIndicator color={colors[foreground]} />
       ) : (
-        <Text variant="label" style={{ color: foreground, textAlign: 'center' }}>
-          {label}
-        </Text>
+        <View style={styles.buttonContent}>
+          {icon ? <Icon name={icon} color={foreground} /> : null}
+          <Text variant="label" color={foreground} style={styles.centered}>
+            {label}
+          </Text>
+        </View>
       )}
     </Pressable>
   );
@@ -68,34 +85,56 @@ export interface TextFieldProps extends TextInputProps {
   label: string;
   error?: string | null;
   hint?: string;
+  /** Icon at the end of the field (decorative). */
+  icon?: IconName;
+  /** For password fields: adds a button that shows or hides what was typed. */
+  revealable?: boolean;
 }
 
-/** Labelled input; the error is shown under the field and announced with it. */
+/** Labelled, filled input; the error is shown under the field and announced with it. */
 export const TextField = forwardRef<ComponentRef<typeof TextInput>, TextFieldProps>(
-  function TextField({ label, error, hint, style, ...rest }, ref) {
+  function TextField({ label, error, hint, icon, revealable, style, ...rest }, ref) {
     const { colors } = useTheme();
+    const [revealed, setRevealed] = useState(false);
     const description = error ?? hint;
+    const secure = rest.secureTextEntry === true && !revealed;
     return (
       <View style={styles.field}>
         <Text variant="label">{label}</Text>
-        <TextInput
-          ref={ref}
-          accessibilityLabel={label}
-          accessibilityHint={description ?? undefined}
-          accessibilityState={{ disabled: rest.editable === false }}
-          placeholderTextColor={colors.textMuted}
+        <View
           style={[
-            styles.input,
-            typography.body,
+            styles.inputBox,
             {
-              color: colors.text,
-              backgroundColor: colors.surface,
+              backgroundColor: colors.surfaceAlt,
+              // Kept visible (3:1) so the field is recognisable as an input (WCAG 1.4.11).
               borderColor: error ? colors.danger : colors.border,
             },
-            style,
           ]}
-          {...rest}
-        />
+        >
+          <TextInput
+            ref={ref}
+            accessibilityLabel={label}
+            accessibilityHint={description ?? undefined}
+            accessibilityState={{ disabled: rest.editable === false }}
+            placeholderTextColor={colors.textMuted}
+            style={[styles.input, typography.body, { color: colors.text }, style]}
+            {...rest}
+            secureTextEntry={secure}
+          />
+          {revealable ? (
+            <Pressable
+              onPress={() => setRevealed((v) => !v)}
+              accessibilityRole="button"
+              accessibilityLabel={t(revealed ? 'auth.hidePassword' : 'auth.showPassword')}
+              hitSlop={8}
+              style={styles.reveal}
+            >
+              <Icon name={revealed ? 'visibility-off' : 'visibility'} />
+            </Pressable>
+          ) : icon ? (
+            <Icon name={icon} />
+          ) : null}
+        </View>
         {error ? (
           <Text variant="caption" color="danger" accessibilityLiveRegion="polite">
             {error}
@@ -118,29 +157,228 @@ export function ErrorBanner({ message }: { message: string | null }) {
     <View
       accessibilityRole="alert"
       accessibilityLiveRegion="assertive"
-      style={[styles.banner, { borderColor: colors.danger, backgroundColor: colors.surface }]}
+      style={[styles.banner, { backgroundColor: colors.dangerSoft }]}
     >
-      <Text color="danger">{message}</Text>
+      <Icon name="error-outline" color="onDangerSoft" />
+      <Text color="onDangerSoft" style={styles.flex}>
+        {message}
+      </Text>
+    </View>
+  );
+}
+
+export interface SegmentOption<T extends string> {
+  value: T;
+  label: string;
+  icon?: IconName;
+}
+
+/** Segmented tabs (e.g. D1 / D9, Yesterday / Today / Tomorrow). */
+export function SegmentedTabs<T extends string>({
+  options,
+  value,
+  onChange,
+}: {
+  options: readonly SegmentOption<T>[];
+  value: T;
+  onChange: (value: T) => void;
+}) {
+  const { colors } = useTheme();
+  return (
+    <View
+      accessibilityRole="tablist"
+      style={[styles.segments, { backgroundColor: colors.surfaceAlt }]}
+    >
+      {options.map((option) => {
+        const selected = option.value === value;
+        return (
+          <Pressable
+            key={option.value}
+            onPress={() => onChange(option.value)}
+            accessibilityRole="tab"
+            accessibilityState={{ selected }}
+            accessibilityLabel={option.label}
+            style={[
+              styles.segment,
+              selected && {
+                backgroundColor: colors.surface,
+                borderColor: colors.primary,
+              },
+            ]}
+          >
+            <View style={styles.buttonContent}>
+              {option.icon ? (
+                <Icon name={option.icon} size={18} color={selected ? 'primary' : 'textMuted'} />
+              ) : null}
+              <Text
+                variant="label"
+                color={selected ? 'primary' : 'textMuted'}
+                style={styles.centered}
+              >
+                {option.label}
+              </Text>
+            </View>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+/** Single-choice pill (e.g. relation). Exposed as a radio button. */
+export function Chip({
+  label,
+  selected,
+  onPress,
+  testID,
+}: {
+  label: string;
+  selected: boolean;
+  onPress: () => void;
+  testID?: string;
+}) {
+  const { colors } = useTheme();
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="radio"
+      accessibilityState={{ checked: selected }}
+      accessibilityLabel={label}
+      testID={testID}
+      style={({ pressed }) => [
+        styles.chip,
+        {
+          backgroundColor: selected ? colors.primary : colors.surface,
+          borderColor: selected ? colors.primary : colors.border,
+          opacity: pressed ? 0.85 : 1,
+        },
+      ]}
+    >
+      <Text variant="label" color={selected ? 'onPrimary' : 'text'}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
+
+/**
+ * A muted prompt followed by an accent link, e.g. "New here? Create an account". One tap target
+ * whose accessible name is the whole sentence.
+ */
+export function InlineLink({
+  prompt,
+  action,
+  onPress,
+}: {
+  prompt: string;
+  action: string;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="link"
+      accessibilityLabel={`${prompt} ${action}`}
+      style={({ pressed }) => [styles.inlineLink, { opacity: pressed ? 0.7 : 1 }]}
+    >
+      <Text color="textMuted" style={styles.centered}>
+        {prompt}{' '}
+        <Text variant="label" color="accent">
+          {action}
+        </Text>
+      </Text>
+    </Pressable>
+  );
+}
+
+/** Horizontal rule with a word in the middle, e.g. "or". */
+export function Divider({ label }: { label: string }) {
+  const { colors } = useTheme();
+  return (
+    <View style={styles.divider} accessibilityRole="text">
+      <View style={[styles.rule, { backgroundColor: colors.hairline }]} />
+      <Text variant="overline" color="textMuted">
+        {label}
+      </Text>
+      <View style={[styles.rule, { backgroundColor: colors.hairline }]} />
+    </View>
+  );
+}
+
+/** A labelled group of controls. */
+export function Field({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <View style={styles.field}>
+      <Text variant="label">{label}</Text>
+      {children}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  flex: { flex: 1 },
   button: {
-    minHeight: MIN_TOUCH,
+    minHeight: MIN_TOUCH + 4,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  link: { minHeight: MIN_TOUCH, paddingHorizontal: spacing.sm },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    flexShrink: 1,
+  },
+  centered: { textAlign: 'center', flexShrink: 1 },
   field: { gap: spacing.xs },
-  input: {
-    minHeight: MIN_TOUCH,
+  inputBox: {
+    minHeight: MIN_TOUCH + 4,
     borderWidth: 1,
     borderRadius: radius.md,
     paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
-  banner: { borderWidth: 1, borderRadius: radius.md, padding: spacing.md },
+  input: { flex: 1, minHeight: MIN_TOUCH, paddingVertical: spacing.sm },
+  banner: {
+    borderRadius: radius.md,
+    padding: spacing.md,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: spacing.sm,
+  },
+  segments: { flexDirection: 'row', borderRadius: radius.md, padding: 4, gap: 4 },
+  segment: {
+    flex: 1,
+    minHeight: MIN_TOUCH,
+    borderRadius: radius.sm,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.xs,
+  },
+  reveal: {
+    minWidth: MIN_TOUCH,
+    minHeight: MIN_TOUCH,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: -spacing.sm,
+  },
+  inlineLink: { minHeight: MIN_TOUCH, alignItems: 'center', justifyContent: 'center' },
+  divider: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  rule: { flex: 1, height: 1 },
+  chip: {
+    minHeight: MIN_TOUCH,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    paddingHorizontal: spacing.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

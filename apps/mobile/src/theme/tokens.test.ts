@@ -18,11 +18,22 @@ const TEXT_PAIRS: [ColorName, ColorName][] = [
   ['danger', 'background'],
   ['danger', 'surface'],
   ['success', 'surface'],
+  // Soft fills (tags, icon tiles, banners, soft buttons) and their text.
+  ['onPrimarySoft', 'primarySoft'],
+  ['onAccentSoft', 'accentSoft'],
+  ['onDangerSoft', 'dangerSoft'],
+  ['onDanger', 'danger'],
+  // Secondary buttons, segmented tabs and inputs sit on surfaceAlt.
+  ['primary', 'surfaceAlt'],
+  ['accent', 'surfaceAlt'],
+  ['danger', 'surfaceAlt'],
 ];
 const NON_TEXT_PAIRS: [ColorName, ColorName][] = [
   ['border', 'surface'],
   ['border', 'background'],
   ['border', 'surfaceAlt'],
+  ['primary', 'surfaceAlt'],
+  ['danger', 'surfaceAlt'],
   ['chartLine', 'chartBg'],
   ['chartLine', 'chartLagna'],
 ];

@@ -4,6 +4,7 @@
  */
 export const en = {
   'app.name': 'Astro',
+  'app.tagline': 'Vedic Astrology & Celestial Insights',
 
   'auth.signIn.title': 'Sign in',
   'auth.signIn.submit': 'Sign in',
@@ -12,12 +13,22 @@ export const en = {
   'auth.signUp.title': 'Create account',
   'auth.signUp.submit': 'Create account',
   'auth.signUp.haveAccount': 'Already have an account? Sign in',
+  'auth.signUp.intro': 'Save birth details for yourself and your family, and see their charts.',
+  'auth.signUp.privacyNote':
+    'We store the birth details you enter to create your charts. You can delete your account and all your data at any time from Settings.',
+  'auth.signIn.noAccountPrompt': 'New here?',
+  'auth.signIn.createAccount': 'Create an account',
+  'auth.signUp.haveAccountPrompt': 'Already have an account?',
+  'auth.signUp.signIn': 'Sign in',
   'auth.reset.title': 'Reset password',
   'auth.reset.submit': 'Send reset link',
   'auth.reset.sent': 'If an account exists for that email, a reset link is on its way.',
   'auth.reset.back': 'Back to sign in',
   'auth.email': 'Email',
   'auth.password': 'Password',
+  'auth.emailPlaceholder': 'you@example.com',
+  'auth.showPassword': 'Show password',
+  'auth.hidePassword': 'Hide password',
   'auth.passwordHint': 'At least 8 characters',
   'auth.or': 'or',
   'auth.google': 'Continue with Google',

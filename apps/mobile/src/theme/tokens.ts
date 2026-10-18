@@ -1,21 +1,29 @@
-import { Platform } from 'react-native';
-
 /**
- * Design tokens. Night-indigo with saffron accents: calm, traditional, readable.
+ * Design tokens from the Stitch design system "Vedic Celestial Minimalism": indigo primary,
+ * saffron accent, warm off-white surfaces (dark palette derived to match).
  * Every text/background pairing used in the app is checked for WCAG AA (4.5:1) in tokens.test.ts.
  */
 export const palettes = {
   light: {
-    background: '#FBF8F3',
+    background: '#FCF9F4',
     surface: '#FFFFFF',
-    surfaceAlt: '#F2ECE2',
-    text: '#1B1640',
-    textMuted: '#4A4570',
+    surfaceAlt: '#F0EDE9',
+    text: '#1C1C19',
+    textMuted: '#474552',
     primary: '#3B2F8F',
     onPrimary: '#FFFFFF',
-    accent: '#9A4A06',
-    border: '#8C8170',
-    danger: '#B42318',
+    primarySoft: '#E4DFFF',
+    onPrimarySoft: '#2E2380',
+    accent: '#974804',
+    accentSoft: '#FFDBC8',
+    onAccentSoft: '#6F3200',
+    border: '#787583',
+    /** Decorative dividers only; never the sole edge of an input or control. */
+    hairline: '#E5E2DD',
+    danger: '#BA1A1A',
+    onDanger: '#FFFFFF',
+    dangerSoft: '#FFDAD6',
+    onDangerSoft: '#93000A',
     success: '#067647',
     // North Indian chart: saffron ground with traditional graha colours (Sun copper, Moon blue,
     // Mars red, Mercury green, Jupiter gold, Venus pink, Saturn dark blue, Rahu smoke, Ketu brown).
@@ -36,17 +44,25 @@ export const palettes = {
     grahaKetu: '#6B4423',
   },
   dark: {
-    background: '#0F0C29',
-    surface: '#1B1640',
-    surfaceAlt: '#262054',
-    text: '#F4F1FA',
-    textMuted: '#C9C3E3',
-    primary: '#B9AEFF',
-    onPrimary: '#0F0C29',
-    accent: '#F5A524',
-    border: '#7671B0',
-    danger: '#F97066',
-    success: '#47CD89',
+    background: '#13121A',
+    surface: '#1E1C27',
+    surfaceAlt: '#2A2735',
+    text: '#E7E3EE',
+    textMuted: '#C8C4D4',
+    primary: '#C6BFFF',
+    onPrimary: '#1F1366',
+    primarySoft: '#3A3275',
+    onPrimarySoft: '#E4DFFF',
+    accent: '#FFB68A',
+    accentSoft: '#5A2A05',
+    onAccentSoft: '#FFDBC8',
+    border: '#928F9C',
+    hairline: '#34313F',
+    danger: '#FFB4AB',
+    onDanger: '#690005',
+    dangerSoft: '#690005',
+    onDangerSoft: '#FFDAD6',
+    success: '#6DD58C',
     chartBg: '#24180B',
     chartLagna: '#3A260F',
     chartLine: '#F5A524',
@@ -71,27 +87,41 @@ export type ColorName = keyof Palette;
 /** 4-point spacing scale. */
 export const spacing = { xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48 } as const;
 
-export const radius = { sm: 6, md: 12, lg: 20 } as const;
+export const radius = { sm: 8, md: 12, lg: 16, pill: 999 } as const;
 
 /** Minimum touch target (WCAG 2.5.5 / platform guidance). */
 export const MIN_TOUCH = 44;
 
-export const fonts = Platform.select({
-  ios: { body: 'system-ui', heading: 'ui-serif' },
-  default: { body: 'sans-serif', heading: 'serif' },
-});
+/**
+ * Inter, one file per weight: Android cannot synthesise weights from fontWeight alone, so each
+ * text style names its exact face. Loaded in the root layout before the first screen renders.
+ */
+export const fonts = {
+  regular: 'Inter_400Regular',
+  medium: 'Inter_500Medium',
+  semibold: 'Inter_600SemiBold',
+  bold: 'Inter_700Bold',
+} as const;
 
 /**
- * Type scale. Sizes are base values: React Native scales them with the user's text-size
- * setting (allowFontScaling is on by default), so layouts must tolerate larger text.
+ * Type scale (Stitch design system, body raised to 16 for reading comfort). Sizes are base
+ * values: React Native scales them with the user's text-size setting, so layouts must tolerate
+ * larger text.
  */
 export const typography = {
-  title: { fontSize: 28, lineHeight: 36, fontWeight: '600' },
-  heading: { fontSize: 22, lineHeight: 30, fontWeight: '600' },
-  subheading: { fontSize: 18, lineHeight: 26, fontWeight: '600' },
-  body: { fontSize: 16, lineHeight: 24, fontWeight: '400' },
-  label: { fontSize: 15, lineHeight: 22, fontWeight: '600' },
-  caption: { fontSize: 13, lineHeight: 18, fontWeight: '400' },
+  title: { fontSize: 28, lineHeight: 34, fontFamily: fonts.bold, letterSpacing: -0.5 },
+  heading: { fontSize: 22, lineHeight: 28, fontFamily: fonts.semibold, letterSpacing: -0.3 },
+  subheading: { fontSize: 17, lineHeight: 22, fontFamily: fonts.semibold, letterSpacing: -0.2 },
+  body: { fontSize: 16, lineHeight: 24, fontFamily: fonts.regular },
+  label: { fontSize: 15, lineHeight: 20, fontFamily: fonts.semibold },
+  caption: { fontSize: 13, lineHeight: 18, fontFamily: fonts.medium },
+  overline: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontFamily: fonts.semibold,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
 } as const;
 
 export type TextVariant = keyof typeof typography;
