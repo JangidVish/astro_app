@@ -10,11 +10,11 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://REPLACE-WITH-YOUR-RENDER-URL.onrender.com",
-        "EXPO_PUBLIC_FIREBASE_API_KEY": "REPLACE-WITH-FIREBASE-WEB-apiKey",
-        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "REPLACE-WITH-FIREBASE-WEB-authDomain",
-        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "REPLACE-WITH-FIREBASE-WEB-projectId",
-        "EXPO_PUBLIC_FIREBASE_APP_ID": "REPLACE-WITH-FIREBASE-WEB-appId"
+        "EXPO_PUBLIC_API_URL": "https://astro-api-9d7d.onrender.com",
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyDn3uv-b29FnD-TFqpbpKijdNIhgp_yxZA",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "astro-poc-1de99.firebaseapp.com",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "astro-poc-1de99",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "1:262818998229:web:adccc36066094879f5ff5c"
       }
     }
   }

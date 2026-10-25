@@ -1,3 +1,11 @@
 # Extends the built-in gitleaks ruleset. Add allowlists only with a comment explaining why.
 [extend]
 useDefault = true
+
+# The Firebase *web* API key of the POC project (astro-poc-1de99). It is a public identifier that
+# ships inside every client build (Firebase docs: "not a secret"); access is enforced by Firebase
+# Auth, Firestore rules and the API. Allowed by exact value, so any other Google key still fails.
+[allowlist]
+description = "Public Firebase web API key of the POC project"
+regexTarget = "match"
+regexes = ['''AIzaSyDn3uv-b29FnD-TFqpbpKijdNIhgp_yxZA''']
