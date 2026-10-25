@@ -21,6 +21,8 @@ infra/gcp/env.*.sh
 *.keystore
 *.jks
 service-account*.json
+*firebase-adminsdk*.json
+firebase-key.json
 *-credentials.json
 google-services.json
 GoogleService-Info.plist

@@ -138,7 +138,7 @@ Request logs carry a request id (`x-request-id` response header) and a peppered 
 **Waiting on your accounts or decisions:**
 
 - **Google sign-in is hidden** until OAuth client IDs exist. Email/password and Apple are wired.
-- **Bundle identifiers** are placeholders (`com.placeholder.astroapp`).
+- **App ID** is `com.jangidvish.astro` (set for the POC build; change before a store release if the publisher differs).
 - **Privacy policy and terms text** are not written yet (M0.6). Their versions are `2026-10-17`.
 - **The quota value (30 per day)** is a placeholder until the credit cost per call is known.
 

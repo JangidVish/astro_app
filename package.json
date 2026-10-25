@@ -24,7 +24,8 @@
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run test",
     "prepare": "husky",
     "emulators": "npm run emulators --workspace @astro/firebase",
-    "dev:lan": "node scripts/dev-lan.mjs"
+    "dev:lan": "node scripts/dev-lan.mjs",
+    "build:apk": "node scripts/build-apk.mjs"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

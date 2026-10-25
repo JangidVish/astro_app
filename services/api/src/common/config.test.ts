@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import { ConfigError, loadConfig } from './config.js';
+import { ConfigError, isDeployed, loadConfig } from './config.js';
 
 const PEPPER = randomBytes(32).toString('base64');
 
@@ -65,6 +65,34 @@ describe('loadConfig', () => {
         'LISTEN_ON_LAN: is for local development only',
       );
     }
+  });
+
+  it('demo (hosted proof of concept) may run without App Check', () => {
+    const config = loadConfig({
+      ...base,
+      APP_ENV: 'demo',
+      ASTRO_PROVIDER: 'astrologyapi',
+      ASTROLOGYAPI_USER_ID: 'u',
+      ASTROLOGYAPI_API_KEY: 'k',
+      APP_CHECK_ENFORCED: 'false',
+    });
+    expect(config.env).toBe('demo');
+    expect(config.appCheckEnforced).toBe(false);
+  });
+
+  it.each(['FIREBASE_AUTH_EMULATOR_HOST', 'FIRESTORE_EMULATOR_HOST'])(
+    'demo refuses %s like staging and prod',
+    (name) => {
+      expect(problems({ ...base, APP_ENV: 'demo', [name]: '127.0.0.1:9099' })).toContain(
+        `${name}: must not be set when deployed (emulators accept unsigned tokens)`,
+      );
+    },
+  );
+
+  it('treats staging, prod and demo as deployed', () => {
+    expect(
+      ['local', 'test', 'staging', 'prod', 'demo'].filter((e) => isDeployed(e as never)),
+    ).toEqual(['staging', 'prod', 'demo']);
   });
 
   it('refuses the mock provider in prod', () => {

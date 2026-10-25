@@ -1,0 +1,39 @@
+# Render Blueprint: hosts the API for the free proof-of-concept (docs/deploy-poc.md).
+# Render > New > Blueprint > pick this repo. Values marked "sync: false" are asked for once,
+# in Render's dashboard; never commit them here.
+services:
+  - type: web
+    name: astro-api
+    runtime: docker
+    plan: free # sleeps after ~15 idle minutes; the first request then takes 30-60 s
+    region: singapore # closest Render region to India
+    dockerfilePath: ./services/api/Dockerfile
+    dockerContext: .
+    healthCheckPath: /healthz
+    autoDeployTrigger: commit
+    envVars:
+      # Hosted demo: deployed rules apply, but App Check is off until the app sends App Check
+      # tokens. Sign-in is still required for every /v1 call, and the daily quota applies.
+      - key: APP_ENV
+        value: demo
+      - key: APP_CHECK_ENFORCED
+        value: 'false'
+      - key: ASTRO_PROVIDER
+        value: astrologyapi
+      - key: LOG_LEVEL
+        value: info
+      - key: QUOTA_PROVIDER_CALLS_PER_DAY
+        value: '30'
+      # firebase-admin reads the service-account key from this Secret File (added by hand in
+      # Render: Environment > Secret Files > firebase-key.json).
+      - key: GOOGLE_APPLICATION_CREDENTIALS
+        value: /etc/secrets/firebase-key.json
+      # 32 random bytes, base64: exactly what UID_HASH_PEPPER needs. Never change it later.
+      - key: UID_HASH_PEPPER
+        generateValue: true
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: ASTROLOGYAPI_USER_ID
+        sync: false
+      - key: ASTROLOGYAPI_API_KEY
+        sync: false

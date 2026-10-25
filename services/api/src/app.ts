@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import Fastify, { type FastifyError, type FastifyInstance } from 'fastify';
 import { ZodError } from 'zod';
 import { MAX_BODY_BYTES, toValidationDetails, type ApiError } from '@astro/shared';
-import type { Config } from './common/config.js';
+import { isDeployed, type Config } from './common/config.js';
 import { AppError } from './common/errors.js';
 import { loggerOptions } from './common/logger.js';
 import { addAuthHook, decorateAuth } from './modules/auth/hook.js';
@@ -104,7 +104,7 @@ export function buildApp(config: Config, options: BuildAppOptions): FastifyInsta
     logger: options.logStream ? { ...logger, stream: options.logStream } : logger,
     bodyLimit: MAX_BODY_BYTES,
     // Cloud Run terminates TLS at its proxy; trust it only when deployed there.
-    trustProxy: config.env === 'staging' || config.env === 'prod',
+    trustProxy: isDeployed(config.env),
     // Never trust client-supplied request ids; they end up in logs.
     requestIdHeader: false,
     genReqId: () => randomUUID(),

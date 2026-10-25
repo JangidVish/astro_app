@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon",
-      "bundleIdentifier": "com.placeholder.astroapp",
+      "bundleIdentifier": "com.jangidvish.astro",
       "supportsTablet": true,
       "usesAppleSignIn": true
     },
@@ -21,7 +21,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.placeholder.astroapp"
+      "package": "com.jangidvish.astro"
     },
     "web": {
       "output": "single",

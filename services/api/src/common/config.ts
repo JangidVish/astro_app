@@ -1,7 +1,16 @@
 import { z } from 'zod';
 
-const APP_ENVS = ['local', 'test', 'staging', 'prod'] as const;
+/**
+ * "demo" is a hosted proof of concept (e.g. a free host for a client trial): deployed like
+ * staging, but App Check may be off because the app does not send App Check tokens yet.
+ */
+const APP_ENVS = ['local', 'test', 'staging', 'prod', 'demo'] as const;
 export type AppEnv = (typeof APP_ENVS)[number];
+
+/** Running on a real host: listens publicly, trusts the host's proxy, never uses emulators. */
+export function isDeployed(env: AppEnv): boolean {
+  return env === 'staging' || env === 'prod' || env === 'demo';
+}
 
 const booleanString = z.enum(['true', 'false']).transform((v) => v === 'true');
 
@@ -40,7 +49,7 @@ const envSchema = z
     FIRESTORE_EMULATOR_HOST: z.string().optional(),
   })
   .superRefine((env, ctx) => {
-    const deployed = env.APP_ENV === 'staging' || env.APP_ENV === 'prod';
+    const deployed = isDeployed(env.APP_ENV);
     if (env.APP_ENV === 'prod' && env.ASTRO_PROVIDER === 'mock') {
       ctx.addIssue({
         code: 'custom',
@@ -54,12 +63,12 @@ const envSchema = z
           ctx.addIssue({
             code: 'custom',
             path: [key],
-            message: 'must not be set in staging or prod (emulators accept unsigned tokens)',
+            message: 'must not be set when deployed (emulators accept unsigned tokens)',
           });
         }
       }
     }
-    if (deployed && !env.APP_CHECK_ENFORCED) {
+    if ((env.APP_ENV === 'staging' || env.APP_ENV === 'prod') && !env.APP_CHECK_ENFORCED) {
       ctx.addIssue({
         code: 'custom',
         path: ['APP_CHECK_ENFORCED'],

@@ -1,7 +1,7 @@
 # Full journey: register -> consent -> profile -> chart -> dasha -> prediction -> reopen saved
 # reading -> delete account. Selectors are testIDs and the English strings in src/i18n/en.ts.
 # Android: the date and time pickers open dialogs; "OK" accepts 1990-01-01 and 12:00.
-appId: com.placeholder.astroapp
+appId: com.jangidvish.astro
 name: Full user journey
 ---
 - launchApp:

@@ -13,3 +13,9 @@ infra/firebase/**
 docs
 **/*.log
 **/coverage
+
+# Render secret files are copied into the build context: keep keys out of images
+firebase-key.json
+**/firebase-key.json
+**/service-account*.json
+**/*firebase-adminsdk*.json

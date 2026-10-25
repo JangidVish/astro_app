@@ -54,7 +54,7 @@ These scripts set up one environment (staging or prod). Each environment lives i
 
 4. **Firebase console, manual steps** (there is no stable CLI for these):
    - Authentication → Sign-in method: enable **Email/Password**, **Google** and **Apple**. Apple needs the Services ID and key from your Apple Developer account (M0.3).
-   - Project settings → add the **iOS** and **Android** apps. Their bundle ids replace `com.placeholder.astroapp` in `apps/mobile/app.json`. Put the web config values into the EAS environment as `EXPO_PUBLIC_FIREBASE_*`.
+   - Project settings → add the **iOS** and **Android** apps. The app ID is `com.jangidvish.astro` (`apps/mobile/app.json`). Put the web config values into the EAS environment as `EXPO_PUBLIC_FIREBASE_*`.
    - App Check: register **App Attest** (iOS) and **Play Integrity** (Android). The mobile App Check integration is still to do (see `docs/STATUS.md`). **Until it is done, the deployed API rejects the app**, because `APP_CHECK_ENFORCED=true` is mandatory in staging and prod.
 
 5. **GitHub** → Settings → Environments:
