@@ -22,7 +22,11 @@ concurrency:
 
 jobs:
   deploy:
-    if: github.event_name == 'push' || github.event.workflow_run.conclusion == 'success'
+    # Skipped until a Google Cloud project is configured (repository variable GCP_PROJECT_ID).
+    # The free POC runs on Render instead (render.yaml, docs/deploy-poc.md).
+    if: >-
+      vars.GCP_PROJECT_ID != '' &&
+      (github.event_name == 'push' || github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     environment: ${{ github.event_name == 'push' && 'production' || 'staging' }}
     permissions:
